@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const { auth } = require("../middlewares/auth");
+const { auth, authMaxim } = require("../middlewares/auth");
 const {
   UserModel,
   validateUser,
@@ -14,10 +14,15 @@ router.get("/", async (req, res) => {
   res.json({ msg: "user work 77777" });
 });
 
+router.get("/validToken", authMaxim, (req, res) => {
+  // If the middleware reaches this point, the token is valid and not expired
+  res.json({ isValid: true });
+
+});
+
+
 router.get("/profile", auth, async (req, res) => {
-  // res.json({msg:"Info of user"})
   try {
-    // req.tokenData - מגיע מהפונקציית אוט שנמצאת בשרשור של הראוטר
     const data = await UserModel.findOne(
       { _id: req.tokenData._id },
       { password: 0 }
@@ -29,8 +34,6 @@ router.get("/profile", auth, async (req, res) => {
   }
 });
 
-// אזור שרק משתמש שהתחבר ושלח
-// טוקן יוכל לקבל מידע על עצמו לפי הטוקן ששלח
 router.get("/showInfo", async (req, res) => {
   // נבדוק אם נשלח טוקן בהידר
   // req.params, req.body, .req.query, req.header
@@ -165,12 +168,4 @@ router.put("/update/:userId", auth, async (req, res) => {
   }
 });
 
-
-
-
-
-
 module.exports = router;
-
-
-

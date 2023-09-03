@@ -7,14 +7,13 @@ import Home from "./Home";
 import Welcome from "./Welcome";
 import Post from "./Post";
 
-
 const MainRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Welcome />}></Route>
         <Route path="/home" element={<Home />}></Route>
-        <Route path="/home/post"element={<Post/>}></Route>
+        <Route path="/home/post" element={<Post />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/profile" element={<Profile />}></Route>

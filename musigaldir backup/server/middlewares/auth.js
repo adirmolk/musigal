@@ -1,26 +1,43 @@
 const jwt = require("jsonwebtoken");
 
-// פונקציית מיידלוואר / אמצעית
 exports.auth = async (req, res, next) => {
   const token = req.header("x-api-key");
-  // בודק שנשלח טוקן בהידר
+
   if (!token) {
-    return res
-      .status(401)
-      .json({ err: "You need send token to this endpoint or url " });
+    return res.status(401).json({ err: "You need to send a token in the 'x-api-key' header." });
   }
+
   try {
-    // מנסה לפענח את הטוקן אם הוא לא בתוקף
-    // או שיש טעות אחרת נעבור לקץ'
-    const decodeToken = jwt.verify(token, "adirmolkSecret");
-    // נעביר את המידע של הטוקן כמאפיין לריק
-    // מכיוון שהמשתנה שלו זהה לחלוטין בזכרון לריק של הפונקציה
-    // הבאה בשרשור של הראוטר
-    req.tokenData = decodeToken;
-    // לעבור בפונקציה הבאה בתור בשרשור של הרואטר
+    const decodedToken = jwt.verify(token, "adirmolkSecret");
+    req.tokenData = decodedToken;
     next();
   } catch (err) {
-    console.log(err);
-    res.status(502).json({ err: "Token invalid or expired " });
+    // Handle token expiration error
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ err: "Token has expired." });
+    }
+
+    // Handle other JWT verification errors
+    return res.status(401).json({ err: "Invalid token." });
   }
+};
+
+exports.authMaxim = async (req, res, next) => {
+  const token = req.header("x-api-key");
+  
+  if (!token) {
+    return res.status(401).json({ err: "You need to send a token in the 'x-api-key' header." });
+  }
+
+  // Verify the token without throwing an error for expiration
+  const decodedToken = jwt.decode(token, { complete: true });
+
+  // Check if the token has expired
+  if (decodedToken && decodedToken.payload.exp < Date.now() / 1000) {
+    return res.redirect("login");
+  }
+  
+
+  req.tokenData = decodedToken;
+  next();
 };
