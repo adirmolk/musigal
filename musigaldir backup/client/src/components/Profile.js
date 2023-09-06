@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CurrentlyPlaying from "./CurrentlyPlaying";
+import Post from "./Post";
 import FriendsList from "./FriendsList";
 
 const Profile = () => {
@@ -30,16 +31,17 @@ const Profile = () => {
   }, [navigate]);
 
   return (
-    <div className="container mt-4 mx-4">
+    <div style={{width:"400px"}} className="container d-flex  mt-4 mx-5">
       <div className="row mb-5">
-        <div className="col-md-4">
+        <div className="">
           {user ? (
             <div
               style={{
                 backgroundColor: "white",
                 border: "lightgray 1px solid",
+                width:"400px"
               }}
-              className="rounded p-4"
+              className="rounded p-4 "
             >
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center">
@@ -67,8 +69,8 @@ const Profile = () => {
                 </div>
                 <button
                   onClick={() => navigate("/home/post")}
-                  style={{ fontWeight: "bold" }}
-                  className="btn "
+                  style={{ backgroundColor: "#DDC7A9" }}
+                  className="btn badge fw-bold fs-5 h-50  mt-2 "
                 >
                   +
                 </button>
@@ -111,11 +113,13 @@ const Profile = () => {
                 </div>
               </div>
             </div>
+
           ) : (
             <p>Loading...</p>
           )}
         </div>
       </div>
+      {/* <Post/> */}
     </div>
   );
 };

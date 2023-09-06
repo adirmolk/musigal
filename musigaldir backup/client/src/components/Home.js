@@ -4,6 +4,7 @@ import "../App.css";
 import Nav from "./Nav";
 import Profile from "./Profile";
 import checkTokenValidation from "./checkTokenValidation";
+import Post from "./Post";
 
 const Home = () => {
   const nav = useNavigate();
@@ -22,9 +23,18 @@ const Home = () => {
   }, [nav]);
 
   return (
-    <div style={{ backgroundColor: "#F4F3F4", height: "740px" }}>
+    <div style={{ backgroundColor: "#F4F3F4", height: "100%", width:"100%" }}>
       <Nav />
-      <Profile />
+      <div className="d-flex">
+        <div className="">
+          {" "}
+          <Profile />
+        </div>
+        <div className="">
+          {" "}
+          <Post />
+        </div>
+      </div>
     </div>
   );
 };

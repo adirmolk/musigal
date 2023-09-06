@@ -56,7 +56,7 @@ const FriendsList = () => {
         width={"30px"}
         src="friends (1).png"
         alt="Friends"
-        className="bg-primary rounded p-1"
+        className=" rounded p-1"
       />
     </button>
     {showFriends && (
