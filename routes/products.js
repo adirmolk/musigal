@@ -1,0 +1,83 @@
+const express = require("express");
+const { auth } = require("../middlewares/auth");
+const { validateProduct, productsModel } = require("../models/productModel");
+const router = express.Router();
+
+router.get("/",auth, async(req,res) => {
+  try{
+    const limit = req.query.limit || 5;
+    const page = req.query.page - 1 || 0;
+    const sort = req.query.sort || "_id";
+    const reverse = req.query.reverse == "yes" ? 1 : -1;
+
+    let filteFind = {};
+    // בודק אם הגיע קווארי לחיפוש ?s=
+    if(req.query.s){  
+      const searchExp = new RegExp(req.query.s,"i");
+      filteFind = {title:searchExp}
+    }
+    const data = await productsModel
+    .find(filteFind)
+    .limit(limit)
+    .skip(page * limit)
+    .sort({[sort]:reverse})
+    res.json(data);
+  }
+  catch(err){
+    console.log(err);
+    res.status(502).json({err})
+  }
+});
+
+router.post("/",auth, async(req,res) => {
+  const validBody = validateProduct(req.body)
+  if(validBody.error){
+    return res.status(400).json(validBody.error.details);
+  }
+  try{
+    const product = new productsModel(req.body);
+    product.user_id = req.tokenData._id;
+    await product.save();
+
+    res.status(201).json(product);
+
+  }
+  catch(err){
+    console.log(err);
+    res.status(502).json({err})
+  }
+});
+
+router.put("/:id", auth, async (req, res) => {
+  const validBody = validateProduct(req.body)
+  if(validBody.error){
+    return res.status(400).json(validBody.error.details);
+  }
+  try{
+    const id = req.params.id;
+    const data = await productsModel.updateOne({_id:id,user_id:req.tokenData._id}, req.body);
+    res.status(200).json(data);
+  }
+  catch(err){
+    console.log(err);
+    res.status(502).json({err})
+  }
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  const validBody = validateProduct(req.body)
+  if(validBody.error){
+    return res.status(400).json(validBody.error.details);
+  }
+  try{
+    const id = req.params.id;
+    const data = await productsModel.deleteOne({_id:id,user_id:req.tokenData._id}, req.body);
+    res.status(201).json(data);
+  }
+  catch(err){
+    console.log(err);
+    res.status(502).json({err})
+  }
+})
+
+module.exports = router;
