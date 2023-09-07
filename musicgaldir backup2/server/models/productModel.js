@@ -20,7 +20,7 @@ exports.validateProduct = (_reqBody) => {
     condition: Joi.string().min(2).max(100).required(),
     location: Joi.string().min(2).max(100).required(),
     description: Joi.string().min(2).max(100).required(),
-    img_url: Joi.string().min(2).max(100).allow("", null)
+    img_url: Joi.string().min(2).max(100000).allow("", null)
 
   })
   return joiSchema.validate(_reqBody);

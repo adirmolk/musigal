@@ -14,49 +14,64 @@ const Post = () => {
   const [postType, setPostType] = useState("song");
   const [product, setProduct] = useState({});
   const [song, setSong] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
 
   const onPlay = () => {
-    setSong({...song, title: selectedSong.title, album: selectedSong.album.title, artist: selectedSong.artist.name, img_url: selectedSong.album.cover_medium})
-  }
+    setSong({
+      ...song,
+      title: selectedSong.title,
+      album: selectedSong.album.title,
+      artist: selectedSong.artist.name,
+      img_url: selectedSong.album.cover_medium,
+    });
+  };
+  const onPost = async () => {
+    setIsPosted(false);
+    const tokenValid = checkTokenValidation();
 
-  const onPost = async() => {
-    checkTokenValidation();
-    if(postType != "song") {
-    console.log(product);
-    await axios({
-      method: 'POST',
-      url: "http://localhost:3001/products",
-      headers: {
-        'x-api-key': localStorage.getItem("token")
-      },
-      data: product,
-    })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
+    if (tokenValid) {
+      setIsLoading(true);
+
+      try {
+        if (postType !== "song") {
+          console.log(product);
+          const response = await axios.post(
+            "http://localhost:3001/products",
+            product,
+            {
+              headers: {
+                "x-api-key": localStorage.getItem("token"),
+              },
+            }
+          );
+          console.log(response.data);
+        } else {
+          console.log(song);
+          const response = await axios.post(
+            "http://localhost:3001/songs",
+            song,
+            {
+              headers: {
+                "x-api-key": localStorage.getItem("token"),
+              },
+            }
+          );
+          console.log(response.data);
+        }
+
+        setIsPosted(true);
+
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
         console.error(error);
-      });
-  }
-  else{
-    console.log(song);
-    await axios({
-      method: 'POST',
-      url: "http://localhost:3001/songs",
-      headers: {
-        'x-api-key': localStorage.getItem("token")
-      },
-      data: song,
-    })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-}
+        setIsLoading(false);
+      }
+    }
+  };
 
   const fetchDeezerData = async () => {
     const options = {
@@ -95,19 +110,19 @@ const Post = () => {
     setIsPlaying(true);
   };
 
-  useEffect(()=>{
-    if(selectedSong){
+  useEffect(() => {
+    if (selectedSong) {
       onPlay();
     }
-  }, [selectedSong])
+  }, [selectedSong]);
 
   return (
     <div>
-      <div
-        className="d-flex flex-column p-4 "
-        
-      >
-        <div style={{ backgroundColor: "white",border:"lightgray 1px solid" }} className="p-4 rounded">
+      <div className="d-flex flex-column p-4 ">
+        <div
+          style={{ backgroundColor: "white", border: "lightgray 1px solid" }}
+          className="p-3 rounded"
+        >
           <div>
             {" "}
             <img
@@ -140,7 +155,9 @@ const Post = () => {
                   src="https://cdn.britannica.com/88/158788-050-314EBC88/Mount-Triumph-height-North-Cascades-National-Park.jpg"
                   alt="User Profile"
                 />
-                <h2 style={{color: "#DDC7A9"}} className="d-inline  mx-3 ">Post Product</h2>
+                <h2 style={{ color: "#DDC7A9" }} className="d-inline  mx-3 ">
+                  Post Product
+                </h2>
               </div>
             )}
             <hr />
@@ -206,7 +223,9 @@ const Post = () => {
                           💿{result.album.title} &#8226;{" "}
                         </span>
                         <button
-                          onClick={() => {handlePlayButtonClick(result)}}
+                          onClick={() => {
+                            handlePlayButtonClick(result);
+                          }}
                           className="btn"
                         >
                           <img
@@ -274,7 +293,10 @@ const Post = () => {
                     </div>
                   </div>
                   <hr />
-                  <input onChange={(e) => setSong({...song, description: e.target.value})}
+                  <input
+                    onChange={(e) =>
+                      setSong({ ...song, description: e.target.value })
+                    }
                     className="w-100 rounded text-center border p-2 bg-light"
                     placeholder="add description..."
                     type="text"
@@ -282,33 +304,47 @@ const Post = () => {
                 </div>
               )
             ) : (
-              <div className="text-start " >
+              <div className="text-start ">
                 <div className="d-flex">
                   <input
+                    onChange={(e) =>
+                      setProduct({ ...product, img_url: e.target.value })
+                    }
                     style={{ width: "150px", height: "100px" }}
                     className=" rounded border  bg-light"
-                    type="file"
+                    type="text"
                   />
                   <div className="p-2">
-                    <input onChange={(e)=> setProduct({...product, title: e.target.value})}
+                    <input
+                      onChange={(e) =>
+                        setProduct({ ...product, title: e.target.value })
+                      }
                       className=" rounded mx-1 border p-2 bg-light"
                       placeholder="Items Name"
                       type="text"
                     />
-                    <input onChange={(e)=> setProduct({...product, price: e.target.value})}
+                    <input
+                      onChange={(e) =>
+                        setProduct({ ...product, price: e.target.value })
+                      }
                       className=" rounded mx-1 mt-2 border p-2 bg-light"
                       placeholder="Items Price"
                       type="number"
-                      
                     />
                   </div>
                 </div>
-                <div className="d-flex ">
-                  <select onChange={(e)=> setProduct({...product, condition: e.target.value})}
+                <div className="d-flex">
+                  <select
+                    onChange={(e) =>
+                      setProduct({ ...product, condition: e.target.value })
+                    }
                     className="rounded border mt-2 p-2 bg-light"
                     name="itemCondition"
                     id="itemCondition"
                   >
+                    <option value="" disabled selected>
+                      Choose condition
+                    </option>
                     <option value="Mint (M)">Mint (M)</option>
                     <option value="Near Mint (NM or M-)">
                       Near Mint (NM or M-)
@@ -322,14 +358,21 @@ const Post = () => {
                     <option value="Poor (P)">Poor (P)</option>
                     <option value="Fair (F)">Fair (F)</option>
                   </select>
-                  <input onChange={(e)=> setProduct({...product, location: e.target.value})}
+
+                  <input
+                    onChange={(e) =>
+                      setProduct({ ...product, location: e.target.value })
+                    }
                     className="w-50 mx-2  rounded border mt-2 p-2 bg-light"
                     placeholder="Location"
                     type="text"
                   />
                 </div>
 
-                <input onChange={(e)=> setProduct({...product, description: e.target.value})}
+                <input
+                  onChange={(e) =>
+                    setProduct({ ...product, description: e.target.value })
+                  }
                   style={{ height: "70px" }}
                   className="w-100 rounded text-center border mt-2 p-2 bg-light"
                   placeholder="Add Description..."
@@ -339,7 +382,10 @@ const Post = () => {
               </div>
             )}
 
-            <div className="d-flex justify-content-between ">
+            <div
+              style={{ marginTop: selectedSong !== null ? "15px" : "0" }}
+              className="d-flex  justify-content-between "
+            >
               <div
                 className="rounded-pill btn text-center"
                 onClick={() => setPostType("song")}
@@ -376,11 +422,18 @@ const Post = () => {
                   Product
                 </span>
               </div>
-              <button onClick={() => onPost()}
-                style={{ backgroundColor: "#DDC7A9", color: "white" }}
-                className="btn rounded-pill w-50"
+              <button
+                onClick={onPost}
+                style={{
+                  backgroundColor: isLoading ? "#ccc" : "#DDC7A9",
+                  color: "white",
+                }}
+                className={`btn rounded-pill w-50 ${
+                  isLoading ? "disabled" : ""
+                }`}
+                disabled={isLoading}
               >
-                Post
+                {isLoading ? "Posting..." : isPosted ? "Posted" : "Post"}
               </button>
             </div>
           </div>

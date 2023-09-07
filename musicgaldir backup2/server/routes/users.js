@@ -34,6 +34,8 @@ router.get("/profile", auth, async (req, res) => {
   }
 });
 
+
+
 router.get("/showInfo", async (req, res) => {
   // נבדוק אם נשלח טוקן בהידר
   // req.params, req.body, .req.query, req.header
@@ -113,6 +115,31 @@ router.post("/login", async (req, res) => {
     res.status(502).json({ err });
   }
 });
+router.get("/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find the user by ID in the database
+    const user = await UserModel.findById(userId, { password: 0 });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Return the user data (excluding the password)
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
+
+
+
 
 router.put("/update/:userId", auth, async (req, res) => {
   const userId = req.params.userId;

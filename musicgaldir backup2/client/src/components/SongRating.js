@@ -6,16 +6,23 @@ const SongRating = ({ songId, user, updateLevel, updateUser }) => {
 
   const handleRatingChange = (event) => {
     const selectedRating = parseInt(event.target.value);
-    const levelIncrement = selectedRating;
-    updateUser(user._id, user.level + levelIncrement);
-    localStorage.setItem(`songRating_${songId}`, selectedRating.toString());
-    updateLevel(user.level + levelIncrement);
-    setRated(true);
-    setRating(selectedRating);
+    console.log("User object:", user); // Add this line to your handleRatingChange function
+
+    if (user && user._id !== undefined && user.level !== undefined) {
+      const levelIncrement = selectedRating;
+      updateUser(user._id, user.level + levelIncrement);
+      localStorage.setItem(`songRating_${songId}`, selectedRating.toString());
+      updateLevel(user.level + levelIncrement);
+      setRated(true);
+      setRating(selectedRating);
+
+    } else {
+      console.error("User is undefined or missing _id or level property");
+    }
   };
 
   const handleResetRating = () => {
-    setRating(rating);
+    setRating("");
   };
 
   useEffect(() => {

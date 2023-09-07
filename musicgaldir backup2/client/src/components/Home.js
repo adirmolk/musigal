@@ -5,6 +5,7 @@ import Nav from "./Nav";
 import Profile from "./Profile";
 import checkTokenValidation from "./checkTokenValidation";
 import Post from "./Post";
+import PostArea from "./PostArea";
 
 const Home = () => {
   const nav = useNavigate();
@@ -33,6 +34,7 @@ const Home = () => {
         <div className="">
           {" "}
           <Post />
+          <PostArea/>
         </div>
       </div>
     </div>
