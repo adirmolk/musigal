@@ -7,8 +7,8 @@ const PostArea = () => {
   const [postSongs, setPostSongs] = useState([]);
   const [postProducts, setPostProducts] = useState([]);
   const [postType, setPostType] = useState("song");
-  const [showDescription, setShowDescription] = useState(false); 
-  const [selectedDescription, setSelectedDescription] = useState("");
+  const [showDescription, setShowDescription] = useState(false);
+  const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -63,9 +63,12 @@ const PostArea = () => {
     "Poor (P)": "red",
     "Fair (F)": "brown",
   };
-  const toggleDescription = (description) => {
-    setSelectedDescription(description);
-    setShowDescription(!showDescription);
+  const toggleDescription = (index) => {
+    if (index === openDescriptionIndex) {
+      setOpenDescriptionIndex(null);
+    } else {
+      setOpenDescriptionIndex(index);
+    }
   };
 
   return (
@@ -109,7 +112,10 @@ const PostArea = () => {
           {postSongs.map((song, index) => (
             <div
               className="mt-4 mx-4 p-2 rounded"
-              style={{ backgroundColor: "#DDC7A9" }}
+              style={{
+                backgroundColor: "white",
+                border: "lightgray 1px solid",
+              }}
               key={index}
             >
               <div className="p-2 justify-content-between">
@@ -134,11 +140,9 @@ const PostArea = () => {
                         ? "Maxim"
                         : "Noob"}
                     </p>
-                    
                   </div>
-                 
                 </div>
-                <hr/>
+                <hr />
                 <div
                   className="instagram-post rounded"
                   style={{
@@ -186,9 +190,15 @@ const PostArea = () => {
                     </p>
                   </div>
                 </div>
-                <p className="text-center fw-bold mt-3">{song.description}</p>
-                <p className="text-center fw-bold mt-3">{song.user_id}</p>
-                
+                <SongRating />
+
+                <p
+                  style={{ fontSize: "13px" }}
+                  className=" d-inline-block fw-bold mt-3"
+                >
+                  {song.user_id}{" "}
+                </p>
+                <p className=" d-inline mt-3"> {song.description}</p>
               </div>
             </div>
           ))}
@@ -198,7 +208,10 @@ const PostArea = () => {
           {postProducts.map((item, index) => (
             <div
               className="mt-4 mx-4 rounded p-2"
-              style={{ backgroundColor: "#DDC7A9" }}
+              style={{
+                backgroundColor: "white",
+                border: "lightgray 1px solid",
+              }}
               key={index}
             >
               <div className="d-flex p-2 justify-content-between">
@@ -231,14 +244,12 @@ const PostArea = () => {
                 >
                   +
                 </button>
-                
               </div>
-              <hr/>           
-              
-              <div className="p-3 text-center rounded">
-                
+              <hr />
+
+              <div className="p-3 rounded">
                 <img
-                  className="rounded ms-5 mt-3 mb-3 d-block"
+                  className="rounded ms-5  mb-3 d-block"
                   src={item.img_url}
                   style={{
                     width: "300px",
@@ -255,16 +266,22 @@ const PostArea = () => {
                 <span className=""> {item.location}</span>
                 <br />
                 <div>
-                  <button className="btn">Buy</button>
                   <button
-                    onClick={() => toggleDescription(item.description)}
-                    className=" btn "
+                    style={{ backgroundColor: "lightblue" }}
+                    className="btn mt-1"
+                  >
+                    Buy
+                  </button>
+                  <button
+                    style={{ backgroundColor: "lightblue" }}
+                    onClick={() => toggleDescription(index)}
+                    className="ms-2 btn "
                   >
                     {showDescription ? "Hide Description" : "See Description"}
                   </button>
                 </div>
-                {showDescription && (
-                  <div className="text-center mt-2">{selectedDescription}</div>
+                {openDescriptionIndex === index && (
+                  <div className="text-center mt-2">{item.description}</div>
                 )}
               </div>
             </div>

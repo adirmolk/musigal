@@ -139,7 +139,7 @@ const Post = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search a song"
+                placeholder="Post Song"
                 style={{
                   backgroundColor: "#EEEDEF",
                   fontSize: "15px",

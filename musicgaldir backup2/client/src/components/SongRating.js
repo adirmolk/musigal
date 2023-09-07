@@ -39,7 +39,7 @@ const SongRating = ({ songId, user, updateLevel, updateUser }) => {
         <div>
           <button
             style={{ fontWeight: "bold" }}
-            className="btn bg-light ml-2 mx-4"
+            className="btn  bg-light ml-2 mx-4"
             onClick={handleResetRating}
           >
             {rating}
@@ -49,11 +49,12 @@ const SongRating = ({ songId, user, updateLevel, updateUser }) => {
       ) : (
         <div>
           <select
-            className="form-select mb-3"
+          style={{width:"70px"}}
+            className="form-select mt-2"
             value={rating}
             onChange={handleRatingChange}
           >
-            <option value="">rate</option>
+            <option value="">&#10084;</option>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
               <option key={value} value={value}>
                 {value}
