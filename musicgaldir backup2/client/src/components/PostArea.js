@@ -74,9 +74,10 @@ const PostArea = () => {
   return (
     <div>
       <div
-        className="rounded-pill btn text-center"
+        className="rounded-pill btn text-center ms-4"
         onClick={() => setPostType("song")}
         style={{
+          border: "lightgray 1px solid",
           backgroundColor: postType === "song" ? "lightblue" : "#EEEDEF",
         }}
       >
@@ -94,6 +95,7 @@ const PostArea = () => {
         className="rounded-pill btn text-center"
         onClick={() => setPostType("product")}
         style={{
+          border: "lightgray 1px solid",
           backgroundColor: postType === "product" ? "lightblue" : "#EEEDEF",
         }}
       >
@@ -198,7 +200,13 @@ const PostArea = () => {
                 >
                   {song.user_id}{" "}
                 </p>
-                <p className=" d-inline mt-3"> {song.description}</p>
+                <p
+                  style={{ maxWidth:"400px",height:"auto",  overflow: "hidden" }}
+                  className=""
+                >
+                  {" "}
+                  {song.description}
+                </p>
               </div>
             </div>
           ))}
@@ -254,6 +262,7 @@ const PostArea = () => {
                   style={{
                     width: "300px",
                     height: "300px",
+                    border: "lightgray 1px solid",
                   }}
                 />
                 <span className="fw-bold">{item.title} </span>&#8226;{" "}
