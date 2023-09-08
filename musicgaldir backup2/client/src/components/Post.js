@@ -118,9 +118,11 @@ const Post = () => {
 
   return (
     <div>
-      <div className="d-flex flex-column p-4 ">
+      <div className="d-flex flex-column p-4">
         <div
-          style={{ backgroundColor: "white", border: "lightgray 1px solid" }}
+          style={{ backgroundColor: "white",
+          //  border: "lightgray 1px solid"
+           }}
           className="p-3 rounded"
         >
           <div>
@@ -413,10 +415,10 @@ const Post = () => {
                 }}
               >
                 <img
-                  src={process.env.PUBLIC_URL + "/item.png"}
+                  src={process.env.PUBLIC_URL + "/vinyl.png"}
                   alt="Song 2"
                   className=""
-                  style={{ width: "14px", height: "14px" }}
+                  style={{ width: "16px", height: "16px" }}
                 />
                 <span style={{ fontSize: "12px" }} className="m-2">
                   Product

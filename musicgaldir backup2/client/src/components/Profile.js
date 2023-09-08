@@ -38,7 +38,7 @@ const Profile = () => {
             <div
               style={{
                 backgroundColor: "white",
-                border: "lightgray 1px solid",
+                // border: "lightgray 1px solid",
                 width:"400px"
               }}
               className="rounded p-4 "

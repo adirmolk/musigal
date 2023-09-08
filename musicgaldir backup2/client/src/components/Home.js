@@ -24,7 +24,7 @@ const Home = () => {
   }, [nav]);
 
   return (
-    <div style={{ backgroundColor: "#F4F3F4", height: "100%", width:"100%" }}>
+    <div style={{ backgroundColor: "#ECEBEC", height: "100%", width:"100%" }}>
       <Nav />
       <div className="d-flex">
         <div className="">
@@ -33,7 +33,7 @@ const Home = () => {
         </div>
         <div className="">
           {" "}
-          <Post />
+          {/* <Post /> */}
           <PostArea/>
         </div>
       </div>

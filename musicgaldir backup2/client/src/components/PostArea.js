@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import SongRating from "./SongRating";
 import { useNavigate } from "react-router-dom";
+import Post from "./Post";
 
 const PostArea = () => {
   const [postSongs, setPostSongs] = useState([]);
@@ -10,38 +11,60 @@ const PostArea = () => {
   const [showDescription, setShowDescription] = useState(false);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
   const token = localStorage.getItem("token");
+  const [togglePost, setTogglePost] = useState(false);
+  const [userLevel, setUserLevel] = useState(0);
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-
-  const fetchUserProfile = async () => {
+  const [authenticatedUserId, setAuthenticatedUserId] = useState(null);
+  const fetchUserProfile = async (userId) => {
     try {
-      const userId = "64f1bf53c56650f5bc9b783d";
-      const response = await axios.get(`http://localhost:3001/users/${userId}`);
-      setUser(response.data);
-      console.log(response.data);
+      const response = await axios.get(
+        `http://localhost:3001/users/profile/${userId}`,
+        {
+          headers: {
+            "x-api-key": localStorage.getItem("token"),
+          },
+        }
+      );
+      const user = response.data;
+      setAuthenticatedUserId(response.data._id);
+
+      setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
-  const ShowSongs = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:3001/songs", {
-        headers: { "x-api-key": token },
-      });
-      console.log(data);
-      setPostSongs(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+
   const ShowProducts = async () => {
     try {
       const { data } = await axios.get("http://localhost:3001/products", {
         headers: { "x-api-key": token },
       });
       console.log(data);
+
+      for (const product of data) {
+        fetchUserProfile(product.user_id);
+      }
+
       setPostProducts(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const ShowSongs = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:3001/songs", {
+        headers: { "x-api-key": token },
+      });
+      console.log(data);
+
+      for (const song of data) {
+        fetchUserProfile(song.user_id);
+      }
+
+      setPostSongs(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -50,7 +73,6 @@ const PostArea = () => {
   useEffect(() => {
     ShowSongs();
     ShowProducts();
-    fetchUserProfile();
   }, []);
 
   const conditionColors = {
@@ -71,42 +93,73 @@ const PostArea = () => {
     }
   };
 
+  const showPost = () => {
+    setTogglePost(!togglePost);
+  };
+  const updateLevel = (newLevel) => {
+    setUserLevel(newLevel);
+  };
+
   return (
-    <div>
+    <div style={{ marginTop: togglePost ? "0" : "25px" }} className="">
+      <div style={{ display: togglePost ? "block" : "none" }}>
+        <Post />
+      </div>
+
       <div
-        className="rounded-pill btn text-center ms-4"
+        className="rounded  btn text-center ms-4"
         onClick={() => setPostType("song")}
         style={{
-          border: "lightgray 1px solid",
-          backgroundColor: postType === "song" ? "lightblue" : "#EEEDEF",
+          // border: "lightgray 1px solid",
+          display: togglePost ? "none" : "inline",
+          backgroundColor:
+            postType === "song" ?? !togglePost ? "lightblue" : "white",
         }}
       >
         <img
           src={process.env.PUBLIC_URL + "/musicnote.png"}
           alt="Song 1"
           className=""
-          style={{ width: "16px", height: "14px" }}
+          style={{ marginBottom: "2px", width: "17px", height: "15px" }}
         />
-        <span style={{ fontSize: "12px" }} className="m-2">
-          Song
+        <span style={{ fontSize: "16px" }} className="m-2">
+          Posts
         </span>
       </div>
       <div
-        className="rounded-pill btn text-center"
+        className="rounded btn text-center ms-2"
         onClick={() => setPostType("product")}
         style={{
-          border: "lightgray 1px solid",
-          backgroundColor: postType === "product" ? "lightblue" : "#EEEDEF",
+          display: togglePost ? "none" : "inline",
+          // border: "lightgray 1px solid",
+          backgroundColor: postType === "product" ? "lightblue" : "white",
         }}
       >
         <img
           src={process.env.PUBLIC_URL + "/item.png"}
           alt="Song 2"
-          className=""
-          style={{ width: "14px", height: "14px" }}
+          className="mb-1"
+          style={{ width: "16px", height: "16px" }}
         />
-        <span style={{ fontSize: "12px" }} className="m-2">
-          Product
+        <span style={{ fontSize: "16px" }} className="m-2">
+          Shop
+        </span>
+      </div>
+      <div
+        className="rounded btn text-center  "
+        onClick={() => showPost()}
+        style={{
+          marginLeft: togglePost ? "25px" : "7px",
+          height: "36px",
+          border: "lightgray 1px solid",
+          backgroundColor: togglePost === true ? "lightblue" : "#EEEDEF",
+        }}
+      >
+        <span style={{ color: "gray" }} className="fw-bold ">
+          +
+        </span>
+        <span style={{ fontSize: "14px" }} className="m-2">
+          Upload
         </span>
       </div>
       {postType === "song" ? (
@@ -116,7 +169,8 @@ const PostArea = () => {
               className="mt-4 mx-4 p-2 rounded"
               style={{
                 backgroundColor: "white",
-                border: "lightgray 1px solid",
+                width: "400px",
+                // border: "lightgray 1px solid",
               }}
               key={index}
             >
@@ -130,17 +184,21 @@ const PostArea = () => {
                   />
                   <div className="mx-3">
                     <h4
-                      onClick={() => navigate(`/profile`)}
+                      onClick={() => navigate(`/profile/${song.user_id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user.name}
+                      {user && user[song.user_id]
+                        ? user[song.user_id].name
+                        : "Unknown User"}
                     </h4>
                     <p className="text-muted mb-0">
-                      {song.level >= 150
-                        ? "Pro"
-                        : song.level >= 50
-                        ? "Maxim"
-                        : "Noob"}
+                      {user && user[song.user_id]
+                        ? user[song.user_id].level >= 150
+                          ? "Pro"
+                          : user[song.user_id].level >= 50
+                          ? "Maxim"
+                          : "Noob"
+                        : "Unknown Level"}
                     </p>
                   </div>
                 </div>
@@ -192,16 +250,33 @@ const PostArea = () => {
                     </p>
                   </div>
                 </div>
-                <SongRating />
+                {user &&
+                user[song.user_id] &&
+                user[song.user_id]._id !== authenticatedUserId ? (
+                  <SongRating
+                    songId={song._id}
+                    userId={user[song.user_id]._id}
+                    user={user}
+                    userLevel={userLevel}
+                    updateLevel={(newLevel) => {
+                      setUserLevel(newLevel);
+                    }}
+                  />
+                ) : (
+                  <p className="mt-2">You cant rank your own song.</p>
+                )}
 
-                <p
-                  style={{ fontSize: "13px" }}
-                  className=" d-inline-block fw-bold mt-3"
-                >
-                  {song.user_id}{" "}
+                <p style={{}} className=" d-inline fw-bold mt-3">
+                  {user && user[song.user_id]
+                    ? user[song.user_id].name
+                    : "Unknown User"}
                 </p>
                 <p
-                  style={{ maxWidth:"400px",height:"auto",  overflow: "hidden" }}
+                  style={{
+                    maxWidth: "400px",
+                    height: "auto",
+                    overflow: "hidden",
+                  }}
                   className=""
                 >
                   {" "}
@@ -217,8 +292,9 @@ const PostArea = () => {
             <div
               className="mt-4 mx-4 rounded p-2"
               style={{
+                width: "432px",
                 backgroundColor: "white",
-                border: "lightgray 1px solid",
+                // border: "lightgray 1px solid",
               }}
               key={index}
             >
@@ -232,17 +308,21 @@ const PostArea = () => {
                   />
                   <div className="mx-3">
                     <h4
-                      onClick={() => navigate(`/profile`)}
+                      onClick={() => navigate(`/profile/${item.user_id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user.name}
+                      {user && user[item.user_id]
+                        ? user[item.user_id].name
+                        : "Unknown User"}
                     </h4>
                     <p className="text-muted mb-0">
-                      {item.level >= 150
-                        ? "Pro"
-                        : item.level >= 50
-                        ? "Maxim"
-                        : "Noob"}
+                      {user && user[item.user_id]
+                        ? user[item.user_id].level >= 150
+                          ? "Pro"
+                          : user[item.user_id].level >= 50
+                          ? "Maxim"
+                          : "Noob"
+                        : "Unknown Level"}
                     </p>
                   </div>
                 </div>
@@ -284,7 +364,7 @@ const PostArea = () => {
                   <button
                     style={{ backgroundColor: "lightblue" }}
                     onClick={() => toggleDescription(index)}
-                    className="ms-2 btn "
+                    className="ms-2 btn mt-1"
                   >
                     {showDescription ? "Hide Description" : "See Description"}
                   </button>

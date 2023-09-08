@@ -1,37 +1,55 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const SongRating = ({ songId, user, updateLevel, updateUser }) => {
-  const [rating, setRating] = useState("");
+const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
+  const [rating, setRating] = useState(0);
   const [rated, setRated] = useState(false);
-
-  const handleRatingChange = (event) => {
-    const selectedRating = parseInt(event.target.value);
-    console.log("User object:", user); // Add this line to your handleRatingChange function
-
-    if (user && user._id !== undefined && user.level !== undefined) {
-      const levelIncrement = selectedRating;
-      updateUser(user._id, user.level + levelIncrement);
-      localStorage.setItem(`songRating_${songId}`, selectedRating.toString());
-      updateLevel(user.level + levelIncrement);
-      setRated(true);
-      setRating(selectedRating);
-
-    } else {
-      console.error("User is undefined or missing _id or level property");
-    }
-  };
-
-  const handleResetRating = () => {
-    setRating("");
-  };
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const storedRating = localStorage.getItem(`songRating_${songId}`);
-    if (storedRating !== null) {
-      setRating(parseInt(storedRating));
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/users/profile/${userId}`,
+          {
+            headers: {
+              "x-api-key": localStorage.getItem("token"),
+            },
+          }
+        );
+        const userProfile = response.data;
+        setUserData(userProfile);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const handleRatingChange = async (event) => {
+    const selectedRating = parseInt(event.target.value);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/users/update/${userId}`,
+        {
+          rating: selectedRating,
+        },
+        {
+          headers: {
+            "x-api-key": localStorage.getItem("token"),
+          },
+        }
+      );
+
+      updateLevel(response.data.level, response.data.totalPoints);
+
       setRated(true);
+    } catch (error) {
+      console.error("Error updating user's level:", error);
     }
-  }, [songId]);
+  };
 
   return (
     <div>
@@ -39,8 +57,8 @@ const SongRating = ({ songId, user, updateLevel, updateUser }) => {
         <div>
           <button
             style={{ fontWeight: "bold" }}
-            className="btn  bg-light ml-2 mx-4"
-            onClick={handleResetRating}
+            className="btn bg-light ml-2 mx-4"
+            disabled
           >
             {rating}
             <br />
@@ -49,7 +67,7 @@ const SongRating = ({ songId, user, updateLevel, updateUser }) => {
       ) : (
         <div>
           <select
-          style={{width:"70px"}}
+            style={{ width: "70px" }}
             className="form-select mt-2"
             value={rating}
             onChange={handleRatingChange}
