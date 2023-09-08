@@ -16,7 +16,7 @@ const PostArea = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-  const [authenticatedUserId, setAuthenticatedUserId] = useState(null);
+  const [authenticatedUserId, setAuthenticatedUserId] = useState("");
   const fetchUserProfile = async (userId) => {
     try {
       const response = await axios.get(
@@ -28,8 +28,8 @@ const PostArea = () => {
         }
       );
       const user = response.data;
-      setAuthenticatedUserId(response.data._id);
-
+      console.log(response.data);
+      setAuthenticatedUserId(user._id);
       setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -251,8 +251,9 @@ const PostArea = () => {
                   </div>
                 </div>
                 {user &&
-                user[song.user_id] &&
-                user[song.user_id]._id !== authenticatedUserId ? (
+                user[song.user_id]
+                //  && user[song.user_id]._id !== authenticatedUserId 
+                ? (
                   <SongRating
                     songId={song._id}
                     userId={user[song.user_id]._id}
