@@ -1,59 +1,63 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
-  
+const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   const [rated, setRated] = useState(false);
   const [rating, setRating] = useState(0);
-  const [userData, setUserData] = useState(null);
-  const [selectedRating, setSelectedRating] = useState([])
-
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0); 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserRating = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/users/profile/${userId}`,
+          `http://localhost:3001/songs/rating/${songId}`,
           {
             headers: {
               "x-api-key": localStorage.getItem("token"),
             },
           }
         );
-        const userProfile = response.data;
-        setUserData(userProfile);
+        const { userRating, totalRating } = response.data;
+
+        if (userRating) {
+          setRating(userRating);
+          setSelectedRating(userRating);
+          setRated(true);
+        }
+        setTotalPoints(totalRating);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user rating:", error);
       }
     };
 
-    fetchUserData();
-  }, [userId]);
+    fetchUserRating();
+  }, [songId]);
 
   const handleRatingChange = async (event) => {
-    setSelectedRating(parseInt(event.target.value));
-    localStorage.setItem('rating', parseInt(event.target.value))
-
+    const newRating = parseInt(event.target.value);
 
     try {
       const response = await axios.put(
-        `http://localhost:3001/users/update/${userId}`,
+        `http://localhost:3001/songs/rating/${songId}`,
         {
-          rating: selectedRating,
+          rating: newRating,
         },
         {
           headers: {
             "x-api-key": localStorage.getItem("token"),
           },
         }
-        
       );
 
-      updateLevel(response.data.level, response.data.totalPoints);
-
+      setSelectedRating(newRating);
+      localStorage.setItem("rating", newRating);
       setRated(true);
-      
+
+      if (updateLevel) {
+        updateLevel(response.data.level, response.data.totalPoints);
+      }
     } catch (error) {
-      console.error("Error updating user's level:", error);
+      console.error("Error updating rating:", error);
     }
   };
 
@@ -62,16 +66,22 @@ const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
       {rated ? (
         <div>
           <button
-            style={{ fontWeight: "bold" }}
-            className="btn bg-light ml-2 mx-4"
-            disabled
+            style={{
+              fontWeight: "bold",
+              color:
+                selectedRating >= 8
+                  ? "lightgreen"
+                  : selectedRating > 3
+                  ? "#2DD3F7"
+                  : "lightcoral",
+            }}
+            className="btn border mt-2"
           >
             {selectedRating}
-            <br />
           </button>
         </div>
       ) : (
-        <div>
+        <div className="d-flex">
           <select
             style={{ width: "70px" }}
             className="form-select mt-2"
@@ -85,6 +95,15 @@ const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
               </option>
             ))}
           </select>
+          <button
+            style={{
+              fontWeight: "bold",
+              color: "black",
+            }}
+            className="btn border ms-1 mt-2"
+          >
+            {totalPoints} <span>Ratings</span>
+          </button>
         </div>
       )}
     </div>

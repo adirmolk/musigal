@@ -52,6 +52,10 @@ router.get('/profile/:id', auth, async (req, res) => {
 });
 
 
+
+
+
+
 router.get("/showInfo", async (req, res) => {
   // נבדוק אם נשלח טוקן בהידר
   // req.params, req.body, .req.query, req.header

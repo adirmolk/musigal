@@ -28,7 +28,7 @@ const PostArea = () => {
         }
       );
       const user = response.data;
-      console.log(response.data);
+      // console.log(response.data);
       setAuthenticatedUserId(user._id);
       setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
@@ -174,7 +174,7 @@ const PostArea = () => {
               }}
               key={index}
             >
-              <div className="p-2 justify-content-between">
+              <div className="p-2 justify-content-evenly">
                 <div className="d-flex align-items-center">
                   <img
                     src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
@@ -201,6 +201,17 @@ const PostArea = () => {
                         : "Unknown Level"}
                     </p>
                   </div>
+                  {/* <button
+                    style={{ backgroundColor: "#DDC7A9" }}
+                    className="btn ms-5"
+                  >
+                    <img
+                      src={process.env.PUBLIC_URL + "/add-user.png"}
+                      alt="Song 2"
+                      className="mb-1"
+                      style={{ width: "16px", height: "16px" }}
+                    />
+                  </button> */}
                 </div>
                 <hr />
                 <div

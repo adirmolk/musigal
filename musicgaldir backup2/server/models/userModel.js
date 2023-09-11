@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   role:{
     type:String,default:"user"
   },
-  
+  friends:Array,
   // מאפיין שיווצר לבד בכל רשומה שנוסיף
   // לפי התאריך שנוספה הרשומה בברירת מחדל
  
