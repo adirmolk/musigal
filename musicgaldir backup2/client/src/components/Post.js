@@ -120,9 +120,10 @@ const Post = () => {
     <div>
       <div className="d-flex flex-column p-4">
         <div
-          style={{ backgroundColor: "white",
-          //  border: "lightgray 1px solid"
-           }}
+          style={{
+            backgroundColor: "white",
+            //  border: "lightgray 1px solid"
+          }}
           className="p-3 rounded"
         >
           <div>

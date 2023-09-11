@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
-  const [rating, setRating] = useState(0);
+  
   const [rated, setRated] = useState(false);
+  const [rating, setRating] = useState(0);
   const [userData, setUserData] = useState(null);
+  const [selectedRating, setSelectedRating] = useState([])
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -28,7 +30,9 @@ const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
   }, [userId]);
 
   const handleRatingChange = async (event) => {
-    const selectedRating = parseInt(event.target.value);
+    setSelectedRating(parseInt(event.target.value));
+    localStorage.setItem('rating', parseInt(event.target.value))
+
 
     try {
       const response = await axios.put(
@@ -41,11 +45,13 @@ const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
             "x-api-key": localStorage.getItem("token"),
           },
         }
+        
       );
 
       updateLevel(response.data.level, response.data.totalPoints);
 
       setRated(true);
+      
     } catch (error) {
       console.error("Error updating user's level:", error);
     }
@@ -60,7 +66,7 @@ const SongRating = ({ songId, userId, user, userLevel, updateLevel }) => {
             className="btn bg-light ml-2 mx-4"
             disabled
           >
-            {rating}
+            {selectedRating}
             <br />
           </button>
         </div>

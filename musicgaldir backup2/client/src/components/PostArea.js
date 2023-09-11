@@ -250,10 +250,8 @@ const PostArea = () => {
                     </p>
                   </div>
                 </div>
-                {user &&
-                user[song.user_id]
-                //  && user[song.user_id]._id !== authenticatedUserId 
-                ? (
+                {user && user[song.user_id] ? (
+                  //  && user[song.user_id]._id !== authenticatedUserId
                   <SongRating
                     songId={song._id}
                     userId={user[song.user_id]._id}
