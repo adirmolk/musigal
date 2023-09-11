@@ -1,6 +1,6 @@
 const express = require("express");
 const { auth } = require("../middlewares/auth");
-const { validateSong, songModel } = require("../models/songmodel");
+const { validateSong, songModel } = require("../models/songModel");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -39,6 +39,38 @@ router.post("/", auth, async (req, res) => {
     await song.save();
 
     res.status(201).json(song);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
+router.put("/rating/:id", auth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await songModel.updateOne(
+      {
+        _id: id,
+      },
+      req.body
+    );
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
+router.get("/rating/:id", auth, async (req, res) => {
+  try {
+    const songId = req.params.id;
+    const userId = req.tokenData._id;
+    const data = await songModel.findOne({ _id: songId });
+    data.whoRated.forEach((rateInfo) => {
+      if (rateInfo.user === userId) {
+        res.json(rateInfo.rating);
+      }
+    });
   } catch (err) {
     console.log(err);
     res.status(502).json({ err });

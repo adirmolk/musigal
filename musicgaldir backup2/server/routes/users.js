@@ -166,6 +166,7 @@ router.put("/update/:userId", auth, async (req, res) => {
     if (userId === authenticatedUserId) {
       return res.status(403).json({ error: "You cannot update your own level" });
     }
+    
 
     // Validate and update user data
     if (req.body.name) {
