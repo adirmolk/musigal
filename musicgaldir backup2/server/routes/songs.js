@@ -28,6 +28,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get('/user/:userId',  async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Check if the user is the owner of the products
+    const products = await songModel.find({
+      user_id: userId, // Ensure the user is the owner of the products
+    });
+
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 router.post("/", auth, async (req, res) => {
   const validBody = validateSong(req.body);
   if (validBody.error) {

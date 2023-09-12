@@ -48,6 +48,21 @@ router.get("/:id", auth, async (req, res) => {
     res.status(502).json({ err });
   }
 });
+router.get('/user/:userId',  async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Check if the user is the owner of the products
+    const products = await productsModel.find({
+      user_id: userId, // Ensure the user is the owner of the products
+    });
+
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 router.post("/",auth, async(req,res) => {
   const validBody = validateProduct(req.body)
   if(validBody.error){
