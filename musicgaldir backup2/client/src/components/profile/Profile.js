@@ -53,7 +53,7 @@ const Profile = () => {
                   />
                   <div className="mx-3">
                     <h3
-                      onClick={() => navigate(`/profiles`)}
+                      onClick={() => navigate(`/profiles/${user._id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
                       {user.name}

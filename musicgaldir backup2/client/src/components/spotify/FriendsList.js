@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useFriendsList from "../../hooks/useFrindsList";
 import BgColor from "../customFunctions/BgColor";
-import SongRating from "../customFunctions/SongRating";
 
 const FriendsList = () => {
   const { friendsList, isLoading } = useFriendsList();
@@ -58,7 +57,7 @@ const FriendsList = () => {
       >
         <img
           width={"30px"}
-          src="friends (1).png"
+          src="https://cdn-icons-png.flaticon.com/512/880/880594.png"
           alt="Friends"
           className=" rounded p-1"
         />

@@ -37,6 +37,7 @@ const PostArea = () => {
           Posts
         </span>
       </div>
+      
       <div
         className="rounded btn text-center ms-2"
         onClick={() => setPostType("product")}

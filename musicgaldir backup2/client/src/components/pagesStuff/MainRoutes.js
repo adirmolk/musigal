@@ -18,7 +18,7 @@ const MainRoutes = () => {
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/profiles" element={<ProfilesErea />}></Route>
+        <Route path="/profiles/:id" element={<ProfilesErea />}></Route>
       </Routes>
     </BrowserRouter>
   );

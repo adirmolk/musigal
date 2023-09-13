@@ -2,14 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
-import SkullLoading from "../customFunctions/SkullLoading";
-
-const override = css`
-  display: block;
-  margin: 0 auto;
-  border-color: red;
-  color: black;
-`;
+import SkullLoading from "../customFunctions/ProductLoading";
+import ProductLoading from "../customFunctions/ProductLoading";
 
 const ProductPost = () => {
   const [postProducts, setPostProducts] = useState([]);
@@ -49,7 +43,7 @@ const ProductPost = () => {
 
       setTimeout(() => {
         setPostProducts(data);
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -82,7 +76,7 @@ const ProductPost = () => {
     <div>
       {postProducts.length === 0 ? ( // Display the Loading component when postProducts is empty
         <div className="text-center">
-          <SkullLoading />
+          <ProductLoading />
         </div>
       ) : (
         postProducts.map((item, index) => (

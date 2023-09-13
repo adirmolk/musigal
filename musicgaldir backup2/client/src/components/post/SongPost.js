@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SongRating from "../customFunctions/SongRating";
 import { css } from "@emotion/react";
-import SkullLoading from "../customFunctions/SkullLoading";
+import SkullLoading from "../customFunctions/ProductLoading";
+import SongLoading from "../customFunctions/SongLoading";
 
 const SongPost = () => {
   const [postSongs, setPostSongs] = useState([]);
@@ -48,7 +49,7 @@ const SongPost = () => {
 
       setTimeout(() => {
         setPostSongs(data);
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -62,7 +63,7 @@ const SongPost = () => {
     <div>
       {postSongs.length === 0 ? ( // Display the Loading component when postSongs is empty
         <div className="text-center mt-4">
-          <SkullLoading />
+          <SongLoading />
         </div>
       ) : (
         postSongs.map((song, index) => (
@@ -84,7 +85,7 @@ const SongPost = () => {
                 />
                 <div className="mx-3">
                   <h4
-                    onClick={() => navigate(`/profile/${song.user_id}`)}
+                    onClick={() => navigate(`/profiles/${song.user_id}`)}
                     style={{ cursor: "pointer", margin: "0" }}
                   >
                     {user && user[song.user_id]

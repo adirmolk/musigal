@@ -53,18 +53,18 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
           },
         }
       );
-  
-      const { level, totalPoints } = response.data; 
-  
+
+      const { level, totalPoints } = response.data;
+
       setSelectedRating(rating);
       localStorage.setItem("rating", rating);
       setRated(true);
-  
+
       if (updateLevel) {
-        updateLevel(level, totalPoints); 
+        updateLevel(level, totalPoints);
       }
-        await axios.put(
-        `http://localhost:3001/users/update/${userId}`, 
+      await axios.put(
+        `http://localhost:3001/users/update/${userId}`,
         {
           rating: rating,
         },
@@ -78,7 +78,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
       console.error("Error updating rating:", error);
     }
   };
-  
+
   const toggleInputVisibility = () => {
     setInputVisible(!inputVisible);
   };
@@ -120,10 +120,10 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
 
           <button
             onClick={toggleInputVisibility}
-            className="btn bg-light  ms-1 mt-2"
+            className="btn  ms-1 mt-2"
             style={
               {
-                // backgroundColor:"#DDC7A9"
+                backgroundColor:"#ECEBEC"
               }
             }
           >
