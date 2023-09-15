@@ -7,6 +7,7 @@ import Home from "./Home";
 import Welcome from "./Welcome";
 import Post from "../post/Post";
 import ProfilesErea from "../profile/ProfilesErea";
+import VinylWall from "../profile/VinylWall";
 
 const MainRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const MainRoutes = () => {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/profiles/:id" element={<ProfilesErea />}></Route>
+        <Route path="/vinylwall/:id" element={<VinylWall />}></Route>
       </Routes>
     </BrowserRouter>
   );

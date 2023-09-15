@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Nav from "../pagesStuff/Nav";
 import BgColor from "../customFunctions/BgColor";
 import SongRating from "../customFunctions/SongRating";
+import VinylWall from "./VinylWall";
 
 const ProfilesErea = () => {
   const navigate = useNavigate();
@@ -65,15 +66,26 @@ const ProfilesErea = () => {
       setOpenDescriptionIndex(index);
     }
   };
+  const conditionColors = {
+    "Mint (M)": "green",
+    "Near Mint (NM or M-)": "blue",
+    "Very Good Plus (VG+)": "orange",
+    "Very Good (VG)": "yellow",
+    "Good (G)": "pink",
+    "Good Plus (G+)": "purple",
+    "Poor (P)": "red",
+    "Fair (F)": "brown",
+  };
 
   return (
     <div>
       <div>
         <Nav />
+       
         {user ? (
           <div className="" style={{ backgroundColor: "#EEEDEF" }}>
             <div
-              style={{ backgroundColor: backgroundColor }}
+              style={{ backgroundColor: "rgb(247, 229, 205)" }}
               className="d-flex p-5 "
             >
               <div className="d-flex ms-5 ">
@@ -102,6 +114,8 @@ const ProfilesErea = () => {
                 </div>
               </div>
             </div>
+
+           
             <div className="mt-4">
               {" "}
               <div
@@ -143,7 +157,7 @@ const ProfilesErea = () => {
                 </span>
               </div>
             </div>
-
+            <div className="d-flex justify-content-between">
             {postType === "song" ? (
               <div>
                 {postSongs.map((song, index) => (
@@ -264,97 +278,114 @@ const ProfilesErea = () => {
               </div>
             ) : (
               <div>
-                {postProducts.map((item, index) => (
-                  <div
-                    className="mt-4 mx-4 rounded p-2"
-                    style={{
-                      width: "432px",
-                      backgroundColor: "white",
-                      // border: "lightgray 1px solid",
-                    }}
-                    key={index}
-                  >
-                    <div className="d-flex p-2 justify-content-between">
-                      <div className="d-flex align-items-center">
-                        <img
-                          src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
-                          alt="Profile"
-                          className="rounded-circle"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                        <div className="mx-3">
-                          <h4 style={{ cursor: "pointer", margin: "0" }}>
-                            {user ? user.name : "Unknown User"}
-                          </h4>
-                          <p className="text-muted mb-0">
-                            {user
-                              ? user.level >= 150
-                                ? "Pro"
-                                : user.level >= 50
-                                ? "Maxim"
-                                : "Noob"
-                              : "Unknown Level"}
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        style={{ backgroundColor: "#DDC7A9" }}
-                        className="btn badge fw-bold fs-5 h-50  mt-2 "
-                      >
-                        +
-                      </button>
-                    </div>
-                    <hr />
-
-                    <div className="p-3 rounded">
-                      <img
-                        className="rounded ms-5  mb-3 d-block"
-                        src={item.img_url}
-                        style={{
-                          width: "300px",
-                          height: "300px",
-                          border: "lightgray 1px solid",
-                        }}
-                      />
-                      <span className="fw-bold">{item.title} </span>&#8226;{" "}
-                      <span style={{}}> {item.condition} </span>
-                      <br />
-                      <span className="">{item.price}$ &#8226;</span>
-                      <span className=""> {item.location}</span>
-                      <br />
-                      <div>
-                        <button
-                          style={{ backgroundColor: "lightblue" }}
-                          className="btn mt-1"
-                        >
-                          Buy
-                        </button>
-                        <button
-                          style={{ backgroundColor: "lightblue" }}
-                          onClick={() => toggleDescription(index)}
-                          className="ms-2 btn mt-1"
-                        >
-                          {showDescription
-                            ? "Hide Description"
-                            : "See Description"}
-                        </button>
-                      </div>
-                      {openDescriptionIndex === index && (
-                        <div className="text-center mt-2">
-                          {item.description}
-                        </div>
-                      )}
-                    </div>
+                {postProducts.length === 0 ? (
+                  <div className="">
+                    <p>theres no products to look for here:)</p>
                   </div>
-                ))}
+                ) : (
+                  postProducts.map((item, index) => (
+                    <div
+                      className="mt-4 mx-4 rounded p-2"
+                      style={{
+                        width: "432px",
+                        backgroundColor: "white",
+                        // border: "lightgray 1px solid",
+                      }}
+                      key={index}
+                    >
+                      <div className="d-flex p-2 justify-content-between">
+                        <div className="d-flex align-items-center">
+                          <img
+                            src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                            alt="Profile"
+                            className="rounded-circle"
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                          <div className="mx-3">
+                            <h4 style={{ cursor: "pointer", margin: "0" }}>
+                              {user ? user.name : "Unknown User"}
+                            </h4>
+                            <p className="text-muted mb-0">
+                              {user
+                                ? user.level >= 150
+                                  ? "Pro"
+                                  : user.level >= 50
+                                  ? "Maxim"
+                                  : "Noob"
+                                : "Unknown Level"}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          style={{ backgroundColor: "#DDC7A9" }}
+                          className="btn badge fw-bold fs-5 h-50  mt-2 "
+                        >
+                          +
+                        </button>
+                      </div>
+                      <hr />
+
+                      <div className="p-3 rounded">
+                        <img
+                          className="rounded ms-5  mb-3 d-block"
+                          src={item.img_url}
+                          style={{
+                            width: "300px",
+                            height: "300px",
+                            border: "lightgray 1px solid",
+                          }}
+                        />
+                        <span className="fw-bold">{item.title} </span>&#8226;{" "}
+                        <span
+                          style={{ color: conditionColors[item.condition] }}
+                        >
+                          {" "}
+                          {item.condition}{" "}
+                        </span>
+                        <br />
+                        <span className="">{item.price}$ &#8226;</span>
+                        <span className=""> {item.location}</span>
+                        <br />
+                        <div>
+                          <button
+                            style={{ backgroundColor: "lightblue" }}
+                            className="btn mt-1"
+                          >
+                            Buy
+                          </button>
+                          <button
+                            style={{ backgroundColor: "lightblue" }}
+                            onClick={() => toggleDescription(index)}
+                            className="ms-2 btn mt-1"
+                          >
+                            {showDescription
+                              ? "Hide Description"
+                              : "See Description"}
+                          </button>
+                        </div>
+                        {openDescriptionIndex === index && (
+                          <div className="text-center mt-2">
+                            {item.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
+            <div><VinylWall/></div>
+                
+          </div>
+      
           </div>
         ) : (
           <div>
             <h1>user not found</h1>
           </div>
         )}
+        
+
       </div>
     </div>
   );

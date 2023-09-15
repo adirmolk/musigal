@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const limit = req.query.limit || 10;
+    const limit = req.query.limit || 8;
     const page = req.query.page - 1 || 0;
     const sort = req.query.sort || "_id";
     const reverse = req.query.reverse == "yes" ? 1 : -1;
