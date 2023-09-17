@@ -7,6 +7,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   const [selectedRating, setSelectedRating] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [inputVisible, setInputVisible] = useState(false); // To control input visibility
+  const [user, setUser] = useState({})
 
   useEffect(() => {
     const fetchUserRating = async () => {
@@ -27,6 +28,17 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
           setRated(true);
         }
         setTotalPoints(totalRating);
+
+         const {data} = await axios.get(
+          `http://localhost:3001/users/profile`,
+          {
+            headers: {
+              "x-api-key": localStorage.getItem("token"),
+            },
+          }
+        );
+        setUser(data);
+
       } catch (error) {
         console.error("Error fetching user rating:", error);
       }
@@ -84,7 +96,12 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   };
   return (
     <div>
-      {rated ? (
+      {user._id == userId ? (<div className=" fw-bold mt-2">{totalPoints}  <img
+              className="mb-1"
+              width={"15px"}
+              src={process.env.PUBLIC_URL + "increase.png"}
+            /></div>) : (
+      rated ? (
         <div>
           <button
             style={{
@@ -156,7 +173,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
             />
           </span>
         </div>
-      )}
+      ))}
     </div>
   );
 };

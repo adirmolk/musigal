@@ -9,24 +9,39 @@ import VinylWall from "./VinylWall";
 const ProfilesErea = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [postProducts, setPostProducts] = useState([]);
   const [postSongs, setPostSongs] = useState([]);
   const [showDescription, setShowDescription] = useState(false);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
-  const backgroundColor = BgColor();
   const [postType, setPostType] = useState("song");
   const [togglePost, setTogglePost] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
   const { id } = useParams();
   useEffect(() => {
-    axios
-      .get(`http://localhost:3001/users/${id}`)
-      .then((response) => {
-        setUser(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
+    const fetchUser = async () => {
+      await axios
+        .get(`http://localhost:3001/users/${id}`)
+        .then((response) => {
+          setUser(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    const fetchLoggedInUser = async () => {
+      const { data } = await axios.get(`http://localhost:3001/users/profile`, {
+        headers: {
+          "x-api-key": localStorage.getItem("token"),
+        },
       });
+      setLoggedInUser(data);
+      console.log("Logged: ", loggedInUser);
+    };
+    fetchUser();
+    fetchLoggedInUser();
   }, []);
 
   const ShowProducts = async () => {
@@ -77,11 +92,53 @@ const ProfilesErea = () => {
     "Fair (F)": "brown",
   };
 
+  const toggleFollow = async () => {
+    try {
+      if (!isFollowed) {
+        const response = await axios.put(
+          `http://localhost:3001/users/follow/${id}`,
+          {},
+          {
+            headers: { "x-api-key": localStorage.getItem("token") },
+          }
+        );
+        if (response.status === 200) {
+          setIsFollowed(true);
+        } else {
+          console.log("Failed to follow user.");
+        }
+      } else {
+        const response = await axios.put(
+          `http://localhost:3001/users/unfollow/${id}`,
+          {},
+          {
+            headers: { "x-api-key": localStorage.getItem("token") },
+          }
+        );
+        if (response.status === 200) {
+          setIsFollowed(false);
+        } else {
+          console.log("Failed to unfollow user.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (loggedInUser && loggedInUser.friends.includes(user._id)) {
+      setIsFollowed(true);
+    } else {
+      setIsFollowed(false);
+    }
+  }, [loggedInUser, user]);
+
   return (
     <div>
       <div>
         <Nav />
-       
+
         {user ? (
           <div className="" style={{ backgroundColor: "#EEEDEF" }}>
             <div
@@ -96,7 +153,18 @@ const ProfilesErea = () => {
                   alt="User Avatar"
                 />
                 <div className="ms-2 mt-3">
-                  <h2>{user.name}</h2>
+                  <h2>
+                    {user.name}
+                    <button
+                      className={`btn ${
+                        isFollowed ? "btn-danger ms-2" : "ms-2 btn-primary"
+                      }`}
+                      onClick={toggleFollow}
+                    >
+                      {isFollowed ? "Unfollow" : "Follow"}
+                    </button>
+                  </h2>
+
                   <div className="d-flex">
                     <p className="text-muted me-1 mb-0">
                       {user.level >= 150
@@ -108,14 +176,13 @@ const ProfilesErea = () => {
                     &#8226;
                     <span className=" text-muted ms-1">
                       {" "}
-                      {user.friends.length} friends
+                      {user.friends.length} following
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-           
             <div className="mt-4">
               {" "}
               <div
@@ -158,92 +225,94 @@ const ProfilesErea = () => {
               </div>
             </div>
             <div className="d-flex justify-content-between">
-            {postType === "song" ? (
-              <div>
-                {postSongs.map((song, index) => (
-                  <div
-                    className="mt-4 mx-4 p-2 rounded"
-                    style={{
-                      backgroundColor: "white",
-                      width: "400px",
-                    }}
-                    key={index}
-                  >
-                    <div className="p-2 justify-content-evenly">
-                      <div className="d-flex align-items-center">
-                        <img
-                          src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
-                          alt="Profile"
-                          className="rounded-circle"
-                          style={{ width: "50px", height: "50px" }}
-                        />
-                        <div className="mx-3">
-                          <h4
-                            onClick={() => navigate(`/profile/${song.user_id}`)}
-                            style={{ cursor: "pointer", margin: "0" }}
-                          >
-                            {user ? user.name : "Unknown User"}
-                          </h4>
-                          <p className="text-muted mb-0">
-                            {user
-                              ? user.level >= 150
-                                ? "Pro"
-                                : user.level >= 50
-                                ? "Maxim"
-                                : "Noob"
-                              : "Unknown Level"}
-                          </p>
+              {postType === "song" ? (
+                <div>
+                  {postSongs.map((song, index) => (
+                    <div
+                      className="mt-4 mx-4 p-2 rounded"
+                      style={{
+                        backgroundColor: "white",
+                        width: "400px",
+                      }}
+                      key={index}
+                    >
+                      <div className="p-2 justify-content-evenly">
+                        <div className="d-flex align-items-center">
+                          <img
+                            src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                            alt="Profile"
+                            className="rounded-circle"
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                          <div className="mx-3">
+                            <h4
+                              onClick={() =>
+                                navigate(`/profile/${song.user_id}`)
+                              }
+                              style={{ cursor: "pointer", margin: "0" }}
+                            >
+                              {user ? user.name : "Unknown User"}
+                            </h4>
+                            <p className="text-muted mb-0">
+                              {user
+                                ? user.level >= 150
+                                  ? "Pro"
+                                  : user.level >= 50
+                                  ? "Maxim"
+                                  : "Noob"
+                                : "Unknown Level"}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <hr />
-                      <div
-                        className="instagram-post rounded"
-                        style={{
-                          width: "300px",
-                          marginBottom: "20px",
-                          position: "relative",
-                          borderRadius: "10px",
-                          margin: "0 auto",
-                        }}
-                      >
-                        <img
-                          className="rounded mt-4"
-                          src={song.img_url}
-                          alt={`${song.title} Album Cover`}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            borderRadius: "10px 10px 0 0",
-                          }}
-                        />
+                        <hr />
                         <div
-                          className="text-center"
+                          className="instagram-post rounded"
                           style={{
-                            position: "absolute",
-                            bottom: "0",
-                            left: "0",
-                            right: "0",
-                            backgroundColor: "rgba(0, 0, 0, 0.7)",
-                            color: "#DDC7A9",
-                            padding: "10px",
-                            borderRadius: "0 0 5px 5px",
+                            width: "300px",
+                            marginBottom: "20px",
+                            position: "relative",
+                            borderRadius: "10px",
+                            margin: "0 auto",
                           }}
                         >
-                          <p
+                          <img
+                            className="rounded mt-4"
+                            src={song.img_url}
+                            alt={`${song.title} Album Cover`}
                             style={{
-                              fontWeight: "bold",
-                              fontSize: "16px",
-                              margin: "0",
+                              width: "100%",
+                              height: "100%",
+                              borderRadius: "10px 10px 0 0",
+                            }}
+                          />
+                          <div
+                            className="text-center"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "0",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.7)",
+                              color: "#DDC7A9",
+                              padding: "10px",
+                              borderRadius: "0 0 5px 5px",
                             }}
                           >
-                            {song.title}
-                          </p>
-                          <p style={{ fontSize: "14px", margin: "0" }}>
-                            {song.artist}
-                          </p>
+                            <p
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "16px",
+                                margin: "0",
+                              }}
+                            >
+                              {song.title}
+                            </p>
+                            <p style={{ fontSize: "14px", margin: "0" }}>
+                              {song.artist}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      {/* {user && user[song.user_id] ? (
+                        {/* {user && user[song.user_id] ? (
                         //  && user[song.user_id]._id !== authenticatedUserId
                         <SongRating
                           songId={song._id}
@@ -258,134 +327,132 @@ const ProfilesErea = () => {
                         <p className="mt-2">You cant rank your own song.</p>
                       )} */}
 
-                      <p style={{}} className=" d-inline fw-bold mt-3">
-                        {user ? user.name : "Unknown User"}
-                      </p>
-                      <p
-                        style={{
-                          maxWidth: "400px",
-                          height: "auto",
-                          overflow: "hidden",
-                        }}
-                        className=""
-                      >
-                        {" "}
-                        {song.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>
-                {postProducts.length === 0 ? (
-                  <div className="">
-                    <p>theres no products to look for here:)</p>
-                  </div>
-                ) : (
-                  postProducts.map((item, index) => (
-                    <div
-                      className="mt-4 mx-4 rounded p-2"
-                      style={{
-                        width: "432px",
-                        backgroundColor: "white",
-                        // border: "lightgray 1px solid",
-                      }}
-                      key={index}
-                    >
-                      <div className="d-flex p-2 justify-content-between">
-                        <div className="d-flex align-items-center">
-                          <img
-                            src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
-                            alt="Profile"
-                            className="rounded-circle"
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                          <div className="mx-3">
-                            <h4 style={{ cursor: "pointer", margin: "0" }}>
-                              {user ? user.name : "Unknown User"}
-                            </h4>
-                            <p className="text-muted mb-0">
-                              {user
-                                ? user.level >= 150
-                                  ? "Pro"
-                                  : user.level >= 50
-                                  ? "Maxim"
-                                  : "Noob"
-                                : "Unknown Level"}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          style={{ backgroundColor: "#DDC7A9" }}
-                          className="btn badge fw-bold fs-5 h-50  mt-2 "
-                        >
-                          +
-                        </button>
-                      </div>
-                      <hr />
-
-                      <div className="p-3 rounded">
-                        <img
-                          className="rounded ms-5  mb-3 d-block"
-                          src={item.img_url}
+                        <p style={{}} className=" d-inline fw-bold mt-3">
+                          {user ? user.name : "Unknown User"}
+                        </p>
+                        <p
                           style={{
-                            width: "300px",
-                            height: "300px",
-                            border: "lightgray 1px solid",
+                            maxWidth: "400px",
+                            height: "auto",
+                            overflow: "hidden",
                           }}
-                        />
-                        <span className="fw-bold">{item.title} </span>&#8226;{" "}
-                        <span
-                          style={{ color: conditionColors[item.condition] }}
+                          className=""
                         >
                           {" "}
-                          {item.condition}{" "}
-                        </span>
-                        <br />
-                        <span className="">{item.price}$ &#8226;</span>
-                        <span className=""> {item.location}</span>
-                        <br />
-                        <div>
-                          <button
-                            style={{ backgroundColor: "lightblue" }}
-                            className="btn mt-1"
-                          >
-                            Buy
-                          </button>
-                          <button
-                            style={{ backgroundColor: "lightblue" }}
-                            onClick={() => toggleDescription(index)}
-                            className="ms-2 btn mt-1"
-                          >
-                            {showDescription
-                              ? "Hide Description"
-                              : "See Description"}
-                          </button>
-                        </div>
-                        {openDescriptionIndex === index && (
-                          <div className="text-center mt-2">
-                            {item.description}
-                          </div>
-                        )}
+                          {song.description}
+                        </p>
                       </div>
                     </div>
-                  ))
-                )}
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  {postProducts.length === 0 ? (
+                    <div className="">
+                      <p>theres no products to look for here:)</p>
+                    </div>
+                  ) : (
+                    postProducts.map((item, index) => (
+                      <div
+                        className="mt-4 mx-4 rounded p-2"
+                        style={{
+                          width: "432px",
+                          backgroundColor: "white",
+                          // border: "lightgray 1px solid",
+                        }}
+                        key={index}
+                      >
+                        <div className="d-flex p-2 justify-content-between">
+                          <div className="d-flex align-items-center">
+                            <img
+                              src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                              alt="Profile"
+                              className="rounded-circle"
+                              style={{ width: "50px", height: "50px" }}
+                            />
+                            <div className="mx-3">
+                              <h4 style={{ cursor: "pointer", margin: "0" }}>
+                                {user ? user.name : "Unknown User"}
+                              </h4>
+                              <p className="text-muted mb-0">
+                                {user
+                                  ? user.level >= 150
+                                    ? "Pro"
+                                    : user.level >= 50
+                                    ? "Maxim"
+                                    : "Noob"
+                                  : "Unknown Level"}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            style={{ backgroundColor: "#DDC7A9" }}
+                            className="btn badge fw-bold fs-5 h-50  mt-2 "
+                          >
+                            +
+                          </button>
+                        </div>
+                        <hr />
+
+                        <div className="p-3 rounded">
+                          <img
+                            className="rounded ms-5  mb-3 d-block"
+                            src={item.img_url}
+                            style={{
+                              width: "300px",
+                              height: "300px",
+                              border: "lightgray 1px solid",
+                            }}
+                          />
+                          <span className="fw-bold">{item.title} </span>&#8226;{" "}
+                          <span
+                            style={{ color: conditionColors[item.condition] }}
+                          >
+                            {" "}
+                            {item.condition}{" "}
+                          </span>
+                          <br />
+                          <span className="">{item.price}$ &#8226;</span>
+                          <span className=""> {item.location}</span>
+                          <br />
+                          <div>
+                            <button
+                              style={{ backgroundColor: "lightblue" }}
+                              className="btn mt-1"
+                            >
+                              Buy
+                            </button>
+                            <button
+                              style={{ backgroundColor: "lightblue" }}
+                              onClick={() => toggleDescription(index)}
+                              className="ms-2 btn mt-1"
+                            >
+                              {showDescription
+                                ? "Hide Description"
+                                : "See Description"}
+                            </button>
+                          </div>
+                          {openDescriptionIndex === index && (
+                            <div className="text-center mt-2">
+                              {item.description}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+              <div>
+                <VinylWall />
               </div>
-            )}
-            <div><VinylWall/></div>
-                
-          </div>
-      
+            </div>
           </div>
         ) : (
           <div>
             <h1>user not found</h1>
           </div>
         )}
-        
-
       </div>
     </div>
   );

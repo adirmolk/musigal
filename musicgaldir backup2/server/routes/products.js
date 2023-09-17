@@ -3,7 +3,7 @@ const { auth } = require("../middlewares/auth");
 const { validateProduct, productsModel } = require("../models/productModel");
 const router = express.Router();
 
-router.get("/",auth, async(req,res) => {
+router.get("/", auth, async(req,res) => {
   try{
     const limit = req.query.limit || 15;
     const page = req.query.page - 1 || 0;

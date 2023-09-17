@@ -1,6 +1,7 @@
 const express = require("express");
 const { auth } = require("../middlewares/auth");
 const { validateSong, songModel } = require("../models/songModel");
+const { UserModel } = require("../models/userModel");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -27,6 +28,41 @@ router.get("/", async (req, res) => {
     res.status(502).json({ err });
   }
 });
+
+router.get("/friends", auth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 8;
+    const page = parseInt(req.query.page) - 1 || 0;
+    const sort = req.query.sort || "_id";
+    const reverse = req.query.reverse === "yes" ? 1 : -1;
+
+    const userId = req.tokenData._id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const currentUser = await UserModel.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const friends = currentUser.friends || [];
+
+    const data = await songModel
+      .find({ user_id: { $in: friends } }) 
+      .limit(limit)
+      .skip(page * limit)
+      .sort({ [sort]: reverse });
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(502).json({ error: "Server error" });
+  }
+});
+
 
 router.get('/user/:userId',  async (req, res) => {
   try {

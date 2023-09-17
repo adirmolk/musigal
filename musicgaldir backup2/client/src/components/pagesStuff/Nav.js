@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import FriendsList from "../spotify/FriendsList";
+import Search from "../customFunctions/Search";
 
 const Nav = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -25,12 +26,14 @@ const Nav = () => {
         <h1 style={{ color: "#DDC7A9" }} className="mt-1 mx-4">
           musigal
         </h1>
+        
         <div className={`p-2 d-flex align-items-center`}>
+        <span className={` mt-1 d-${menuOpen ? "none" : "block"}`}>
+            <Search/>
+          </span>
           <FriendsList isOpen={menuOpen} />
 
-          <span className={`p-2 d-${menuOpen ? "none" : "block"}`}>
-            profile
-          </span>
+         
           <button
             className={`btn bg-light d-${menuOpen ? "none" : "block"}`}
             onClick={toggleDarkMode}

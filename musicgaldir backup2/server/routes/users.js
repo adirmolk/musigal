@@ -51,6 +51,26 @@ router.get('/profile/:id', auth, async (req, res) => {
   }
 });
 
+// Add this route to your server code
+router.get("/search", async (req, res) => {
+  try {
+    // Retrieve search criteria from the query parameters
+    const searchCriteria = req.query.criteria;
+
+    // Perform the search based on the criteria
+    const users = await UserModel.find({
+      $or: [
+        { name: { $regex: searchCriteria, $options: "i" } }, // Search by name (case-insensitive)
+        { email: { $regex: searchCriteria, $options: "i" } }, // Search by email (case-insensitive)
+      ],
+    }).select("-password"); // Exclude password from the results
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 
@@ -212,7 +232,42 @@ router.put("/update/:userId", auth, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+router.put('/follow/:userId', auth, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await UserModel.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user._id.toString() === req.tokenData._id) {
+      return res.status(400).json({ error: 'You cannot follow yourself' });
+    }
+
+    if (user.friends.includes(req.tokenData._id)) {
+      return res.status(400).json({ error: 'User is already in your friends list' });
+    }
+// מעדכן את מי שאני עוקב אחריו
+    await UserModel.updateOne({ _id:  req.tokenData._id  }, { $push:{ friends: userId }});
+    res.json({ message: 'User followed successfully' });
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ error: 'Internal Server Error' });
+  }
+});
 
 
+router.put('/unfollow/:userId', auth, async(req, res) => {
+  try{
+    const userId = req.params.userId;
+    const user = await UserModel.updateOne({ _id:  req.tokenData._id  }, { $pull:{ friends: userId }}) 
+    res.json(user);
+  }
+  catch(err){
+    console.log(err);
+    res.status(502).json({err})
+  }
+})
 
 module.exports = router;

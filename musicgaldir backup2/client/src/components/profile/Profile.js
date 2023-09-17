@@ -58,13 +58,17 @@ const Profile = () => {
                     >
                       {user.name}
                     </h3>
-                    <p className="text-muted mb-0">
+                    <span className="text-muted mb-0">
                       {user.level >= 150
                         ? "Pro"
                         : user.level >= 50
                         ? "Maxim"
                         : "Noob"}
-                    </p>
+                    </span> &#8226;
+                    <span className=" text-muted">
+                      {" "}
+                      {user.friends.length} following
+                    </span>
                   </div>
                 </div>
                 <button

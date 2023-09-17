@@ -10,6 +10,8 @@ const SongPost = () => {
   const [postSongs, setPostSongs] = useState([]);
   const [authenticatedUserId, setAuthenticatedUserId] = useState("");
   const [user, setUser] = useState(null);
+  const [loggedInUser, setloggedInUser] = useState(null);
+
   const navigate = useNavigate();
   const [userLevel, setUserLevel] = useState(0);
 
@@ -20,6 +22,7 @@ const SongPost = () => {
   `;
 
   const fetchUserProfile = async (userId) => {
+    
     try {
       const response = await axios.get(
         `http://localhost:3001/users/profile/${userId}`,
@@ -30,21 +33,29 @@ const SongPost = () => {
         }
       );
       const user = response.data;
+      console.log("user: ", user);
       setAuthenticatedUserId(user._id);
       setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
+  
+
+  
 
   const ShowSongs = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3001/songs", {
+      const { data } = await axios.get("http://localhost:3001/songs/friends", {
         headers: { "x-api-key": localStorage.getItem("token") },
       });
 
       for (const song of data) {
+      
         fetchUserProfile(song.user_id);
+        getLoggedinUser();
+        
+
       }
 
       setTimeout(() => {
@@ -57,7 +68,32 @@ const SongPost = () => {
 
   useEffect(() => {
     ShowSongs();
+
   }, []);
+
+  const getLoggedinUser = async () =>{
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    } else {
+     await axios
+        .get("http://localhost:3001/users/profile", {
+          headers: {
+            "x-api-key": token,
+          },
+        })
+        .then((response) => {
+          setloggedInUser(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  
+  }
+  
+
 
   return (
     <div>

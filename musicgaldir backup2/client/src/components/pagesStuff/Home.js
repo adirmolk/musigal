@@ -5,6 +5,7 @@ import Profile from "../profile/Profile";
 import checkTokenValidation from "../users/checkTokenValidation";
 import Post from "../post/Post";
 import PostArea from "../post/PostArea";
+import Search from "../customFunctions/Search";
 
 const Home = () => {
   const nav = useNavigate();
@@ -29,6 +30,7 @@ const Home = () => {
         <div className="">
           {" "}
           <Profile />
+          {/* <Search/> */}
         </div>
         <div className="">
           {" "}
