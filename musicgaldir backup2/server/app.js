@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 const corsOptions = {
   origin: "http://localhost:3000", // Change this to your frontend's URL and port
-  methods: "GET,POST,PUT,DELETE",
+  methods: "GET,POST,PUT,DELETE,PATCH",
   optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

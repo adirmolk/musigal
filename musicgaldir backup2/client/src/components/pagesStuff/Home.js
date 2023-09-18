@@ -6,6 +6,7 @@ import checkTokenValidation from "../users/checkTokenValidation";
 import Post from "../post/Post";
 import PostArea from "../post/PostArea";
 import Search from "../customFunctions/Search";
+import Friends from "./Friends";
 
 const Home = () => {
   const nav = useNavigate();
@@ -37,6 +38,10 @@ const Home = () => {
           {/* <Post /> */}
           <PostArea />
         </div>
+        <div className="">
+          {" "}
+          {/* <Post /> */}
+<Friends/>        </div>
       </div>
     </div>
   );

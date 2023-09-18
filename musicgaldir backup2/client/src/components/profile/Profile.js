@@ -67,7 +67,7 @@ const Profile = () => {
                     </span> &#8226;
                     <span className=" text-muted">
                       {" "}
-                      {user.friends.length} following
+                      {user.friends.length} Friends
                     </span>
                   </div>
                 </div>

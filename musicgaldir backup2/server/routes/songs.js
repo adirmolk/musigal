@@ -51,7 +51,10 @@ router.get("/friends", auth, async (req, res) => {
     const friends = currentUser.friends || [];
 
     const data = await songModel
-      .find({ user_id: { $in: friends } }) 
+      .find({ $or: [
+        { user_id: userId },  
+        { user_id: { $in: friends }}
+      ] }) 
       .limit(limit)
       .skip(page * limit)
       .sort({ [sort]: reverse });

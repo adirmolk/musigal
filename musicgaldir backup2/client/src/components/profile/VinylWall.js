@@ -10,21 +10,23 @@ const VinylWall = () => {
   const [albumTitleFromDeezer, setAlbumTitleFromDeezer] = useState({});
   const [isAddVinyl, setIsAddVinyl] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [showAll, setShowAll] = useState(false); // Track whether to show all albums
 
   const { id } = useParams();
   const record = vinylWall[0];
-  const [displayedVinyls, setDisplayedVinyls] = useState(7); // Initially, display 8 vinyls
-  const vinylsPerPage = Infinity; // Number of vinyls per page
-  const reversedVinylWall = [...vinylWall].reverse(); // Reverse the order of vinylWall
-  const vinylWallSlice = reversedVinylWall.slice(0, displayedVinyls);
+  const [displayedVinyls, setDisplayedVinyls] = useState(8);
+  const vinylsPerPage = Infinity; 
+  const reversedVinylWall = [...vinylWall].reverse(); 
+  const vinylWallSlice = showAll ? reversedVinylWall : reversedVinylWall.slice(0, displayedVinyls);
 
   const renderVinyl = async () => {
     const { data } = await axios.get(`http://localhost:3001/vinyls/user/${id}`);
     setVinylWall(data);
     console.log(data);
   };
+
   const handleShowMore = () => {
-    setDisplayedVinyls((prevCount) => prevCount + vinylsPerPage);
+    setShowAll((prevShowAll) => !prevShowAll);
   };
 
   const postVinyl = async () => {
@@ -43,6 +45,7 @@ const VinylWall = () => {
       console.log(err);
     }
   };
+
   const fetchLoggedInUser = async () => {
     const { data } = await axios.get(`http://localhost:3001/users/profile`, {
       headers: {
@@ -52,6 +55,7 @@ const VinylWall = () => {
     setLoggedInUser(data);
     console.log("Logged: ", loggedInUser);
   };
+
   useEffect(() => {
     fetchLoggedInUser();
   }, []);
@@ -72,6 +76,7 @@ const VinylWall = () => {
       img_url: albumImg_url,
     });
   };
+
   useEffect(() => {
     if (albumTitleFromDeezer.title) {
       postVinyl();
@@ -79,6 +84,8 @@ const VinylWall = () => {
       setIsAddVinyl(true);
     }
   }, [albumTitleFromDeezer]);
+
+  const maxVinylCount = loggedInUser?._id === id ? 8 : 7;
 
   return (
     <div>
@@ -171,14 +178,13 @@ const VinylWall = () => {
           </div>
         )}
       </div>
-      {vinylWall.length > displayedVinyls && (
-        <div className="text-center mt-3">
+      {vinylWall.length > maxVinylCount && (
+        <div>
           <button
-            className="btn btn-outline-primary btn-sm"
-            style={{ fontSize: "14px" }}
+            className="btn btn-outline-primary mt-2 "
             onClick={handleShowMore}
           >
-            Show All
+            {showAll ? "Show Less" : "Show All"}
           </button>
         </div>
       )}

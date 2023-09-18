@@ -37,6 +37,7 @@ const ProfilesErea = () => {
           "x-api-key": localStorage.getItem("token"),
         },
       });
+      console.log(data._id);
       setLoggedInUser(data);
       console.log("Logged: ", loggedInUser);
     };
@@ -94,22 +95,10 @@ const ProfilesErea = () => {
 
   const toggleFollow = async () => {
     try {
-      if (!isFollowed) {
-        const response = await axios.put(
-          `http://localhost:3001/users/follow/${id}`,
-          {},
-          {
-            headers: { "x-api-key": localStorage.getItem("token") },
-          }
-        );
-        if (response.status === 200) {
-          setIsFollowed(true);
-        } else {
-          console.log("Failed to follow user.");
-        }
-      } else {
-        const response = await axios.put(
-          `http://localhost:3001/users/unfollow/${id}`,
+      if (isFollowed) {
+        // User is currently following, so remove the friend
+        const response = await axios.patch(
+          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
           {},
           {
             headers: { "x-api-key": localStorage.getItem("token") },
@@ -118,14 +107,29 @@ const ProfilesErea = () => {
         if (response.status === 200) {
           setIsFollowed(false);
         } else {
-          console.log("Failed to unfollow user.");
+          console.log("Failed to remove friend.");
+        }
+      } else {
+        // User is not currently following, so add the friend
+        const response = await axios.patch(
+          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
+          {},
+          {
+            headers: { "x-api-key": localStorage.getItem("token") },
+          }
+        );
+        if (response.status === 200) {
+          setIsFollowed(true);
+        } else {
+          console.log("Failed to add friend.");
         }
       }
+      navigate(0)
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   useEffect(() => {
     if (loggedInUser && loggedInUser.friends.includes(user._id)) {
       setIsFollowed(true);
@@ -176,7 +180,7 @@ const ProfilesErea = () => {
                     &#8226;
                     <span className=" text-muted ms-1">
                       {" "}
-                      {user.friends.length} following
+                      {user.friends.length} Friends
                     </span>
                   </div>
                 </div>

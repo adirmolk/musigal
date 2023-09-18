@@ -257,6 +257,26 @@ router.put('/follow/:userId', auth, async (req, res) => {
   }
 });
 
+router.get("/friends/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find the user by their ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the friends of the user using their friendIds
+    const friendsArr = await UserModel.find({ _id: { $in: user.friends } });
+
+    res.json({ friendsArr });
+  } catch (err) {
+    console.error(err);
+    res.status(502).json({ error: err.message });
+  }
+});
 
 router.put('/unfollow/:userId', auth, async(req, res) => {
   try{
@@ -269,5 +289,36 @@ router.put('/unfollow/:userId', auth, async(req, res) => {
     res.status(502).json({err})
   }
 })
+
+router.patch("/addRemoveFriend/:id/:friendId", auth, async (req, res) => {
+  try {
+    const { id, friendId } = req.params;
+    if (id === friendId) {
+      return res.status(400).json({ err: "You cannot follow yourself" });
+    }
+    const user = await UserModel.findById(id);
+    const friend = await UserModel.findById(friendId);
+
+   
+    if (!friend) {
+      return res.status(404).json({ err: "Friend not found" });
+    }
+    const isFriend = user.friends.includes(friendId);
+
+    if (isFriend) {
+      await UserModel.updateOne({ _id: user }, { $pull: { friends: friendId } });
+      await UserModel.updateOne({ _id: friendId }, { $pull: { friends: id } });
+    } else {
+      await UserModel.updateOne({ _id: user }, { $push: { friends: friendId } });
+      await UserModel.updateOne({ _id: friendId }, { $push: { friends: id } });
+    }
+
+    res.status(200).json({ user, friend });
+  } catch (err) {
+    console.error(err);
+    res.status(502).json({ err: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;
