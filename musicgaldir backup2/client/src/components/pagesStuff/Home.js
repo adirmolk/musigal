@@ -23,28 +23,31 @@ const Home = () => {
     // Call the checkToken function when the component mounts
     checkToken();
   }, [nav]);
-
   return (
-    <div style={{ backgroundColor: "#ECEBEC", height: "100%", width: "100%" }}>
+    <div style={{ backgroundColor: "#ECEBEC" }}>
       <Nav />
-      <div className="d-flex">
-        <div className="">
-          {" "}
-          <Profile />
-          {/* <Search/> */}
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12 col-lg-4 order-md-1">
+            {/* On smaller screens (up to medium), it will take up the full width */}
+            {/* On larger screens (large and above), it will take up 4 columns */}
+            <Profile />
+          </div>
+          <div className="col-md-12 col-lg-4 order-md-2">
+            {/* On smaller screens (up to medium), it will take up the full width */}
+            {/* On larger screens (large and above), it will take up 4 columns */}
+            <PostArea />
+          </div>
+          <div className="col-md-12 col-lg-4 order-md-3">
+            {/* On smaller screens (up to medium), it will take up the full width */}
+            {/* On larger screens (large and above), it will take up 4 columns */}
+            <Friends />
+          </div>
         </div>
-        <div className="">
-          {" "}
-          {/* <Post /> */}
-          <PostArea />
-        </div>
-        <div className="">
-          {" "}
-          {/* <Post /> */}
-<Friends/>        </div>
       </div>
     </div>
   );
+  
 };
 
 export default Home;

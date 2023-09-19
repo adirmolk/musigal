@@ -75,7 +75,7 @@ const ProductPost = () => {
   return (
     <div>
       {postProducts.length === 0 ? ( // Display the Loading component when postProducts is empty
-        <div className="text-center">
+        <div className="text-center" style={{width:"450px"}}>
           <ProductLoading />
         </div>
       ) : (
@@ -83,59 +83,65 @@ const ProductPost = () => {
           <div
             className="mt-4 mx-4 rounded p-2"
             style={{
-              width: "432px",
+               width: "",
               backgroundColor: "white",
               // border: "lightgray 1px solid",
             }}
             key={index}
           >
             <div className="d-flex p-2 justify-content-between">
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center ms-1">
                 <img
                   src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
                   alt="Profile"
                   className="rounded-circle"
-                  style={{ width: "50px", height: "50px" }}
+                  style={{ width: "48px", height: "48px" }}
                 />
-                <div className="mx-3">
-                  <h4
+                <div className="mx-2">
+                  <h5
                     onClick={() => navigate(`/profiles/${item.user_id}`)}
                     style={{ cursor: "pointer", margin: "0" }}
                   >
                     {user && user[item.user_id]
                       ? user[item.user_id].name
                       : "Unknown User"}
-                  </h4>
-                  <p className="text-muted mb-0">
+                  </h5>
+                  <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
                     {user && user[item.user_id]
                       ? user[item.user_id].level >= 150
-                        ? "Pro"
+                        ? "Pro "
                         : user[item.user_id].level >= 50
-                        ? "Maxim"
-                        : "Noob"
+                        ? "Maxim "
+                        : "Noob "
                       : "Unknown Level"}
+                    <span style={{ fontSize: "14px" }} className="text-muted">
+                      &#8226; {user[item.user_id].friends.length} Friends
+                    </span>
                   </p>
                 </div>
               </div>
-              <button
+              {/* <button
                 style={{ backgroundColor: "#DDC7A9" }}
                 className="btn badge fw-bold fs-5 h-50  mt-2 "
               >
                 +
-              </button>
+              </button> */}
             </div>
-            <hr />
+            {/* <hr /> */}
 
-            <div className="p-3 rounded">
+            <div className="p-3  rounded">
               <img
-                className="rounded ms-5  mb-3 d-block"
+                className="rounded mb-1"
                 src={item.img_url}
+                alt={`${item.title} Album Cover`}
                 style={{
-                  width: "300px",
-                  height: "300px",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "10px 10px 0 0",
                   border: "lightgray 1px solid",
                 }}
               />
+              <br />
               <span className="fw-bold">{item.title} </span>&#8226;{" "}
               <span style={{ color: conditionColors[item.condition] }}>
                 {" "}

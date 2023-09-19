@@ -99,7 +99,7 @@ function CurrentlyPlaying() {
       {/* <Nav /> */}
       <div className="d-flex">
         {currentlyPlaying ? (
-          <div style={{ width: "400px" }} className="p-2">
+          <div style={{ width: "" }} className="p-1">
             <div
               className="rounded"
               style={{

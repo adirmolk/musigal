@@ -15,9 +15,11 @@ const VinylWall = () => {
   const { id } = useParams();
   const record = vinylWall[0];
   const [displayedVinyls, setDisplayedVinyls] = useState(8);
-  const vinylsPerPage = Infinity; 
-  const reversedVinylWall = [...vinylWall].reverse(); 
-  const vinylWallSlice = showAll ? reversedVinylWall : reversedVinylWall.slice(0, displayedVinyls);
+  const vinylsPerPage = Infinity;
+  const reversedVinylWall = [...vinylWall].reverse();
+  const vinylWallSlice = showAll
+    ? reversedVinylWall
+    : reversedVinylWall.slice(0, displayedVinyls);
 
   const renderVinyl = async () => {
     const { data } = await axios.get(`http://localhost:3001/vinyls/user/${id}`);
@@ -53,16 +55,20 @@ const VinylWall = () => {
       },
     });
     setLoggedInUser(data);
+    loggedInUser?._id === id ? setDisplayedVinyls(7) : 0;
+
     console.log("Logged: ", loggedInUser);
   };
 
   useEffect(() => {
     fetchLoggedInUser();
+
   }, []);
 
   useEffect(() => {
     renderVinyl();
     setIsAddVinyl(false);
+
   }, [isAddVinyl]);
 
   const onAddVinyl = () => {
@@ -85,7 +91,6 @@ const VinylWall = () => {
     }
   }, [albumTitleFromDeezer]);
 
-  const maxVinylCount = loggedInUser?._id === id ? 8 : 7;
 
   return (
     <div>
@@ -178,7 +183,7 @@ const VinylWall = () => {
           </div>
         )}
       </div>
-      {vinylWall.length > maxVinylCount && (
+      {vinylWall.length && (
         <div>
           <button
             className="btn btn-outline-primary mt-2 "

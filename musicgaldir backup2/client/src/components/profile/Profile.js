@@ -31,15 +31,15 @@ const Profile = () => {
   }, [navigate]);
 
   return (
-    <div style={{ width: "400px" }} className="container d-flex  mt-4 mx-5">
-      <div className="row mb-5">
+    <div style={{}} className="container d-flex mx-2 mt-4 ">
+      <div className="row ">
         <div className="">
           {user ? (
             <div
               style={{
                 backgroundColor: "white",
                 // border: "lightgray 1px solid",
-                width: "400px",
+                width: "",
               }}
               className="rounded p-4 "
             >
@@ -58,26 +58,24 @@ const Profile = () => {
                     >
                       {user.name}
                     </h3>
-                    <span className="text-muted mb-0">
+                    <span
+                      className="text-muted mb-0"
+                      style={{ fontSize: "15px" }}
+                    >
                       {user.level >= 150
                         ? "Pro"
                         : user.level >= 50
                         ? "Maxim"
                         : "Noob"}
-                    </span> &#8226;
-                    <span className=" text-muted">
+                    </span>{" "}
+                    &#8226;
+                    <span className=" text-muted" style={{ fontSize: "15px" }}>
                       {" "}
                       {user.friends.length} Friends
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => navigate("/home/post")}
-                  style={{ backgroundColor: "#DDC7A9" }}
-                  className="btn badge fw-bold fs-5 h-50  mt-2 "
-                >
-                  +
-                </button>
+
                 {/* <FriendsList/> */}
               </div>
               <hr />

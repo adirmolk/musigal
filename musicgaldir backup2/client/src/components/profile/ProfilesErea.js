@@ -159,14 +159,25 @@ const ProfilesErea = () => {
                 <div className="ms-2 mt-3">
                   <h2>
                     {user.name}
-                    <button
-                      className={`btn ${
-                        isFollowed ? "btn-danger ms-2" : "ms-2 btn-primary"
-                      }`}
-                      onClick={toggleFollow}
-                    >
-                      {isFollowed ? "Unfollow" : "Follow"}
-                    </button>
+                    {loggedInUser?._id === id?(<button 
+                  
+                  className={`btn ${
+                     "mb-1"
+                  }`}
+                 
+                >
+                  <img width={"15px"} src={process.env.PUBLIC_URL + "/edit.png"}/>
+                </button>):(  <button 
+                  
+                  className={`btn ${
+                    isFollowed ? "btn-danger ms-2 mb-2" : "ms-2 mb-2 btn-light"
+                  }`}
+                  onClick={toggleFollow}
+                >
+                  {isFollowed ? <img width={"18px"} src={process.env.PUBLIC_URL + "/delete-user.png"}/> : <img width={"15px"} src={process.env.PUBLIC_URL + "/add-user.png"}/>}
+                </button>)}
+                    
+                  
                   </h2>
 
                   <div className="d-flex">

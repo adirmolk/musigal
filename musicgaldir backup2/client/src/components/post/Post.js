@@ -16,6 +16,7 @@ const Post = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
+  const navigate = useNavigate();
 
   const onPlay = () => {
     setSong({
@@ -64,6 +65,7 @@ const Post = () => {
 
         setTimeout(() => {
           setIsLoading(false);
+          navigate(0)
         }, 1000);
       } catch (error) {
         console.error(error);
@@ -117,10 +119,11 @@ const Post = () => {
 
   return (
     <div>
-      <div className="d-flex flex-column p-4">
+      <div className="d-flex flex-column  p-4">
         <div
           style={{
             backgroundColor: "white",
+            width:"405px"
             //  border: "lightgray 1px solid"
           }}
           className="p-3 rounded"
@@ -306,8 +309,8 @@ const Post = () => {
                 </div>
               )
             ) : (
-              <div className="text-start ">
-                <div className="d-flex">
+              <div style={{width:"356px"}} className="text-start ">
+                <div  className="d-flex">
                   <input
                     onChange={(e) =>
                       setProduct({ ...product, img_url: e.target.value })
@@ -365,7 +368,8 @@ const Post = () => {
                     onChange={(e) =>
                       setProduct({ ...product, location: e.target.value })
                     }
-                    className="w-50 mx-2  rounded border mt-2 p-2 bg-light"
+                    style={{width:"156px"}}
+                    className=" mx-2  rounded border mt-2 p-2 bg-light"
                     placeholder="Location"
                     type="text"
                   />
@@ -375,8 +379,8 @@ const Post = () => {
                   onChange={(e) =>
                     setProduct({ ...product, description: e.target.value })
                   }
-                  style={{ height: "70px" }}
-                  className="w-100 rounded text-center border mt-2 p-2 bg-light"
+                  style={{ height: "70px" , width:"360px"}}
+                  className=" rounded text-center border mt-2 p-2 bg-light"
                   placeholder="Add Description..."
                   type="text"
                 />
@@ -384,60 +388,60 @@ const Post = () => {
               </div>
             )}
 
-            <div
-              style={{ marginTop: selectedSong !== null ? "15px" : "0" }}
-              className="d-flex  justify-content-between "
-            >
-              <div
-                className="rounded-pill btn text-center"
-                onClick={() => setPostType("song")}
-                style={{
-                  backgroundColor:
-                    postType === "song" ? "lightblue" : "#EEEDEF",
-                }}
-              >
-                <img
-                  src={process.env.PUBLIC_URL + "/musicnote.png"}
-                  alt="Song 1"
-                  className=""
-                  style={{ width: "16px", height: "14px" }}
-                />
-                <span style={{ fontSize: "12px" }} className="m-2">
-                  Song
-                </span>
-              </div>
-              <div
-                className="rounded-pill btn text-center"
-                onClick={() => setPostType("product")}
-                style={{
-                  backgroundColor:
-                    postType === "product" ? "lightblue" : "#EEEDEF",
-                }}
-              >
-                <img
-                  src={process.env.PUBLIC_URL + "/vinyl.png"}
-                  alt="Song 2"
-                  className=""
-                  style={{ width: "16px", height: "16px" }}
-                />
-                <span style={{ fontSize: "12px" }} className="m-2">
-                  Product
-                </span>
-              </div>
-              <button
-                onClick={onPost}
-                style={{
-                  backgroundColor: isLoading ? "#ccc" : "#DDC7A9",
-                  color: "white",
-                }}
-                className={`btn rounded-pill w-50 ${
-                  isLoading ? "disabled" : ""
-                }`}
-                disabled={isLoading}
-              >
-                {isLoading ? "Posting..." : isPosted ? "Posted" : "Post"}
-              </button>
-            </div>
+           <div
+  style={{
+    marginTop: selectedSong !== null ? "15px" : "0",
+    marginRight: "15px", // Add margin to the right side
+  }}
+  className="d-flex justify-content-between"
+>
+  <div
+    className="rounded-pill btn text-center"
+    onClick={() => setPostType("song")}
+    style={{
+      backgroundColor: postType === "song" ? "lightblue" : "#EEEDEF",
+    }}
+  >
+    <img
+      src={process.env.PUBLIC_URL + "/musicnote.png"}
+      alt="Song 1"
+      style={{ width: "16px", height: "14px" }}
+    />
+    <span style={{ fontSize: "12px" }} className="m-1">
+      Song
+    </span>
+  </div>
+  <div
+    className="rounded-pill btn text-center"
+    onClick={() => setPostType("product")}
+    style={{
+      backgroundColor: postType === "product" ? "lightblue" : "#EEEDEF",
+    }}
+  >
+    <img
+      src={process.env.PUBLIC_URL + "/vinyl.png"}
+      alt="Song 2"
+      style={{ width: "16px", height: "16px" }}
+    />
+    <span style={{ fontSize: "12px" }} className="m-2">
+      Product
+    </span>
+  </div>
+  <button
+    onClick={onPost}
+    style={{
+      backgroundColor: isLoading ? "#ccc" : "#DDC7A9",
+      color: "white",
+    }}
+    className={`btn rounded-pill me-2 w-50 ${
+      isLoading ? "disabled" : ""
+    }`}
+    disabled={isLoading}
+  >
+    {isLoading ? "Posting..." : isPosted ? "Posted" : "Post"}
+  </button>
+</div>
+
           </div>
         </div>
       </div>

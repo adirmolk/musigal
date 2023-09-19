@@ -22,7 +22,6 @@ const SongPost = () => {
   `;
 
   const fetchUserProfile = async (userId) => {
-    
     try {
       const response = await axios.get(
         `http://localhost:3001/users/profile/${userId}`,
@@ -40,9 +39,6 @@ const SongPost = () => {
       console.error("Error fetching user data:", error);
     }
   };
-  
-
-  
 
   const ShowSongs = async () => {
     try {
@@ -51,11 +47,8 @@ const SongPost = () => {
       });
 
       for (const song of data) {
-      
         fetchUserProfile(song.user_id);
         getLoggedinUser();
-        
-
       }
 
       setTimeout(() => {
@@ -68,15 +61,14 @@ const SongPost = () => {
 
   useEffect(() => {
     ShowSongs();
-
   }, []);
 
-  const getLoggedinUser = async () =>{
+  const getLoggedinUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     } else {
-     await axios
+      await axios
         .get("http://localhost:3001/users/profile", {
           headers: {
             "x-api-key": token,
@@ -90,10 +82,7 @@ const SongPost = () => {
           console.log(error);
         });
     }
-  
-  }
-  
-
+  };
 
   return (
     <div>
@@ -107,7 +96,7 @@ const SongPost = () => {
             className="mt-4 mx-4 p-2 rounded"
             style={{
               backgroundColor: "white",
-              width: "400px",
+              width: "",
             }}
             key={index}
           >
@@ -120,22 +109,25 @@ const SongPost = () => {
                   style={{ width: "50px", height: "50px" }}
                 />
                 <div className="mx-3">
-                  <h4
+                  <h5
                     onClick={() => navigate(`/profiles/${song.user_id}`)}
                     style={{ cursor: "pointer", margin: "0" }}
                   >
                     {user && user[song.user_id]
                       ? user[song.user_id].name
                       : "Unknown User"}
-                  </h4>
-                  <p className="text-muted mb-0">
+                  </h5>
+                  <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
                     {user && user[song.user_id]
                       ? user[song.user_id].level >= 150
-                        ? "Pro"
+                        ? "Pro "
                         : user[song.user_id].level >= 50
-                        ? "Maxim"
-                        : "Noob"
+                        ? "Maxim "
+                        : "Noob "
                       : "Unknown Level"}
+                    <span style={{ fontSize: "14px" }} className="text-muted">
+                      &#8226; {user[song.user_id].friends.length} Friends
+                    </span>
                   </p>
                 </div>
                 {/* <button
@@ -150,11 +142,11 @@ const SongPost = () => {
                 />
               </button> */}
               </div>
-              <hr />
+              {/* <hr /> */}
               <div
                 className="instagram-post rounded"
                 style={{
-                  width: "300px",
+                  width: "",
                   marginBottom: "20px",
                   position: "relative",
                   borderRadius: "10px",
@@ -169,6 +161,7 @@ const SongPost = () => {
                     width: "100%",
                     height: "100%",
                     borderRadius: "10px 10px 0 0",
+                    border: "lightgray 1px solid",
                   }}
                 />
                 <div
@@ -211,11 +204,11 @@ const SongPost = () => {
                 <p className="mt-2">You cant rank your own song.</p>
               )}
 
-              <p style={{}} className=" d-inline fw-bold mt-3">
+              {/* <p style={{}} className=" d-inline fw-bold mt-3">
                 {user && user[song.user_id]
                   ? user[song.user_id].name
                   : "Unknown User"}
-              </p>
+              </p> */}
               <p
                 style={{
                   maxWidth: "400px",
