@@ -9,9 +9,12 @@ import Post from "../post/Post";
 import ProfilesErea from "../profile/ProfilesErea";
 import VinylWall from "../profile/VinylWall";
 
+import { UserProvider } from "../users/UserContext";
+
 const MainRoutes = () => {
   return (
     <BrowserRouter>
+    <UserProvider>
       <Routes>
         <Route path="/" element={<Welcome />}></Route>
         <Route path="/home" element={<Home />}></Route>
@@ -22,6 +25,7 @@ const MainRoutes = () => {
         <Route path="/profiles/:id" element={<ProfilesErea />}></Route>
         <Route path="/vinylwall/:id" element={<VinylWall />}></Route>
       </Routes>
+      </UserProvider>
     </BrowserRouter>
   );
 };

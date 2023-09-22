@@ -3,15 +3,9 @@ import ContentLoader from "react-content-loader";
 
 const SongLoading = () => {
   return (
-    <div
-      className="mt-4 mx-4 p-2 rounded"
-      style={{
-        backgroundColor: "white",
-        width: "400px",
-      }}
-    >
+    <div className="mt-4 mx-4 p-2 rounded" style={{ backgroundColor: "white", width: "400px" }}>
       <div className="p-2 justify-content-evenly">
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center mb-3">
           <ContentLoader
             speed={3}
             width={50}
@@ -22,36 +16,34 @@ const SongLoading = () => {
           >
             <circle cx="25" cy="25" r="25" />
           </ContentLoader>
-          
-          <div className="mx-3">
+          <div className="mx-3 mb-1">
             <ContentLoader
               speed={3}
-              width={120}
+              width={180}
               height={10}
-              viewBox="0 0 120 10"
+              viewBox="0 0 180 10"
               backgroundColor="#f3f3f3"
               foregroundColor="#ADD8E6"
             >
               <rect x="0" y="0" rx="4" ry="4" width="120" height="10" />
             </ContentLoader>
-            <br/>
+            <br />
             <ContentLoader
               speed={3}
-              width={80}
+              width={160}
               height={10}
-              viewBox="0 0 80 10"
+              viewBox="0 0 160 10"
               backgroundColor="#f3f3f3"
               foregroundColor="#ADD8E6"
             >
-              <rect x="0" y="0" rx="4" ry="4" width="80" height="10" />
+              <rect x="0" y="0" rx="4" ry="4" width="100" height="10" />
             </ContentLoader>
           </div>
         </div>
-        <hr />
         <div
           className="instagram-post rounded"
           style={{
-            width: "300px",
+            width: "365px",
             marginBottom: "20px",
             position: "relative",
             borderRadius: "10px",
@@ -60,13 +52,13 @@ const SongLoading = () => {
         >
           <ContentLoader
             speed={3}
-            width={300}
-            height={300}
-            viewBox="0 0 300 300"
+            width={365}
+            height={365}
+            viewBox="0 0 365 365"
             backgroundColor="#f3f3f3"
             foregroundColor="#ADD8E6"
           >
-            <rect x="0" y="0" rx="4" ry="4" width="300" height="300" />
+            <rect x="0" y="0" rx="4" ry="4" width="365" height="365" />
           </ContentLoader>
           <div
             className="text-center"
@@ -91,7 +83,7 @@ const SongLoading = () => {
             >
               <rect x="0" y="0" rx="4" ry="4" width="150" height="16" />
             </ContentLoader>
-            <br/>
+            <br />
             <ContentLoader
               speed={3}
               width={100}
@@ -104,53 +96,36 @@ const SongLoading = () => {
             </ContentLoader>
           </div>
         </div>
-      
-    
-        <br/>
-        <div className="mx-3 d-flex flex-column justify-content-start align-items-start">
-  <div>
-    <ContentLoader
-      speed={3}
-      width={50}
-      height={20}
-      viewBox="0 0 50 20"
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ADD8E6"
-    >
-      <rect x="0" y="0" rx="4" ry="4" width="50" height="20" />
-    </ContentLoader>
-  </div>
 
-  <div>
-    <ContentLoader
-      speed={3}
-      width={120}
-      height={10}
-      viewBox="0 0 120 10"
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ADD8E6"
-    >
-      <rect x="0" y="0" rx="4" ry="4" width="120" height="100" />
-    </ContentLoader>
-  </div>
+        <div className="d-flex flex-column justify-content-start align-items-start">
+          <div>
+            <ContentLoader
+              speed={3}
+              width={150}
+              height={20}
+              viewBox="0 0 150 20"
+              backgroundColor="#f3f3f3"
+              foregroundColor="#ADD8E6"
+            >
+              <rect x="0" y="0" rx="4" ry="4" width="100" height="25" />
+            </ContentLoader>
+          </div>
+
+          <div>
+            <ContentLoader
+              speed={3}
+              width={365}
+              height={10}
+              viewBox="0 0 365 10"
+              backgroundColor="#f3f3f3"
+              foregroundColor="#ADD8E6"
+            >
+              <rect x="0" y="0" rx="4" ry="4" width="100" height="10" />
+            </ContentLoader>
+          </div>
 
 
-  <div>
-    <ContentLoader
-      speed={3}
-      width={80}
-      height={10}
-      viewBox="0 0 80 10"
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ADD8E6"
-    >
-      <rect x="0" y="0" rx="4" ry="4" width="80" height="10" />
-    </ContentLoader>
-  </div>
-</div>
-
-
-
+        </div>
       </div>
     </div>
   );

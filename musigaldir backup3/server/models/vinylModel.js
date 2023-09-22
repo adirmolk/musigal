@@ -12,7 +12,7 @@ exports.VinylModel = mongoose.model("vinyls", VinylSchema);
 
 exports.validateVinyl = (_reqBody) => {
   const joiSchema = Joi.object({
-    title: Joi.string().min(2).max(100).required(),
+    title: Joi.string().min(1).max(100).required(),
     artist: Joi.string().min(2).max(100).required(),
     img_url: Joi.string().min(2).max(9999).required(),
   })

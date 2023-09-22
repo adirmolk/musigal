@@ -45,7 +45,7 @@ const DeezerSearch = ({onAlbumTitleChange}) => {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Post Song"
+        placeholder="Search an album..."
         style={{
           backgroundColor: "#EEEDEF",
           fontSize: "15px",
@@ -90,9 +90,10 @@ const DeezerSearch = ({onAlbumTitleChange}) => {
                         className="ms-2 d-inline mb-0"
                         style={{
                           fontWeight: "bold",
+                          color:"white"
                         }}
                       >
-                        {result.title} &#8226;
+                        {result.album.title} &#8226;
                       </p>
                       <p
                         className="d-inline ms-1"
@@ -102,16 +103,13 @@ const DeezerSearch = ({onAlbumTitleChange}) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          color:"white"
                         }}
                       >
                         {result.artist.name}
                       </p>
-                      <p className="ms-1">
-                        <span className="text-muted">
-                          💿{result.album.title} &#8226;{" "}
-                        </span>
-                      </p>
-                      <button onClick={()=>{{setAlbum_artist(result.artist.name)};{setAlbumImg_url(result.album.cover_medium)};setAlbumTitle(result.album.title);}}>+</button>
+           <br/>
+                      <button className="btn mt-2 text-bg-primary" onClick={()=>{{setAlbum_artist(result.artist.name)};{setAlbumImg_url(result.album.cover_medium)};setAlbumTitle(result.album.title);}}>+</button>
                     </div>
                   </div>
                 ))}

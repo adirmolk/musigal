@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import FriendsList from "../spotify/FriendsList";
+import Search from "../customFunctions/Search";
 
 const Nav = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -17,33 +18,59 @@ const Nav = () => {
 
   return (
     <div>
-      <div
-        className={`d-flex p-2 ${
-          darkMode ? "text-bg-dark" : "text-bg-light"
-        } justify-content-between`}
+      <nav
+        className={`navbar navbar-expand-lg ${
+          darkMode ? "navbar-dark bg-dark" : "navbar-light bg-light"
+        }`}
       >
-        <h1 style={{ color: "#DDC7A9" }} className="mt-1 mx-4">
-          musigal
-        </h1>
-        <div className={`p-2 d-flex align-items-center`}>
-          <FriendsList isOpen={menuOpen} />
+        <div className="container">
 
-          <span className={`p-2 d-${menuOpen ? "none" : "block"}`}>
-            profile
-          </span>
+          <a className="navbar-brand ms-4" href="/home" style={{ color: "#DDC7A9" }}>
+            <h3>musigal</h3>
+          </a>
+
           <button
-            className={`btn bg-light d-${menuOpen ? "none" : "block"}`}
-            onClick={toggleDarkMode}
+            className="navbar-toggler btn"
+            type=""
+            onClick={toggleMenu}
           >
-            {darkMode ? "Light Mode" : "Dark Mode"}
+            <img width={"16px"} src={process.env.PUBLIC_URL + "/more.png"}/>
           </button>
-          <button className="p-2 btn text-bg-light" onClick={toggleMenu}>
-            ☰
-          </button>
+
+          <div
+            className={`collapse navbar-collapse justify-content-end ${
+              menuOpen ? "show" : ""
+            }`}
+          >
+            <ul className="navbar-nav">
+            
+              <li className="nav-item">
+                <span
+                  className={`nav-link ${
+                    !menuOpen ? "d-none d-lg-block" : ""
+                  }`}
+                >
+                  <Search />
+                </span>
+              </li>
+              <li className="nav-item mt-1 ">
+                <FriendsList isOpen={menuOpen} />
+              </li>
+              <li className="nav-item mt-2">
+                <button
+                  className={`btn d-none d-lg-block`}
+                  onClick={toggleDarkMode}
+                >
+                  {darkMode ? <img  width={"23px"} src={process.env.PUBLIC_URL + "/night-mode (1).png"}/> : <img width={"15px"} src={process.env.PUBLIC_URL + "/brightness.png"}/>}
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </nav>
     </div>
   );
+
 };
 
 export default Nav;

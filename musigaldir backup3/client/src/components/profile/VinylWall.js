@@ -2,18 +2,33 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DeezerSearch from "../../DeezerSearch";
+import { FaPlus, FaArrowCircleDown } from "react-icons/fa"; // Import icons
 
 const VinylWall = () => {
   const [vinylWall, setVinylWall] = useState([]);
   const [showDeezerSearch, setShowDeezerSearch] = useState(false);
   const [albumTitleFromDeezer, setAlbumTitleFromDeezer] = useState({});
   const [isAddVinyl, setIsAddVinyl] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [showAll, setShowAll] = useState(false); // Track whether to show all albums
+
   const { id } = useParams();
   const record = vinylWall[0];
+  const [displayedVinyls, setDisplayedVinyls] = useState(8);
+  const vinylsPerPage = Infinity;
+  const reversedVinylWall = [...vinylWall].reverse();
+  const vinylWallSlice = showAll
+    ? reversedVinylWall
+    : reversedVinylWall.slice(0, displayedVinyls);
+
   const renderVinyl = async () => {
     const { data } = await axios.get(`http://localhost:3001/vinyls/user/${id}`);
     setVinylWall(data);
     console.log(data);
+  };
+
+  const handleShowMore = () => {
+    setShowAll((prevShowAll) => !prevShowAll);
   };
 
   const postVinyl = async () => {
@@ -33,9 +48,26 @@ const VinylWall = () => {
     }
   };
 
+  const fetchLoggedInUser = async () => {
+    const { data } = await axios.get(`http://localhost:3001/users/profile`, {
+      headers: {
+        "x-api-key": localStorage.getItem("token"),
+      },
+    });
+    setLoggedInUser(data);
+
+    console.log("Logged: ", loggedInUser);
+  };
+
+  useEffect(() => {
+    fetchLoggedInUser();
+
+  }, []);
+
   useEffect(() => {
     renderVinyl();
-    setIsAddVinyl(false)
+    setIsAddVinyl(false);
+
   }, [isAddVinyl]);
 
   const onAddVinyl = () => {
@@ -43,8 +75,13 @@ const VinylWall = () => {
   };
 
   const handleAlbumTitleChange = (albumTitle, albumImg_url, album_artist) => {
-    setAlbumTitleFromDeezer({ title: albumTitle, artist: album_artist, img_url: albumImg_url });
+    setAlbumTitleFromDeezer({
+      title: albumTitle,
+      artist: album_artist,
+      img_url: albumImg_url,
+    });
   };
+
   useEffect(() => {
     if (albumTitleFromDeezer.title) {
       postVinyl();
@@ -53,30 +90,26 @@ const VinylWall = () => {
     }
   }, [albumTitleFromDeezer]);
 
+
   return (
     <div>
       <h6 className="text-center">My Vinyl Wall</h6>
+
       <div
-        className="instagram-post p-4  me-2 rounded"
+        className="instagram-post p-3 me-2 rounded"
         style={{
-          width: "800px",
+          
           marginBottom: "20px",
           position: "relative",
           borderRadius: "10px",
           margin: "0 auto",
           display: "flex",
           flexWrap: "wrap",
-          justifyContent: "center",
-          backgroundColor: "#F7E5CD",
+          justifyContent: "flex-start",
+          backgroundColor: "white",
         }}
       >
-        <div>
-          <button onClick={onAddVinyl}>Add Vinyl</button>
-        </div>
-        {showDeezerSearch && (
-          <DeezerSearch onAlbumTitleChange={handleAlbumTitleChange} />
-        )}
-        {vinylWall.map((record, index) => (
+        {vinylWallSlice.map((record, index) => (
           <div
             key={index}
             style={{
@@ -85,7 +118,7 @@ const VinylWall = () => {
               margin: "10px",
               position: "relative",
             }}
-            className=""
+            className="text-center ms-2"
           >
             <img
               className="rounded"
@@ -93,8 +126,9 @@ const VinylWall = () => {
               alt={`${record.title} Album Cover`}
               style={{
                 width: "100%",
-                maxWidth: "160px",
+                maxWidth: "",
                 borderRadius: "10px",
+                border: "lightgray 1px solid",
               }}
             />
             <div
@@ -102,6 +136,7 @@ const VinylWall = () => {
               style={{
                 backgroundColor: "rgba(0, 0, 0, 0.7)",
                 color: "#DDC7A9",
+                maxHeight:"40px",
                 padding: "3px",
                 borderRadius: "0 0 5px 5px",
                 position: "absolute",
@@ -123,7 +158,43 @@ const VinylWall = () => {
             </div>
           </div>
         ))}
+     
       </div>
+        
+
+        {showDeezerSearch && (
+          <div className="row">
+            <div className="col-12 mb-3 mt-2">
+              <DeezerSearch onAlbumTitleChange={handleAlbumTitleChange} />
+            </div>
+          </div>
+        )}
+      {vinylWall.length && (
+        <div className="d-flex">
+          <button
+            className="btn btn-outline-primary mt-2 "
+            onClick={handleShowMore}
+          >
+            {showAll ? "Show Less" : "Show All"}
+          </button>
+          {loggedInUser?._id === id && (
+          <div className="mt-2 ms-3">
+            <button
+              className="btn btn-outline-primary"
+              style={{
+                width: "",
+                height: "",
+                display: loggedInUser ? "inline" : "none",
+              }}
+              onClick={onAddVinyl}
+            >
+              <FaPlus size={15} />
+            </button>
+          </div>
+        )}
+        </div>
+        
+      )}
     </div>
   );
 };

@@ -5,6 +5,8 @@ import Profile from "../profile/Profile";
 import checkTokenValidation from "../users/checkTokenValidation";
 import Post from "../post/Post";
 import PostArea from "../post/PostArea";
+import Search from "../customFunctions/Search";
+import Friends from "./Friends";
 
 const Home = () => {
   const nav = useNavigate();
@@ -21,23 +23,25 @@ const Home = () => {
     // Call the checkToken function when the component mounts
     checkToken();
   }, [nav]);
-
   return (
-    <div style={{ backgroundColor: "#ECEBEC", height: "100%", width: "100%" }}>
+    <div style={{ backgroundColor: "#ECEBEC" }}>
       <Nav />
-      <div className="d-flex">
-        <div className="">
-          {" "}
-          <Profile />
-        </div>
-        <div className="">
-          {" "}
-          {/* <Post /> */}
-          <PostArea />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12 col-lg-4 order-md-1">
+            <Profile />
+          </div>
+          <div className="col-md-12 col-lg-4 order-md-2">
+            <PostArea />
+          </div>
+          <div className="col-md-12 col-lg-4 order-md-3">
+            <Friends />
+          </div>
         </div>
       </div>
     </div>
   );
+  
 };
 
 export default Home;

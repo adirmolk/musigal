@@ -4,6 +4,7 @@ import axios from "axios";
 import _ from "lodash";
 import Nav from "../pagesStuff/Nav";
 import checkTokenValidation from "../users/checkTokenValidation";
+import { useUser } from "../users/UserContext";
 
 const Post = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +17,9 @@ const Post = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
+  const navigate = useNavigate();
+  const user = useUser();
+  // console.log(user)
 
   const onPlay = () => {
     setSong({
@@ -64,6 +68,7 @@ const Post = () => {
 
         setTimeout(() => {
           setIsLoading(false);
+          navigate(0);
         }, 1000);
       } catch (error) {
         console.error(error);
@@ -117,10 +122,11 @@ const Post = () => {
 
   return (
     <div>
-      <div className="d-flex flex-column p-4">
+      <div className="d-flex flex-column  p-4">
         <div
           style={{
             backgroundColor: "white",
+            width: "405px",
             //  border: "lightgray 1px solid"
           }}
           className="p-3 rounded"
@@ -131,7 +137,10 @@ const Post = () => {
               width={"50px"}
               height={"50px"}
               className="ms-2 rounded-circle mb-1"
-              src="https://cdn.britannica.com/88/158788-050-314EBC88/Mount-Triumph-height-North-Cascades-National-Park.jpg"
+              src={
+                user?.imgUrl ||
+                "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+              }
               alt="User Profile"
               style={{ display: postType === "song" ? "inline" : "none" }}
             />
@@ -154,7 +163,10 @@ const Post = () => {
                   width={"50px"}
                   height={"50px"}
                   className="ms-2 rounded-circle mb-1"
-                  src="https://cdn.britannica.com/88/158788-050-314EBC88/Mount-Triumph-height-North-Cascades-National-Park.jpg"
+                  src={
+                    user?.imgUrl ||
+                    "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                  }
                   alt="User Profile"
                 />
                 <h2 style={{ color: "#DDC7A9" }} className="d-inline  mx-3 ">
@@ -306,7 +318,7 @@ const Post = () => {
                 </div>
               )
             ) : (
-              <div className="text-start ">
+              <div style={{ width: "356px" }} className="text-start ">
                 <div className="d-flex">
                   <input
                     onChange={(e) =>
@@ -365,7 +377,8 @@ const Post = () => {
                     onChange={(e) =>
                       setProduct({ ...product, location: e.target.value })
                     }
-                    className="w-50 mx-2  rounded border mt-2 p-2 bg-light"
+                    style={{ width: "156px" }}
+                    className=" mx-2  rounded border mt-2 p-2 bg-light"
                     placeholder="Location"
                     type="text"
                   />
@@ -375,8 +388,8 @@ const Post = () => {
                   onChange={(e) =>
                     setProduct({ ...product, description: e.target.value })
                   }
-                  style={{ height: "70px" }}
-                  className="w-100 rounded text-center border mt-2 p-2 bg-light"
+                  style={{ height: "70px", width: "360px" }}
+                  className=" rounded text-center border mt-2 p-2 bg-light"
                   placeholder="Add Description..."
                   type="text"
                 />
@@ -385,8 +398,11 @@ const Post = () => {
             )}
 
             <div
-              style={{ marginTop: selectedSong !== null ? "15px" : "0" }}
-              className="d-flex  justify-content-between "
+              style={{
+                marginTop: selectedSong !== null ? "15px" : "0",
+                marginRight: "15px", // Add margin to the right side
+              }}
+              className="d-flex justify-content-between"
             >
               <div
                 className="rounded-pill btn text-center"
@@ -399,10 +415,9 @@ const Post = () => {
                 <img
                   src={process.env.PUBLIC_URL + "/musicnote.png"}
                   alt="Song 1"
-                  className=""
                   style={{ width: "16px", height: "14px" }}
                 />
-                <span style={{ fontSize: "12px" }} className="m-2">
+                <span style={{ fontSize: "12px" }} className="m-1">
                   Song
                 </span>
               </div>
@@ -417,7 +432,6 @@ const Post = () => {
                 <img
                   src={process.env.PUBLIC_URL + "/vinyl.png"}
                   alt="Song 2"
-                  className=""
                   style={{ width: "16px", height: "16px" }}
                 />
                 <span style={{ fontSize: "12px" }} className="m-2">
@@ -430,7 +444,7 @@ const Post = () => {
                   backgroundColor: isLoading ? "#ccc" : "#DDC7A9",
                   color: "white",
                 }}
-                className={`btn rounded-pill w-50 ${
+                className={`btn rounded-pill me-2 w-50 ${
                   isLoading ? "disabled" : ""
                 }`}
                 disabled={isLoading}

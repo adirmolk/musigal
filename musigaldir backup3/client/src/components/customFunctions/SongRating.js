@@ -96,7 +96,11 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   };
   return (
     <div>
-      {user._id == userId ? (<div>Total Raiting: {totalPoints}</div>) : (
+      {user._id == userId ? (<div className=" fw-bold mt-2">{totalPoints}  <img
+              className="mb-1"
+              width={"15px"}
+              src={process.env.PUBLIC_URL + "/increase.png"}
+            /></div>) : (
       rated ? (
         <div>
           <button
@@ -133,7 +137,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
 
           <button
             onClick={toggleInputVisibility}
-            className="btn  ms-1 mt-2"
+            className="btn mt-2"
             style={
               {
                 backgroundColor:"#ECEBEC"
@@ -165,7 +169,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
             <img
               className="mb-1"
               width={"15px"}
-              src={process.env.PUBLIC_URL + "increase.png"}
+              src={process.env.PUBLIC_URL + "/increase.png"}
             />
           </span>
         </div>
