@@ -184,7 +184,7 @@ const Search = () => {
               />
               <div className="mx-3">
                 <h3
-                  onClick={() => navigate(`/profiles/${user._id}`)}
+                  onClick={() => {navigate(`/profiles/${user._id}`); navigate(0);}}
                   style={{ cursor: "pointer", margin: "0" }}
                 >
                   {user.name}

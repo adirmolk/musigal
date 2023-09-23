@@ -7,6 +7,7 @@ import Post from "../post/Post";
 import PostArea from "../post/PostArea";
 import Search from "../customFunctions/Search";
 import Friends from "./Friends";
+import Leaderboards from "./Leaderboards";
 
 const Home = () => {
   const nav = useNavigate();
@@ -35,7 +36,8 @@ const Home = () => {
             <PostArea />
           </div>
           <div className="col-md-12 col-lg-4 order-md-3">
-            <Friends />
+            <Friends /> 
+            <Leaderboards/>
           </div>
         </div>
       </div>

@@ -51,6 +51,17 @@ router.get('/profile/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/list', async(req,res) => {
+    try{
+      const data = await UserModel.find({});
+      res.json(data);
+    }
+    catch(err){
+      console.log(err);
+      res.status(502).json({err})
+    }
+})
+
 // Add this route to your server code
 router.get("/search", async (req, res) => {
   try {
