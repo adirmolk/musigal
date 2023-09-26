@@ -1,82 +1,48 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useUser } from "../users/UserContext";
 import CurrentlyPlaying from "../spotify/CurrentlyPlaying";
-import Post from "../post/Post";
-import FriendsList from "../spotify/FriendsList";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    } else {
-      axios
-        .get("http://localhost:3001/users/profile", {
-          headers: {
-            "x-api-key": token,
-          },
-        })
-        .then((response) => {
-          setUser(response.data);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [navigate]);
+  const user = useUser();
+  const navigate = useNavigate()
 
   return (
-    <div style={{}} className="container d-flex mx-2 mt-4 ">
-      <div className="row ">
+    <div style={{}} className="container d-flex mt-4">
+      <div className="row">
         <div className="">
           {user ? (
             <div
               style={{
                 backgroundColor: "white",
-                // border: "lightgray 1px solid",
                 width: "",
               }}
-              className="rounded p-4 "
+              className="rounded p-4"
             >
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center">
                   <img
-                    src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                    src={user.imgUrl||"https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"}
                     alt="Profile"
                     className="rounded-circle"
                     style={{ width: "60px", height: "60px" }}
                   />
                   <div className="mx-3">
-                    <h3
+                  <h3
                       onClick={() => navigate(`/profiles/${user._id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
                       {user.name}
-                    </h3>
-                    <span
-                      className="text-muted mb-0"
-                      style={{ fontSize: "15px" }}
-                    >
-                      {user.level >= 150
-                        ? "Pro"
-                        : user.level >= 50
-                        ? "Maxim"
-                        : "Noob"}
-                    </span>{" "}
-                    &#8226;
-                    <span className=" text-muted" style={{ fontSize: "15px" }}>
-                      {" "}
-                      {user.friends.length} Friends
+                    </h3> 
+                    <span className="text-muted mb-0" style={{ fontSize: "15px" }}>
+                      {user.level >= 150 ? "Pro" : user.level >= 50 ? "Maxim" : "Noob"}
+                    </span>{" "} &#8226;
+                   
+                    <span className="text-muted ms-1" style={{ fontSize: "15px" }}>
+                       {user.friends.length} Friends
                     </span>
                   </div>
                 </div>
-
-                {/* <FriendsList/> */}
               </div>
               <hr />
               <CurrentlyPlaying />
@@ -120,7 +86,6 @@ const Profile = () => {
           )}
         </div>
       </div>
-      {/* <Post/> */}
     </div>
   );
 };

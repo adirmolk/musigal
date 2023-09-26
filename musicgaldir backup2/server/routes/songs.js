@@ -51,10 +51,7 @@ router.get("/friends", auth, async (req, res) => {
     const friends = currentUser.friends || [];
 
     const data = await songModel
-      .find({ $or: [
-        { user_id: userId },  
-        { user_id: { $in: friends }}
-      ] }) 
+      .find({ $or: [{ user_id: userId }, { user_id: { $in: friends } }] })
       .limit(limit)
       .skip(page * limit)
       .sort({ [sort]: reverse });
@@ -66,8 +63,7 @@ router.get("/friends", auth, async (req, res) => {
   }
 });
 
-
-router.get('/user/:userId',  async (req, res) => {
+router.get("/user/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
 
@@ -79,7 +75,7 @@ router.get('/user/:userId',  async (req, res) => {
     res.json(products);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -127,7 +123,9 @@ router.get("/rating/:songId", auth, async (req, res) => {
     const userId = req.tokenData._id;
 
     const data = await songModel.findOne({ _id: songId });
-    const userRating = data.whoRated.find((rateInfo) => rateInfo.user === userId);
+    const userRating = data.whoRated.find(
+      (rateInfo) => rateInfo.user === userId
+    );
 
     let totalRating = 0;
     data.whoRated.forEach((rateInfo) => {
@@ -135,16 +133,15 @@ router.get("/rating/:songId", auth, async (req, res) => {
     });
 
     if (userRating) {
-      res.json({ userRating: userRating.rating, totalRating }); 
+      res.json({ userRating: userRating.rating, totalRating });
     } else {
-      res.json({ userRating: 0, totalRating }); 
+      res.json({ userRating: 0, totalRating });
     }
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 router.put("/:id", auth, async (req, res) => {
   const validBody = validateSong(req.body);
@@ -165,11 +162,8 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  const validBody = validateSong(req.body);
-  if (validBody.error) {
-    return res.status(400).json(validBody.error.details);
-  }
   try {
+    console.log("Request Body:", req.body); // Log the request body.
     const id = req.params.id;
     const data = await songModel.deleteOne(
       { _id: id, user_id: req.tokenData._id },

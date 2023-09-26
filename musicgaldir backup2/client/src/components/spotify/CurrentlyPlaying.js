@@ -99,7 +99,7 @@ function CurrentlyPlaying() {
       {/* <Nav /> */}
       <div className="d-flex">
         {currentlyPlaying ? (
-          <div style={{ width: "" }} className="p-1">
+          <div style={{ width: "330px" }} className="p-1">
             <div
               className="rounded"
               style={{
@@ -147,8 +147,19 @@ function CurrentlyPlaying() {
               </div>
             </div>
           </div>
-        ) : (
-          <p>No track currently playing.</p>
+        ) : (<div style={{ width: "" }} className="">
+            <div
+              className="rounded text-center p-3"
+              style={{
+                backgroundColor: "#F0d0Ff",
+                padding: "",
+                width:"350px"
+              }}
+            >
+               <p className="text-center mt-2">No track currently playing.</p>
+              </div>
+              </div>
+         
         )}
         {/* <Home /> */}
       </div>

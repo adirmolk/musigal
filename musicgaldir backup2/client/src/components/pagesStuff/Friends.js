@@ -118,7 +118,7 @@ const Friends = () => {
               >
                 <div className="d-flex align-items-center">
                   <img
-                    src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                    src={friend.imgUrl||"https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"}
                     alt="Profile"
                     className="rounded-circle"
                     style={{ width: "50px", height: "50px" }}

@@ -51,6 +51,17 @@ router.get('/profile/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/list', async(req,res) => {
+    try{
+      const data = await UserModel.find({});
+      res.json(data);
+    }
+    catch(err){
+      console.log(err);
+      res.status(502).json({err})
+    }
+})
+
 // Add this route to your server code
 router.get("/search", async (req, res) => {
   try {
@@ -187,14 +198,17 @@ router.put("/update/:userId", auth, async (req, res) => {
     }
 
     // Check if the authenticated user is trying to update their own level
-    if (userId === authenticatedUserId) {
-      return res.status(403).json({ error: "You cannot update your own level" });
-    }
+    // if (userId === authenticatedUserId) {
+    //   return res.status(403).json({ error: "You cannot update your own level" });
+    // }
     
 
     // Validate and update user data
     if (req.body.name) {
       user.name = req.body.name;
+    }
+    if (req.body.imgUrl) {
+      user.imgUrl = req.body.imgUrl;
     }
 
     if (req.body.email) {
@@ -223,6 +237,7 @@ router.put("/update/:userId", auth, async (req, res) => {
       name: user.name,
       email: user.email,
       level: user.level,
+      imgUrl: user.imgUrl,
       // Add other relevant fields as needed
     };
 

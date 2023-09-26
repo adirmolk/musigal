@@ -7,6 +7,7 @@ import Post from "../post/Post";
 import PostArea from "../post/PostArea";
 import Search from "../customFunctions/Search";
 import Friends from "./Friends";
+import Leaderboards from "./Leaderboards";
 
 const Home = () => {
   const nav = useNavigate();
@@ -29,19 +30,14 @@ const Home = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-12 col-lg-4 order-md-1">
-            {/* On smaller screens (up to medium), it will take up the full width */}
-            {/* On larger screens (large and above), it will take up 4 columns */}
             <Profile />
           </div>
           <div className="col-md-12 col-lg-4 order-md-2">
-            {/* On smaller screens (up to medium), it will take up the full width */}
-            {/* On larger screens (large and above), it will take up 4 columns */}
             <PostArea />
           </div>
           <div className="col-md-12 col-lg-4 order-md-3">
-            {/* On smaller screens (up to medium), it will take up the full width */}
-            {/* On larger screens (large and above), it will take up 4 columns */}
-            <Friends />
+            <Friends /> 
+            <Leaderboards/>
           </div>
         </div>
       </div>

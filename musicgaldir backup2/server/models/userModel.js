@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
     name: String,
     email: String,
     password: String,
+    imgUrl: String,
     level: {
       type: Number,
       default: 0, // Set the default level to 0
@@ -41,6 +42,7 @@ exports.validateUser = (_reqBody) => {
     name: Joi.string().min(2).max(150).required(),
     email: Joi.string().min(2).max(150).email().required(),
     password: Joi.string().min(3).max(16).required(),
+    imgUrl: Joi.string().allow(),
   });
   return joiSchema.validate(_reqBody);
 };

@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DeezerSearch from "../../DeezerSearch";
 import { FaPlus, FaArrowCircleDown } from "react-icons/fa"; // Import icons
+import DeezerSearch from "../dailyChallenge/DeezerSearch";
 
 const VinylWall = () => {
   const [vinylWall, setVinylWall] = useState([]);
@@ -55,7 +55,6 @@ const VinylWall = () => {
       },
     });
     setLoggedInUser(data);
-    loggedInUser?._id === id ? setDisplayedVinyls(7) : 0;
 
     console.log("Logged: ", loggedInUser);
   };
@@ -97,9 +96,9 @@ const VinylWall = () => {
       <h6 className="text-center">My Vinyl Wall</h6>
 
       <div
-        className="instagram-post p-3  me-2 rounded"
+        className="instagram-post p-3 me-2 rounded"
         style={{
-          width: "700px",
+          
           marginBottom: "20px",
           position: "relative",
           borderRadius: "10px",
@@ -119,7 +118,7 @@ const VinylWall = () => {
               margin: "10px",
               position: "relative",
             }}
-            className="ms-3"
+            className="text-center ms-2"
           >
             <img
               className="rounded"
@@ -127,7 +126,7 @@ const VinylWall = () => {
               alt={`${record.title} Album Cover`}
               style={{
                 width: "100%",
-                maxWidth: "160px",
+                maxWidth: "",
                 borderRadius: "10px",
                 border: "lightgray 1px solid",
               }}
@@ -137,6 +136,7 @@ const VinylWall = () => {
               style={{
                 backgroundColor: "rgba(0, 0, 0, 0.7)",
                 color: "#DDC7A9",
+                maxHeight:"40px",
                 padding: "3px",
                 borderRadius: "0 0 5px 5px",
                 position: "absolute",
@@ -158,22 +158,9 @@ const VinylWall = () => {
             </div>
           </div>
         ))}
-        {/* Conditionally render the "Add Vinyl" button */}
-        {loggedInUser?._id === id && (
-          <div className="mt-2 ms-3">
-            <button
-              className="btn btn-outline-primary"
-              style={{
-                width: "133px",
-                height: "135px",
-                display: loggedInUser ? "inline" : "none",
-              }}
-              onClick={onAddVinyl}
-            >
-              <FaPlus size={20} />
-            </button>
-          </div>
-        )}
+     
+      </div>
+        
 
         {showDeezerSearch && (
           <div className="row">
@@ -182,16 +169,31 @@ const VinylWall = () => {
             </div>
           </div>
         )}
-      </div>
       {vinylWall.length && (
-        <div>
+        <div className="d-flex">
           <button
             className="btn btn-outline-primary mt-2 "
             onClick={handleShowMore}
           >
             {showAll ? "Show Less" : "Show All"}
           </button>
+          {loggedInUser?._id === id && (
+          <div className="mt-2 ms-3">
+            <button
+              className="btn btn-outline-primary"
+              style={{
+                width: "",
+                height: "",
+                display: loggedInUser ? "inline" : "none",
+              }}
+              onClick={onAddVinyl}
+            >
+              <FaPlus size={15} />
+            </button>
+          </div>
+        )}
         </div>
+        
       )}
     </div>
   );

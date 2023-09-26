@@ -177,14 +177,14 @@ const Search = () => {
           >
             <div className="d-flex align-items-center">
               <img
-                src="https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
-                alt="Profile"
+                    src={user.imgUrl||"https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"}
+                    alt="Profile"
                 className="rounded-circle"
                 style={{ width: "60px", height: "60px" }}
               />
               <div className="mx-3">
                 <h3
-                  onClick={() => navigate(`/profiles/${user._id}`)}
+                  onClick={() => {navigate(`/profiles/${user._id}`); navigate(0);}}
                   style={{ cursor: "pointer", margin: "0" }}
                 >
                   {user.name}

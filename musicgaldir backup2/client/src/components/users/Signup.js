@@ -49,6 +49,15 @@ const Signup = () => {
                 type="password"
               />
             </div>
+            <div className="form-group">
+              <label htmlFor="id_imgUrl">imgUrl</label>
+              <input
+                onChange={(e) => setUser({ ...user, imgUrl: e.target.value })}
+                id="id_imgUrl"
+                className="form-control"
+                type="text"
+              />
+            </div>
             <button className="btn btn-primary">Sign Up</button>
             <button style={{textDecorationLine:"none"}} onClick={()=>nav('/login')} className="btn btn-link mt-3"><span style={{color:"black"}}>already have an acount? </span>Log In </button>
 

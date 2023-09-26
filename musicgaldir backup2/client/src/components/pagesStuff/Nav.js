@@ -34,7 +34,7 @@ const Nav = () => {
             type=""
             onClick={toggleMenu}
           >
-            <img width={"16px"} src={process.env.PUBLIC_URL + "more.png"}/>
+            <img width={"16px"} src={process.env.PUBLIC_URL + "/more.png"}/>
           </button>
 
           <div
@@ -61,7 +61,7 @@ const Nav = () => {
                   className={`btn d-none d-lg-block`}
                   onClick={toggleDarkMode}
                 >
-                  {darkMode ? <img  width={"23px"} src={process.env.PUBLIC_URL + "night-mode (1).png"}/> : <img width={"15px"} src={process.env.PUBLIC_URL + "brightness.png"}/>}
+                  {darkMode ? <img  width={"23px"} src={process.env.PUBLIC_URL + "/night-mode (1).png"}/> : <img width={"15px"} src={process.env.PUBLIC_URL + "/brightness.png"}/>}
                 </button>
               </li>
             </ul>
