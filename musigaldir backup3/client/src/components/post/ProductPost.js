@@ -36,9 +36,9 @@ const ProductPost = ({ userId, color }) => {
         headers: { "x-api-key": localStorage.getItem("token") },
       });
 
-      for (const product of data) {
-        fetchUserProfile(product.user_id);
-      }
+      // for (const product of data) {
+      //   fetchUserProfile(product.userId);
+      // }
 
       setTimeout(() => {
         setPostProducts(data);
@@ -94,7 +94,7 @@ const ProductPost = ({ userId, color }) => {
       ) : (
         postProducts.map((item, index) =>
           // Add a conditional check here to show products only if userId matches
-          (userId && item.user_id === userId) || !userId ? (
+          (userId && item.userId === userId) || !userId ? (
             <div
               className="mt-4 mx-4 rounded p-2"
               style={{
@@ -107,7 +107,7 @@ const ProductPost = ({ userId, color }) => {
                 <div className="d-flex align-items-center ms-1">
                   <img
                     src={
-                      user[item.user_id].imgUrl ||
+                      user[item.userId].imgUrl ||
                       "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
                     }
                     alt="Profile"
@@ -116,23 +116,23 @@ const ProductPost = ({ userId, color }) => {
                   />
                   <div className="mx-2">
                     <h5
-                      onClick={() => navigate(`/profiles/${item.user_id}`)}
+                      onClick={() => navigate(`/profiles/${item.userId}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user && user[item.user_id]
-                        ? user[item.user_id].name
+                      {user && user[item.userId]
+                        ? user[item.userId].name
                         : "Unknown User"}
                     </h5>
                     <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
-                      {user && user[item.user_id]
-                        ? user[item.user_id].level >= 150
+                      {user && user[item.userId]
+                        ? user[item.userId].level >= 150
                           ? "Pro "
-                          : user[item.user_id].level >= 50
+                          : user[item.userId].level >= 50
                           ? "Maxim "
                           : "Noob "
                         : "Unknown Level"}
                       <span style={{ fontSize: "14px" }} className="text-muted">
-                        &#8226; {user[item.user_id].friends.length} Friends
+                        &#8226; {user[item.userId].friends.length} Friends
                       </span>
                     </p>
                   </div>

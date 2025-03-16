@@ -21,7 +21,9 @@ const ProfilesErea = () => {
     // Fetch user and logged-in user on component mount
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/users/${id}`);
+        const response = await axios.get(
+          `http://localhost:3001/api/users/${id}`
+        );
         setUser(response.data);
       } catch (error) {
         console.log(error);
@@ -31,7 +33,7 @@ const ProfilesErea = () => {
     const fetchLoggedInUser = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:3001/users/profile`,
+          `http://localhost:3001/api/users/profile`,
           {
             headers: {
               "x-api-key": localStorage.getItem("token"),
@@ -78,7 +80,7 @@ const ProfilesErea = () => {
   const toggleFollow = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
+        `http://localhost:3001/users/addRemoveFriend/${loggedInUser.id}/${id}`,
         {},
         {
           headers: { "x-api-key": localStorage.getItem("token") },
@@ -97,7 +99,14 @@ const ProfilesErea = () => {
   };
 
   useEffect(() => {
-    if (loggedInUser && user && loggedInUser.friends.includes(user._id)) {
+    console.log(loggedInUser);
+    console.log(user);
+
+    if (
+      loggedInUser &&
+      user &&
+      loggedInUser.friends.includes(user.id.toString())
+    ) {
       setIsFollowed(true);
     } else {
       setIsFollowed(false);
@@ -129,7 +138,7 @@ const ProfilesErea = () => {
                   />
                   <h2 className="mb-2 ms-5">
                     {user.name}
-                    {loggedInUser?._id === id ? (
+                    {loggedInUser?.id === id ? (
                       <div className="d-inline">
                         {" "}
                         <button
@@ -233,7 +242,7 @@ const ProfilesErea = () => {
                   </div>
                 </div>
                 {postType === "song" ? (
-                  loggedInUser && (loggedInUser._id === id || isFollowed) ? (
+                  loggedInUser && (loggedInUser.id === id || isFollowed) ? (
                     <div>
                       <SongPost userId={id} color={"white"} />
                     </div>

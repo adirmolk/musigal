@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
+      console.log(token + " this is the token ");
       if (!token) {
         navigate("/login");
         return;
@@ -28,6 +29,8 @@ export const UserProvider = ({ children }) => {
             headers: { "x-api-key": token },
           }
         );
+        console.log(response.data + "this is the user ");
+
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user profile:", error);

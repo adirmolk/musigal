@@ -72,7 +72,7 @@ const Leaderboards = ({ color }) => {
               />
               <div className="mx-3">
                 <h5
-                  onClick={() => navigate(`/profiles/${user._id}`)}
+                  onClick={() => navigate(`/profiles/${user.id}`)}
                   style={{ cursor: "pointer", margin: "0" }}
                 >
                   {user.name}

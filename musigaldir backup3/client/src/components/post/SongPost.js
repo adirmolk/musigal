@@ -10,40 +10,26 @@ const SongPost = ({ userId, color }) => {
   const [postSongs, setPostSongs] = useState([]);
   const [authenticatedUserId, setAuthenticatedUserId] = useState("");
   const [user, setUser] = useState(null);
-  // const [loggedInUser, setLoggedInUser] = useState(null);
   const navigate = useNavigate();
   const [userLevel, setUserLevel] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [songToDelete, setSongToDelete] = useState(null);
   const logUser = useUser();
-  useEffect(() => {
-    fetchUserProfile(logUser.id);
-  }, [navigate]);
+  const [loggedInUser, setLoggedInUser] = useState(logUser);
+
   const handleDeleteConfirmation = (song) => {
     setSongToDelete(song);
     setShowDeleteConfirmation(true);
   };
-  const fetchUserProfile = async (userId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3001/api/users/profile/${userId}`,
-        {
-          headers: { "x-api-key": localStorage.getItem("token") },
-        }
-      );
-      const user = response.data;
-      console.log("user: ", user);
-      setAuthenticatedUserId(user.id);
-      setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const ShowSongs = async () => {
+    console.log(loggedInUser + "HEREEEEEEEEEEEEEE");
+
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/songs/friends?userId=${logUser.id}`,
+        userId == null
+          ? `http://localhost:3001/api/songs/friends?userId=${loggedInUser.id}`
+          : `http://localhost:3001/api/songs/getSongsByUserId/${userId}`,
         {
           headers: { "x-api-key": localStorage.getItem("token") },
         }
@@ -54,14 +40,32 @@ const SongPost = ({ userId, color }) => {
       //   fetchUserProfile(song.userId);
       // }
 
-      setTimeout(() => {
-        setPostSongs(response.data);
-      }, 1500);
+      setPostSongs(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  const songs = async () => {
+    console.log(loggedInUser + "HEREEEEEEEEEEEEEE");
 
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/songs/getSongsByUserId/${userId}`,
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        }
+      );
+      console.log(response.data);
+
+      // for (const song of response.data) {
+      //   fetchUserProfile(song.userId);
+      // }
+
+      setPostSongs(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   const deleteSong = async (song) => {
     try {
       const response = await axios.delete(
@@ -119,17 +123,24 @@ const SongPost = ({ userId, color }) => {
           headers: { "x-api-key": token },
         }
       );
+      console.log(
+        response.data +
+          "psjvmosvjsovsvnsbusnbsbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      );
 
       setLoggedInUser(response.data);
-      ShowSongs();
+      // ShowSongs();
     } catch (error) {
       console.error("Error fetching logged-in user:", error);
       navigate("/login"); // Redirect if token is invalid
     }
   };
   useEffect(() => {
+    getLoggedinUser();
+  }, []);
+  useEffect(() => {
     ShowSongs();
-  }, [logUser]); // Runs only when `navigate` changes (which is rare)
+  }, [loggedInUser || userId]);
 
   useEffect(() => {
     const handleFriendsUpdated = (followedUser) => {
@@ -142,7 +153,7 @@ const SongPost = ({ userId, color }) => {
       eventBus.off("friendsUpdated", handleFriendsUpdated);
     };
   }, []);
-  // Listen for songDeleted event and update the song list
+
   useEffect(() => {
     const handleSongDeleted = (songId) => {
       setPostSongs((prevSongs) =>

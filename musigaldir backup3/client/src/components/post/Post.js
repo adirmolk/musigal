@@ -12,13 +12,13 @@ const Post = () => {
   const [selectedSong, setSelectedSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [postType, setPostType] = useState("song");
-  const [product, setProduct] = useState({});
   const [song, setSong] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
   const navigate = useNavigate();
   const user = useUser();
+  const [product, setProduct] = useState({ userId: user.id });
 
   const onPlay = () => {
     setSong({

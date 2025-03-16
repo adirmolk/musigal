@@ -14,7 +14,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
     const fetchUserRating = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/songs/rating/${songId}`,
+          `http://localhost:3001/api/songs/rating/${songId}`,
           {
             headers: {
               "x-api-key": localStorage.getItem("token"),
@@ -55,7 +55,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   const handleRatingMouseUp = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:3001/songs/rating/${songId}`,
+        `http://localhost:3001/api/songs/${songId}?userId=${userId}`,
         {
           rating: rating,
         },
@@ -77,7 +77,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
       }
 
       await axios.put(
-        `http://localhost:3001/users/update/${userId}`,
+        `http://localhost:3001/api/users/update/${userId}`,
         {
           rating: rating,
         },
