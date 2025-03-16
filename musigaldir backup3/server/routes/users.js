@@ -33,34 +33,33 @@ router.get("/profile", auth, async (req, res) => {
 });
 
 // Example server route for fetching user profile
-router.get('/profile/:id', auth, async (req, res) => {
+router.get("/profile/:id", auth, async (req, res) => {
   const userId = req.params.id; // Use req.params to access the user ID
 
   try {
     // Fetch user profile data based on the user ID
-    const userProfile = await UserModel.findById(userId).select('-password');
+    const userProfile = await UserModel.findById(userId).select("-password");
 
     if (!userProfile) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json(userProfile);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get('/list', async(req,res) => {
-    try{
-      const data = await UserModel.find({});
-      res.json(data);
-    }
-    catch(err){
-      console.log(err);
-      res.status(502).json({err})
-    }
-})
+router.get("/list", async (req, res) => {
+  try {
+    const data = await UserModel.find({});
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
 
 // Add this route to your server code
 router.get("/search", async (req, res) => {
@@ -82,10 +81,6 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
-
 
 router.get("/showInfo", async (req, res) => {
   // נבדוק אם נשלח טוקן בהידר
@@ -201,7 +196,6 @@ router.put("/update/:userId", auth, async (req, res) => {
     // if (userId === authenticatedUserId) {
     //   return res.status(403).json({ error: "You cannot update your own level" });
     // }
-    
 
     // Validate and update user data
     if (req.body.name) {
@@ -247,28 +241,33 @@ router.put("/update/:userId", auth, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-router.put('/follow/:userId', auth, async (req, res) => {
+router.put("/follow/:userId", auth, async (req, res) => {
   try {
     const userId = req.params.userId;
     const user = await UserModel.findOne({ _id: userId });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     if (user._id.toString() === req.tokenData._id) {
-      return res.status(400).json({ error: 'You cannot follow yourself' });
+      return res.status(400).json({ error: "You cannot follow yourself" });
     }
 
     if (user.friends.includes(req.tokenData._id)) {
-      return res.status(400).json({ error: 'User is already in your friends list' });
+      return res
+        .status(400)
+        .json({ error: "User is already in your friends list" });
     }
-// מעדכן את מי שאני עוקב אחריו
-    await UserModel.updateOne({ _id:  req.tokenData._id  }, { $push:{ friends: userId }});
-    res.json({ message: 'User followed successfully' });
+    // מעדכן את מי שאני עוקב אחריו
+    await UserModel.updateOne(
+      { _id: req.tokenData._id },
+      { $push: { friends: userId } }
+    );
+    res.json({ message: "User followed successfully" });
   } catch (err) {
     console.log(err);
-    res.status(502).json({ error: 'Internal Server Error' });
+    res.status(502).json({ error: "Internal Server Error" });
   }
 });
 
@@ -293,17 +292,19 @@ router.get("/friends/:userId", async (req, res) => {
   }
 });
 
-router.put('/unfollow/:userId', auth, async(req, res) => {
-  try{
+router.put("/unfollow/:userId", auth, async (req, res) => {
+  try {
     const userId = req.params.userId;
-    const user = await UserModel.updateOne({ _id:  req.tokenData._id  }, { $pull:{ friends: userId }}) 
+    const user = await UserModel.updateOne(
+      { _id: req.tokenData._id },
+      { $pull: { friends: userId } }
+    );
     res.json(user);
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
-    res.status(502).json({err})
+    res.status(502).json({ err });
   }
-})
+});
 
 router.patch("/addRemoveFriend/:id/:friendId", auth, async (req, res) => {
   try {
@@ -314,17 +315,22 @@ router.patch("/addRemoveFriend/:id/:friendId", auth, async (req, res) => {
     const user = await UserModel.findById(id);
     const friend = await UserModel.findById(friendId);
 
-   
     if (!friend) {
       return res.status(404).json({ err: "Friend not found" });
     }
     const isFriend = user.friends.includes(friendId);
 
     if (isFriend) {
-      await UserModel.updateOne({ _id: user }, { $pull: { friends: friendId } });
+      await UserModel.updateOne(
+        { _id: user },
+        { $pull: { friends: friendId } }
+      );
       await UserModel.updateOne({ _id: friendId }, { $pull: { friends: id } });
     } else {
-      await UserModel.updateOne({ _id: user }, { $push: { friends: friendId } });
+      await UserModel.updateOne(
+        { _id: user },
+        { $push: { friends: friendId } }
+      );
       await UserModel.updateOne({ _id: friendId }, { $push: { friends: id } });
     }
 
@@ -334,6 +340,5 @@ router.patch("/addRemoveFriend/:id/:friendId", auth, async (req, res) => {
     res.status(502).json({ err: "Internal Server Error" });
   }
 });
-
 
 module.exports = router;

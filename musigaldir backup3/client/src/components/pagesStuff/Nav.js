@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import FriendsList from "../spotify/FriendsList";
 import Search from "../customFunctions/Search";
+import { FaSun, FaMoon, FaRegSun, FaLightbulb } from "react-icons/fa"; // FontAwesome Icons
+import eventBus from "../EventBus/eventBus";
 
 const Nav = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -9,6 +11,7 @@ const Nav = () => {
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
+    eventBus.emit("themeChanged", darkMode);
   };
 
   // Function to toggle menu visibility
@@ -24,17 +27,16 @@ const Nav = () => {
         }`}
       >
         <div className="container">
-
-          <a className="navbar-brand ms-4" href="/home" style={{ color: "#DDC7A9" }}>
+          <a
+            className="navbar-brand ms-4"
+            href="/home"
+            style={{ color: "#DDC7A9" }}
+          >
             <h3>musigal</h3>
           </a>
 
-          <button
-            className="navbar-toggler btn"
-            type=""
-            onClick={toggleMenu}
-          >
-            <img width={"16px"} src={process.env.PUBLIC_URL + "/more.png"}/>
+          <button className="navbar-toggler btn" type="" onClick={toggleMenu}>
+            <img width={"16px"} src={process.env.PUBLIC_URL + "/more.png"} />
           </button>
 
           <div
@@ -43,12 +45,9 @@ const Nav = () => {
             }`}
           >
             <ul className="navbar-nav">
-            
               <li className="nav-item">
                 <span
-                  className={`nav-link ${
-                    !menuOpen ? "d-none d-lg-block" : ""
-                  }`}
+                  className={`nav-link ${!menuOpen ? "d-none d-lg-block" : ""}`}
                 >
                   <Search />
                 </span>
@@ -61,7 +60,14 @@ const Nav = () => {
                   className={`btn d-none d-lg-block`}
                   onClick={toggleDarkMode}
                 >
-                  {darkMode ? <img  width={"23px"} src={process.env.PUBLIC_URL + "/night-mode (1).png"}/> : <img width={"15px"} src={process.env.PUBLIC_URL + "/brightness.png"}/>}
+                  {!darkMode ? (
+                    <img
+                      width={"15px"}
+                      src={process.env.PUBLIC_URL + "/brightness.png"}
+                    />
+                  ) : (
+                    <FaMoon size={15} color="white" />
+                  )}
                 </button>
               </li>
             </ul>
@@ -70,7 +76,6 @@ const Nav = () => {
       </nav>
     </div>
   );
-
 };
 
 export default Nav;

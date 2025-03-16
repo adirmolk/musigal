@@ -6,6 +6,7 @@ import VinylWall from "./VinylWall";
 import EditProfile from "./EditProfile";
 import SongPost from "../post/SongPost";
 import ProductPost from "../post/ProductPost";
+import eventBus from "../EventBus/eventBus";
 
 const ProfilesErea = () => {
   const navigate = useNavigate();
@@ -17,62 +18,75 @@ const ProfilesErea = () => {
   const { id } = useParams();
 
   useEffect(() => {
+    // Fetch user and logged-in user on component mount
     const fetchUser = async () => {
-      await axios
-        .get(`http://localhost:3001/users/${id}`)
-        .then((response) => {
-          setUser(response.data);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      try {
+        const response = await axios.get(`http://localhost:3001/users/${id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     const fetchLoggedInUser = async () => {
-      const { data } = await axios.get(`http://localhost:3001/users/profile`, {
-        headers: {
-          "x-api-key": localStorage.getItem("token"),
-        },
-      });
-      console.log(data._id);
-      setLoggedInUser(data);
-      console.log("Logged: ", loggedInUser);
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3001/users/profile`,
+          {
+            headers: {
+              "x-api-key": localStorage.getItem("token"),
+            },
+          }
+        );
+        setLoggedInUser(data);
+      } catch (error) {
+        console.log(error);
+      }
     };
+
     fetchUser();
     fetchLoggedInUser();
-  }, []);
+
+    // Listen for profile updates from the event bus
+    const handleProfileUpdate = (updatedProfile) => {
+      setUser((prevUser) => ({
+        ...prevUser,
+        // Only update name if it has changed
+        ...(updatedProfile.name ? { name: updatedProfile.name } : {}),
+        // Only update imgUrl if it has changed
+        ...(updatedProfile.imgUrl ? { imgUrl: updatedProfile.imgUrl } : {}),
+      }));
+
+      setLoggedInUser((prevLoggedInUser) => ({
+        ...prevLoggedInUser,
+        // Only update name if it has changed
+        ...(updatedProfile.name ? { name: updatedProfile.name } : {}),
+        // Only update imgUrl if it has changed
+        ...(updatedProfile.imgUrl ? { imgUrl: updatedProfile.imgUrl } : {}),
+      }));
+      setEditProfileOpen(false);
+    };
+
+    eventBus.on("profileUpdated", handleProfileUpdate);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      eventBus.off("profileUpdated", handleProfileUpdate);
+    };
+  }, [id]);
 
   const toggleFollow = async () => {
     try {
-      if (isFollowed) {
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
-          {
-            headers: { "x-api-key": localStorage.getItem("token") },
-          }
-        );
-        if (response.status === 200) {
-          setIsFollowed(false);
-        } else {
-          console.log("Failed to remove friend.");
+      const response = await axios.patch(
+        `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
+        {},
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
         }
-      } else {
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
-          {
-            headers: { "x-api-key": localStorage.getItem("token") },
-          }
-        );
-        if (response.status === 200) {
-          setIsFollowed(true);
-        } else {
-          console.log("Failed to add friend.");
-        }
+      );
+      if (response.status === 200) {
+        setIsFollowed((prev) => !prev);
       }
-      navigate(0);
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +97,7 @@ const ProfilesErea = () => {
   };
 
   useEffect(() => {
-    if (loggedInUser && loggedInUser.friends.includes(user._id)) {
+    if (loggedInUser && user && loggedInUser.friends.includes(user._id)) {
       setIsFollowed(true);
     } else {
       setIsFollowed(false);
@@ -219,24 +233,24 @@ const ProfilesErea = () => {
                   </div>
                 </div>
                 {postType === "song" ? (
-               loggedInUser && (loggedInUser._id === id || isFollowed) ? (
-                <div>
-                  <SongPost userId={id} />
-                </div>
-              ) : (
-                <div className="mt-4 ms-4 text-center">
-                  <img
-                    className="text-center"
-                    width="30px"
-                    src={process.env.PUBLIC_URL + "/lock.png"}
-                    alt="Lock Icon"
-                  />
-                  <h6>You need to friend {user.name} to see his posts</h6>
-                </div>
-              )
+                  loggedInUser && (loggedInUser._id === id || isFollowed) ? (
+                    <div>
+                      <SongPost userId={id} color={"white"} />
+                    </div>
+                  ) : (
+                    <div className="mt-4 ms-4 text-center">
+                      <img
+                        className="text-center"
+                        width="30px"
+                        src={process.env.PUBLIC_URL + "/lock.png"}
+                        alt="Lock Icon"
+                      />
+                      <h6>You need to friend {user.name} to see his posts</h6>
+                    </div>
+                  )
                 ) : (
                   <div>
-                    <ProductPost userId={id} />
+                    <ProductPost userId={id} color={"white"} />
                   </div>
                 )}
               </div>

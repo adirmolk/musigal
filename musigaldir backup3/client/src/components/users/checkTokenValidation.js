@@ -6,7 +6,7 @@ const checkTokenValidation = async () => {
 
   try {
     const isValidToken = await axios.get(
-      "http://localhost:3001/users/profile",
+      "http://localhost:3001/api/users/profile",
       {
         headers: {
           "x-api-key": token,

@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DeezerSearch from "../../DeezerSearch";
 import { FaPlus, FaArrowCircleDown } from "react-icons/fa"; // Import icons
+import DeezerSearch from "../deezer/DeezerSearch";
 
 const VinylWall = () => {
   const [vinylWall, setVinylWall] = useState([]);
@@ -61,13 +61,11 @@ const VinylWall = () => {
 
   useEffect(() => {
     fetchLoggedInUser();
-
   }, []);
 
   useEffect(() => {
     renderVinyl();
     setIsAddVinyl(false);
-
   }, [isAddVinyl]);
 
   const onAddVinyl = () => {
@@ -90,7 +88,6 @@ const VinylWall = () => {
     }
   }, [albumTitleFromDeezer]);
 
-
   return (
     <div>
       <h6 className="text-center">My Vinyl Wall</h6>
@@ -98,7 +95,6 @@ const VinylWall = () => {
       <div
         className="instagram-post p-3 me-2 rounded"
         style={{
-          
           marginBottom: "20px",
           position: "relative",
           borderRadius: "10px",
@@ -109,67 +105,69 @@ const VinylWall = () => {
           backgroundColor: "white",
         }}
       >
-        {vinylWallSlice.map((record, index) => (
-          <div
-            key={index}
-            style={{
-              width: "20%",
-              textAlign: "center",
-              margin: "10px",
-              position: "relative",
-            }}
-            className="text-center ms-2"
-          >
-            <img
-              className="rounded"
-              src={record.img_url}
-              alt={`${record.title} Album Cover`}
-              style={{
-                width: "100%",
-                maxWidth: "",
-                borderRadius: "10px",
-                border: "lightgray 1px solid",
-              }}
-            />
+        {vinylWallSlice.length > 0 ? (
+          vinylWallSlice.map((record, index) => (
             <div
-              className="text-center"
+              key={index}
               style={{
-                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                color: "#DDC7A9",
-                maxHeight:"40px",
-                padding: "3px",
-                borderRadius: "0 0 5px 5px",
-                position: "absolute",
-                bottom: "0",
-                left: "0",
-                right: "0",
+                width: "20%",
+                textAlign: "center",
+                margin: "10px",
+                position: "relative",
               }}
+              className="text-center ms-2"
             >
-              <p
+              <img
+                className="rounded"
+                src={record.img_url}
+                alt={`${record.title} Album Cover`}
                 style={{
-                  fontWeight: "bold",
-                  fontSize: "12px",
-                  margin: "0",
+                  width: "100%",
+                  maxWidth: "",
+                  borderRadius: "10px",
+                  border: "lightgray 1px solid",
+                }}
+              />
+              <div
+                className="text-center"
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.7)",
+                  color: "#DDC7A9",
+                  maxHeight: "40px",
+                  padding: "3px",
+                  borderRadius: "0 0 5px 5px",
+                  position: "absolute",
+                  bottom: "0",
+                  left: "0",
+                  right: "0",
                 }}
               >
-                {record.title}
-              </p>
-              <p style={{ fontSize: "10px", margin: "0" }}>{record.artist}</p>
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                    margin: "0",
+                  }}
+                >
+                  {record.title}
+                </p>
+                <p style={{ fontSize: "10px", margin: "0" }}>{record.artist}</p>
+              </div>
             </div>
-          </div>
-        ))}
-     
-      </div>
-        
-
-        {showDeezerSearch && (
-          <div className="row">
-            <div className="col-12 mb-3 mt-2">
-              <DeezerSearch onAlbumTitleChange={handleAlbumTitleChange} />
-            </div>
-          </div>
+          ))
+        ) : (
+          <span>There aren't any vinyls to see here.</span>
         )}
-      {vinylWall.length && (
+      </div>
+
+      {showDeezerSearch && (
+        <div className="row">
+          <div className="col-12 mb-3 mt-2">
+            <DeezerSearch onAlbumTitleChange={handleAlbumTitleChange} />
+          </div>
+        </div>
+      )}
+      {vinylWall.length > 0 && (
         <div className="d-flex">
           <button
             className="btn btn-outline-primary mt-2 "
@@ -178,22 +176,21 @@ const VinylWall = () => {
             {showAll ? "Show Less" : "Show All"}
           </button>
           {loggedInUser?._id === id && (
-          <div className="mt-2 ms-3">
-            <button
-              className="btn btn-outline-primary"
-              style={{
-                width: "",
-                height: "",
-                display: loggedInUser ? "inline" : "none",
-              }}
-              onClick={onAddVinyl}
-            >
-              <FaPlus size={15} />
-            </button>
-          </div>
-        )}
+            <div className="mt-2 ms-3">
+              <button
+                className="btn btn-outline-primary"
+                style={{
+                  width: "",
+                  height: "",
+                  display: loggedInUser ? "inline" : "none",
+                }}
+                onClick={onAddVinyl}
+              >
+                <FaPlus size={15} />
+              </button>
+            </div>
+          )}
         </div>
-        
       )}
     </div>
   );

@@ -1,16 +1,29 @@
 const fetch = require("node-fetch");
-
 exports.getWebAccessToken = async function getWebAccessToken(spDcCookie) {
-  const res = await fetch(
-    "https://open.spotify.com/get_access_token?reason=transport&productType=web_player",
-    {
-      headers: {
-        Cookie: `sp_dc=${spDcCookie}`,
-      },
-    }
-  );
+  try {
+    const res = await fetch(
+      "https://open.spotify.com/get_access_token?reason=transport&productType=web_player",
+      {
+        headers: {
+          Cookie: `sp_dc=${spDcCookie}`,
+        },
+      }
+    );
 
-  return res.json();
+    console.log("Raw Response:", res);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log("Parsed JSON Response:", data); // Log response
+
+    return data.accessToken || null; // Ensure accessToken is returned
+  } catch (error) {
+    console.error("Error fetching Spotify access token:", error);
+    return null;
+  }
 };
 
 exports.getFriendActivity = async function getFriendActivity(webAccessToken) {
@@ -22,6 +35,7 @@ exports.getFriendActivity = async function getFriendActivity(webAccessToken) {
       },
     }
   );
+  console.log(res);
 
   return res.json();
 };

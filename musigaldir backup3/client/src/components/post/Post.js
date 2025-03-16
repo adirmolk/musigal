@@ -5,7 +5,7 @@ import _ from "lodash";
 import Nav from "../pagesStuff/Nav";
 import checkTokenValidation from "../users/checkTokenValidation";
 import { useUser } from "../users/UserContext";
-
+import eventBus from "../EventBus/eventBus";
 const Post = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -19,7 +19,6 @@ const Post = () => {
   const audioRef = useRef(null);
   const navigate = useNavigate();
   const user = useUser();
-  // console.log(user)
 
   const onPlay = () => {
     setSong({
@@ -27,7 +26,7 @@ const Post = () => {
       title: selectedSong.title,
       album: selectedSong.album.title,
       artist: selectedSong.artist.name,
-      img_url: selectedSong.album.cover_medium,
+      imgUrl: selectedSong.album.cover_medium,
     });
   };
   const onPost = async () => {
@@ -38,37 +37,32 @@ const Post = () => {
       setIsLoading(true);
 
       try {
+        let response;
         if (postType !== "song") {
-          console.log(product);
-          const response = await axios.post(
-            "http://localhost:3001/products",
+          response = await axios.post(
+            "http://localhost:3001/api/products",
             product,
             {
-              headers: {
-                "x-api-key": localStorage.getItem("token"),
-              },
+              headers: { "x-api-key": localStorage.getItem("token") },
             }
           );
-          console.log(response.data);
+          eventBus.emit("productPosted", response.data);
         } else {
-          console.log(song);
-          const response = await axios.post(
-            "http://localhost:3001/songs",
+          response = await axios.post(
+            `http://localhost:3001/api/songs?userId=${user.id}`,
             song,
             {
-              headers: {
-                "x-api-key": localStorage.getItem("token"),
-              },
+              headers: { "x-api-key": localStorage.getItem("token") },
             }
           );
-          console.log(response.data);
+
+          // Emit event after posting a song
+          eventBus.emit("songPosted", response.data);
         }
 
         setIsPosted(true);
-
         setTimeout(() => {
           setIsLoading(false);
-          navigate(0);
         }, 1000);
       } catch (error) {
         console.error(error);
@@ -90,7 +84,6 @@ const Post = () => {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data.data);
       setSearchResults(response.data.data);
     } catch (error) {
       console.error(error);
@@ -127,7 +120,6 @@ const Post = () => {
           style={{
             backgroundColor: "white",
             width: "405px",
-            //  border: "lightgray 1px solid"
           }}
           className="p-3 rounded"
         >
@@ -322,7 +314,7 @@ const Post = () => {
                 <div className="d-flex">
                   <input
                     onChange={(e) =>
-                      setProduct({ ...product, img_url: e.target.value })
+                      setProduct({ ...product, imgUrl: e.target.value })
                     }
                     style={{ width: "150px", height: "100px" }}
                     className=" rounded border  bg-light"

@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import eventBus from "../EventBus/eventBus";
 
-const Friends = () => {
+const Friends = ({ color }) => {
   const [friends, setFriends] = useState([]);
   const [user, setUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
@@ -19,7 +20,7 @@ const Friends = () => {
       } else {
         try {
           const response = await axios.get(
-            "http://localhost:3001/users/profile",
+            "http://localhost:3001/api/users/profile",
             {
               headers: {
                 "x-api-key": token,
@@ -28,8 +29,8 @@ const Friends = () => {
           );
           setUser(response.data);
           console.log(response.data);
-          friendsGet(response.data._id); // Fetch friends after getting the user data
-          setLoggedInUser(response.data)
+          friendsGet(response.data.id); // Fetch friends after getting the user data
+          setLoggedInUser(response.data);
         } catch (error) {
           console.error(error);
         }
@@ -39,73 +40,102 @@ const Friends = () => {
     getProfile();
   }, [navigate]);
 
+  // Fetch friends list
   const friendsGet = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/friends/${userId}`
+        `http://localhost:3001/api/users/friends?userId=${userId}`
       );
-      console.log(response.data.friendsArr);
-      setFriends(response.data.friendsArr);
+      console.log(response.data);
+      setFriends(response.data);
     } catch (error) {
       console.error("Error fetching friends:", error);
     }
   };
-  const toggleFollow = async (id) => {
+
+  // Toggle follow/unfollow friend
+  const toggleFollow = async (targetUserId) => {
     try {
       if (isFollowed) {
         // User is currently following, so remove the friend
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
+        const response = await axios.put(
+          "http://localhost:3001/api/users/follow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
         );
         if (response.status === 200) {
           setIsFollowed(false);
-          // You might want to update the friends list here
         } else {
           console.log("Failed to remove friend.");
         }
       } else {
         // User is not currently following, so add the friend
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
+        const response = await axios.put(
+          "http://localhost:3001/api/users/unfollow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
         );
+
         if (response.status === 200) {
           setIsFollowed(true);
-          // You might want to update the friends list here
         } else {
           console.log("Failed to add friend.");
         }
       }
-      navigate(0)
+
+      // Emit event to notify others that the friends list has changed
+      eventBus.emit("friendsUpdated", targetUserId);
     } catch (error) {
       console.log(error);
     }
   };
-  
+
+  // Listen for the event to refresh the friends list
+  useEffect(() => {
+    // Re-fetch friends list when the friendsUpdated event is emitted
+    const handleFriendsUpdated = () => {
+      if (loggedInUser) {
+        friendsGet(loggedInUser.id); // Re-fetch the friends list
+      }
+    };
+
+    eventBus.on("friendsUpdated", handleFriendsUpdated);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      eventBus.off("friendsUpdated", handleFriendsUpdated);
+    };
+  }, [loggedInUser]);
+
   useEffect(() => {
     if (loggedInUser && user) {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
         // Set follow status for each friend
-        followStatusCopy[friend._id] = loggedInUser.friends.includes(friend._id);
+        console.log(followStatusCopy[friend.id]);
+        console.log(loggedInUser.friends.includes(friend.id.toString()));
+        console.log(loggedInUser.friends);
+
+        followStatusCopy[friend.id] = loggedInUser.friends.includes(
+          friend.id.toString()
+        );
+        console.log(followStatusCopy);
       });
       setFollowStatus(followStatusCopy);
     }
   }, [loggedInUser, user, friends]);
-
   return (
-    <div  className=""  >
+    <div>
       {user ? (
-        
         friends.length > 0 ? (
-          <div className="bg-light p-2 rounded mt-4 ">
+          <div
+            style={{ backgroundColor: color }}
+            className=" p-2 rounded mt-4 "
+          >
             <h5 className="ms-1">Friends List</h5>
             {friends.map((friend, index) => (
               <div
@@ -114,50 +144,63 @@ const Friends = () => {
                   width: "",
                   backgroundColor: "",
                 }}
-                key={friend._id}
+                key={friend.id}
               >
                 <div className="d-flex align-items-center">
                   <img
-                    src={friend.imgUrl||"https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"}
+                    src={
+                      friend.imgUrl ||
+                      "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                    }
                     alt="Profile"
                     className="rounded-circle"
                     style={{ width: "50px", height: "50px" }}
                   />
                   <div className="mx-3">
                     <h5
-                      onClick={() => navigate(`/profiles/${friend._id}`)}
+                      onClick={() => navigate(`/profiles/${friend.id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
                       {friend.name}
                     </h5>
-                    <span style={{fontSize:"14px"}} className="text-muted mb-0">
+                    <span
+                      style={{ fontSize: "14px" }}
+                      className="text-muted mb-0"
+                    >
                       {friend.level >= 150
                         ? "Pro "
                         : friend.level >= 50
                         ? "Maxim "
                         : "Noob "}
                     </span>
-                    <span style={{fontSize:"14px"}}className="text-muted">
+                    <span style={{ fontSize: "14px" }} className="text-muted">
                       &#8226; {friend.friends.length} Friends
                     </span>
                   </div>
                 </div>
                 <button
-  id={index}
-  style={{ backgroundColor: "#ADD8E6" }}
-  className={`rounded-circle btn${
-    followStatus[friend._id] ? " mb-1 ms-2" : " ms-2"
-  }`}
-  onClick={() => toggleFollow(friend._id)}
->
-  {followStatus[friend._id] ? (
-    <img width={"18px"} className="mb-1" src={process.env.PUBLIC_URL + "/delete-user.png"} alt="Delete User" />
-  ) : (
-    <img width={"18px"} src={process.env.PUBLIC_URL + "/add-user.png"} alt="Add User" />
-  )}
-</button>
-
-                    
+                  id={index}
+                  style={{ backgroundColor: "#ADD8E6" }}
+                  className={`rounded-circle btn${
+                    followStatus[friend.id] ? " mb-1 ms-2" : " ms-2"
+                  }`}
+                  onClick={() => toggleFollow(friend.id)}
+                >
+                  {followStatus[friend.id] ? (
+                    <img
+                      width={"18px"}
+                      className="mb-1"
+                      src={process.env.PUBLIC_URL + "/delete-user.png"}
+                      alt="Delete User"
+                    />
+                  ) : (
+                    <img
+                      width={"18px"}
+                      src={process.env.PUBLIC_URL + "/add-user.png"}
+                      alt="Add User"
+                    />
+                  )}
+                </button>
               </div>
             ))}
           </div>

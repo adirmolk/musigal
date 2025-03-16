@@ -3,7 +3,7 @@ import Nav from "../pagesStuff/Nav";
 import axios from "axios";
 import Home from "../pagesStuff/Home";
 
-function CurrentlyPlaying() {
+function CurrentlyPlaying({ color }) {
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const [accessToken, setAccessToken] = useState("");
 
@@ -103,7 +103,8 @@ function CurrentlyPlaying() {
             <div
               className="rounded"
               style={{
-                backgroundColor: "#F0d0Ff",
+                backgroundColor:
+                  color == "white" ? "#F0d0Ff" : "lightsteelblue",
                 display: "flex",
                 alignItems: "center",
                 padding: "10px",
@@ -147,19 +148,20 @@ function CurrentlyPlaying() {
               </div>
             </div>
           </div>
-        ) : (<div style={{ width: "" }} className="">
+        ) : (
+          <div style={{ width: "" }} className="">
             <div
               className="rounded text-center p-3"
               style={{
-                backgroundColor: "#F0d0Ff",
+                backgroundColor:
+                  color == "white" ? "#F0d0Ff" : "lightsteelblue",
                 padding: "",
-                width:"350px"
+                width: "350px",
               }}
             >
-               <p className="text-center mt-2">No track currently playing.</p>
-              </div>
-              </div>
-         
+              <p className="text-center mt-2">No track currently playing.</p>
+            </div>
+          </div>
         )}
         {/* <Home /> */}
       </div>

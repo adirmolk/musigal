@@ -2,16 +2,37 @@ import React, { useEffect, useState } from "react";
 import Post from "./Post";
 import ProductPost from "./ProductPost";
 import SongPost from "./SongPost";
+import eventBus from "../EventBus/eventBus";
 
-const PostArea = () => {
+const PostArea = ({ color }) => {
   const [postType, setPostType] = useState("song");
 
   const [togglePost, setTogglePost] = useState(false);
-
   const showPost = () => {
     setTogglePost(!togglePost);
   };
+  useEffect(() => {
+    const handleNewSong = () => {
+      setTogglePost((x) => (x = !x));
+    };
 
+    eventBus.on("productPosted", handleNewSong);
+
+    return () => {
+      eventBus.off("productPosted", handleNewSong);
+    };
+  }, []);
+  useEffect(() => {
+    const handleNewSong = () => {
+      setTogglePost((x) => (x = !x));
+    };
+
+    eventBus.on("songPosted", handleNewSong);
+
+    return () => {
+      eventBus.off("songPosted", handleNewSong);
+    };
+  }, []);
   return (
     <div style={{ marginTop: togglePost ? "0" : "25px" }} className="">
       <div style={{ display: togglePost ? "block" : "none" }}>
@@ -37,7 +58,7 @@ const PostArea = () => {
           Posts
         </span>
       </div>
-      
+
       <div
         className="rounded btn text-center ms-2"
         onClick={() => setPostType("product")}
@@ -75,11 +96,11 @@ const PostArea = () => {
       </div>
       {postType === "song" ? (
         <div>
-          <SongPost />
+          <SongPost color={color} />
         </div>
       ) : (
         <div>
-          <ProductPost />
+          <ProductPost color={color} />
         </div>
       )}
     </div>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useUser } from "../users/UserContext";
 
 const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
   const [rated, setRated] = useState(false);
   const [rating, setRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
-  const [inputVisible, setInputVisible] = useState(false); // To control input visibility
-  const [user, setUser] = useState({})
-
+  const [inputVisible, setInputVisible] = useState(false);
+  const [user, setUser] = useState({});
+  const users = useUser();
   useEffect(() => {
     const fetchUserRating = async () => {
       try {
@@ -29,8 +30,8 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
         }
         setTotalPoints(totalRating);
 
-         const {data} = await axios.get(
-          `http://localhost:3001/users/profile`,
+        const { data } = await axios.get(
+          "http://localhost:3001/api/users/profile",
           {
             headers: {
               "x-api-key": localStorage.getItem("token"),
@@ -38,7 +39,6 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
           }
         );
         setUser(data);
-
       } catch (error) {
         console.error("Error fetching user rating:", error);
       }
@@ -75,6 +75,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
       if (updateLevel) {
         updateLevel(level, totalPoints);
       }
+
       await axios.put(
         `http://localhost:3001/users/update/${userId}`,
         {
@@ -90,18 +91,21 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
       console.error("Error updating rating:", error);
     }
   };
-
   const toggleInputVisibility = () => {
     setInputVisible(!inputVisible);
   };
   return (
     <div>
-      {user._id == userId ? (<div className=" fw-bold mt-2">{totalPoints}  <img
-              className="mb-1"
-              width={"15px"}
-              src={process.env.PUBLIC_URL + "/increase.png"}
-            /></div>) : (
-      rated ? (
+      {users.id == userId ? (
+        <div className=" fw-bold mt-2">
+          {totalPoints}{" "}
+          <img
+            className="mb-1"
+            width={"15px"}
+            src={process.env.PUBLIC_URL + "/increase.png"}
+          />
+        </div>
+      ) : rated ? (
         <div>
           <button
             style={{
@@ -138,11 +142,9 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
           <button
             onClick={toggleInputVisibility}
             className="btn mt-2"
-            style={
-              {
-                backgroundColor:"#ECEBEC"
-              }
-            }
+            style={{
+              backgroundColor: "#ECEBEC",
+            }}
           >
             <span
               className="fw-bold"
@@ -173,7 +175,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
             />
           </span>
         </div>
-      ))}
+      )}
     </div>
   );
 };

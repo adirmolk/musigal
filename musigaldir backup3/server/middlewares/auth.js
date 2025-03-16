@@ -4,11 +4,15 @@ exports.auth = async (req, res, next) => {
   const token = req.header("x-api-key");
 
   if (!token) {
-    return res.status(401).json({ err: "You need to send a token in the 'x-api-key' header." });
+    return res
+      .status(401)
+      .json({ err: "You need to send a token in the 'x-api-key' header." });
   }
 
   try {
     const decodedToken = jwt.verify(token, "adirmolkSecret");
+    console.log(decodedToken);
+
     req.tokenData = decodedToken;
     next();
   } catch (err) {
@@ -24,9 +28,11 @@ exports.auth = async (req, res, next) => {
 
 exports.authMaxim = async (req, res, next) => {
   const token = req.header("x-api-key");
-  
+
   if (!token) {
-    return res.status(401).json({ err: "You need to send a token in the 'x-api-key' header." });
+    return res
+      .status(401)
+      .json({ err: "You need to send a token in the 'x-api-key' header." });
   }
 
   // Verify the token without throwing an error for expiration
@@ -36,7 +42,6 @@ exports.authMaxim = async (req, res, next) => {
   if (decodedToken && decodedToken.payload.exp < Date.now() / 1000) {
     return res.redirect("login");
   }
-  
 
   req.tokenData = decodedToken;
   next();

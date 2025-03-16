@@ -1,9 +1,10 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import eventBus from "../EventBus/eventBus";
 
 const Search = () => {
-  const [searchCriteria, setSearchCriteria] = useState('');
+  const [searchCriteria, setSearchCriteria] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -22,7 +23,7 @@ const Search = () => {
       } else {
         try {
           const response = await axios.get(
-            "http://localhost:3001/users/profile",
+            "http://localhost:3001/api/users/profile",
             {
               headers: {
                 "x-api-key": token,
@@ -32,7 +33,7 @@ const Search = () => {
           setUser(response.data);
           console.log(response.data);
           friendsGet(response.data._id); // Fetch friends after getting the user data
-          setLoggedInUser(response.data)
+          setLoggedInUser(response.data);
         } catch (error) {
           console.error(error);
         }
@@ -55,11 +56,11 @@ const Search = () => {
   const handleSearch = async () => {
     try {
       // Check if the search criteria is empty
-      if (searchCriteria.trim() === '') {
+      if (searchCriteria.trim() === "") {
         setSearchResults([]); // Clear the search results
         return; // Exit the function without making an API request
       }
-  
+
       // Send a GET request to the search route with the search criteria
       const response = await axios.get(
         `http://localhost:3001/users/search?criteria=${searchCriteria}`
@@ -71,7 +72,7 @@ const Search = () => {
       // Handle errors here
     }
   };
-  
+
   const delayedSearch = () => {
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -97,6 +98,7 @@ const Search = () => {
           }
         );
         if (response.status === 200) {
+          setSearchCriteria("");
           setIsFollowed(false);
           // You might want to update the friends list here
         } else {
@@ -112,13 +114,14 @@ const Search = () => {
           }
         );
         if (response.status === 200) {
+          setSearchCriteria("");
           setIsFollowed(true);
           // You might want to update the friends list here
         } else {
           console.log("Failed to add friend.");
         }
       }
-      navigate(0)
+      eventBus.emit("friendsUpdated");
     } catch (error) {
       console.log(error);
     }
@@ -138,36 +141,38 @@ const Search = () => {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
         // Set follow status for each friend
-        followStatusCopy[friend._id] = loggedInUser.friends.includes(friend._id);
+        followStatusCopy[friend._id] = loggedInUser.friends.includes(
+          friend._id
+        );
       });
       setFollowStatus(followStatusCopy);
     }
   }, [loggedInUser, user, friends]);
 
   return (
-    <div className='ms-5'>
+    <div className="ms-5">
       <input
         type="text"
         placeholder="Search For Users..."
         value={searchCriteria}
         onChange={(e) => setSearchCriteria(e.target.value)}
-        className='rounded-pill p-2 border'
+        className="rounded-pill p-2 border"
       />
       <div
         className="search-results rounded mt-5"
         style={{
-          position: 'absolute',
-          top: '50px', // Adjust as needed for your layout
-          
-          right: '100px',
-          width:"430px",
-          maxHeight: '300px', // Set a max height for the scrollable container
-          overflowY: 'auto',
-          backgroundColor: 'white',
+          position: "absolute",
+          top: "50px", // Adjust as needed for your layout
+
+          right: "100px",
+          width: "430px",
+          maxHeight: "300px", // Set a max height for the scrollable container
+          overflowY: "auto",
+          backgroundColor: "white",
         }}
       >
-        {searchResults.map((user,index) => (
-            <div
+        {searchResults.map((user, index) => (
+          <div
             className="d-flex justify-content-between mt-2 mb-1 p-2 rounded"
             style={{
               width: "400px",
@@ -177,14 +182,19 @@ const Search = () => {
           >
             <div className="d-flex align-items-center">
               <img
-                    src={user.imgUrl||"https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"}
-                    alt="Profile"
+                src={
+                  user.imgUrl ||
+                  "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
+                }
+                alt="Profile"
                 className="rounded-circle"
                 style={{ width: "60px", height: "60px" }}
               />
               <div className="mx-3">
                 <h3
-                  onClick={() => {navigate(`/profiles/${user._id}`); navigate(0);}}
+                  onClick={() => {
+                    navigate(`/profiles/${user._id}`);
+                  }}
                   style={{ cursor: "pointer", margin: "0" }}
                 >
                   {user.name}
@@ -202,27 +212,36 @@ const Search = () => {
               </div>
             </div>
             <button
-  id={index}
-  style={{ backgroundColor: "#ADD8E6",height:"40px",width:"40px"}}
-  className={`rounded-circle btn  ${
-    followStatus[user._id] ? " mb-1 ms-2" : " ms-2"
-  }`}
-  onClick={() => toggleFollow(user._id)}
->
-  {followStatus[user._id] ? (
-    <img width={"15px"} className='mb-1' src={process.env.PUBLIC_URL + "/delete-user.png"} alt="Delete User" />
-  ) : (
-    <img width={"15px"} className='mb-1' src={process.env.PUBLIC_URL + "/add-user.png"} alt="Add User" />
-  )}
-</button>
-
-                
+              id={index}
+              style={{
+                backgroundColor: "#ADD8E6",
+                height: "40px",
+                width: "40px",
+              }}
+              className={`rounded-circle btn  ${
+                followStatus[user._id] ? " mb-1 ms-2" : " ms-2"
+              }`}
+              onClick={() => toggleFollow(user._id)}
+            >
+              {followStatus[user._id] ? (
+                <img
+                  width={"15px"}
+                  className="mb-1"
+                  src={process.env.PUBLIC_URL + "/delete-user.png"}
+                  alt="Delete User"
+                />
+              ) : (
+                <img
+                  width={"15px"}
+                  className="mb-1"
+                  src={process.env.PUBLIC_URL + "/add-user.png"}
+                  alt="Add User"
+                />
+              )}
+            </button>
           </div>
-          
         ))}
-        
       </div>
-      
     </div>
   );
 };

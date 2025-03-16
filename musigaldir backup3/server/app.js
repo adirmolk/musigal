@@ -31,9 +31,11 @@ app.get("/api/friendList", async (req, res) => {
 
 const getFriendsActicityList = async () => {
   const spDcCookie =
-    "AQCCDpOB1D1ttS8vW-4MSoJgLm2cTxQ-Sgr3kQSR015r0oX-o-xFEcnofDSu394ddzo25L_ZsqzT_LcFpuT8Vh2oClTrAKt9fbN9gUidaW8SeCTJ9erAmAaP0yYopVVOCbne4VpMmGEQ6rF07QuADWq06shk6DYs";
+    "AQBNgCkFHMpfidTuxAPkKsn1T4XfO-EMTTQ7snK6hxB9GmeULmnF6RA6pXl1E6A7AHOd8LUVL7Eu6sV12bBMWlWcNikpqu-1OJu92WExf4a_G4-PKAMPBIEjzlw5a4tGNB1av_2HIzpOpajb6Qki7aKbdxJ2Ahvx";
 
-  const { accessToken } = await buddyList.getWebAccessToken(spDcCookie);
+  const accessToken = await buddyList.getWebAccessToken(spDcCookie);
+  console.log(accessToken);
+
   const friendActivity = await buddyList.getFriendActivity(accessToken);
 
   return friendActivity; // Returning the object directly

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMedal, fa4, fa5 } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMedal, fa4, fa5 } from "@fortawesome/free-solid-svg-icons";
 
-const Leaderboards = () => {
+const Leaderboards = ({ color }) => {
   const [usersList, setUsersList] = useState([]);
   const [counter, setCounter] = useState(0);
   const navigate = useNavigate();
@@ -12,9 +12,10 @@ const Leaderboards = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3001/users/list");
-        const sortedByLevel = data.sort((a, b) => a.level - b.level);
-        setUsersList(sortedByLevel.reverse());
+        const { data } = await axios.get("http://localhost:3001/api/users");
+        const sortedByLevel = data.sort((a, b) => b.level - a.level); // Sort in descending order
+        const topFiveUsers = sortedByLevel.slice(0, 5); // Get first five users
+        setUsersList(topFiveUsers);
         console.log(usersList);
       } catch (error) {
         console.log(error);
@@ -25,7 +26,7 @@ const Leaderboards = () => {
 
   return (
     <div>
-      <div className="bg-light p-2 rounded mt-4 ">
+      <div className="p-2 rounded mt-4 " style={{ backgroundColor: color }}>
         <h5>Leaderboards</h5>
         {usersList.map((user, index) => (
           <div
@@ -34,11 +35,30 @@ const Leaderboards = () => {
           >
             <div className="d-flex align-items-center">
               {index >= 3 ? (
-                <FontAwesomeIcon icon={ index === 3 ? fa4 : index === 4 ? fa5 : null} size="2x" style={{marginRight: '15px', marginLeft: '3px', width: index === 4 ? '23px' : null}}/>
+                <FontAwesomeIcon
+                  icon={index === 3 ? fa4 : index === 4 ? fa5 : null}
+                  size="2x"
+                  style={{
+                    marginRight: "15px",
+                    marginLeft: "3px",
+                    width: index === 4 ? "23px" : null,
+                  }}
+                />
               ) : null}
               <FontAwesomeIcon
                 icon={faMedal}
-                style={{ color: index === 0 ? '#CFB53B' : index === 1 ? '#C0C0C0' : index === 2 ? ' #CD7F32' : 'transparent', marginRight: '10px' , display: index >= 3 ? 'none' : 'inline'}}
+                style={{
+                  color:
+                    index === 0
+                      ? "#CFB53B"
+                      : index === 1
+                      ? "#C0C0C0"
+                      : index === 2
+                      ? " #CD7F32"
+                      : "transparent",
+                  marginRight: "10px",
+                  display: index >= 3 ? "none" : "inline",
+                }}
                 size="2x"
               />
               <img

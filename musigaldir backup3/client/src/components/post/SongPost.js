@@ -2,37 +2,38 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SongRating from "../customFunctions/SongRating";
-import { css } from "@emotion/react";
 import SongLoading from "../customFunctions/SongLoading";
+import eventBus from "../EventBus/eventBus";
+import { useUser } from "../users/UserContext";
 
-const SongPost = ({ userId }) => {
+const SongPost = ({ userId, color }) => {
   const [postSongs, setPostSongs] = useState([]);
   const [authenticatedUserId, setAuthenticatedUserId] = useState("");
   const [user, setUser] = useState(null);
-  const [loggedInUser, setloggedInUser] = useState(null);
-
+  // const [loggedInUser, setLoggedInUser] = useState(null);
   const navigate = useNavigate();
   const [userLevel, setUserLevel] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [songToDelete, setSongToDelete] = useState(null);
+  const logUser = useUser();
+  useEffect(() => {
+    fetchUserProfile(logUser.id);
+  }, [navigate]);
   const handleDeleteConfirmation = (song) => {
     setSongToDelete(song);
     setShowDeleteConfirmation(true);
   };
-
   const fetchUserProfile = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/profile/${userId}`,
+        `http://localhost:3001/api/users/profile/${userId}`,
         {
-          headers: {
-            "x-api-key": localStorage.getItem("token"),
-          },
+          headers: { "x-api-key": localStorage.getItem("token") },
         }
       );
       const user = response.data;
       console.log("user: ", user);
-      setAuthenticatedUserId(user._id);
+      setAuthenticatedUserId(user.id);
       setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -41,18 +42,20 @@ const SongPost = ({ userId }) => {
 
   const ShowSongs = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3001/songs/friends", {
-        headers: { "x-api-key": localStorage.getItem("token") },
-      });
+      const response = await axios.get(
+        `http://localhost:3001/api/songs/friends?userId=${logUser.id}`,
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        }
+      );
+      console.log(response.data);
 
-      for (const song of data) {
-        fetchUserProfile(song.user_id);
-        console.log(song);
-        getLoggedinUser();
-      }
+      // for (const song of response.data) {
+      //   fetchUserProfile(song.userId);
+      // }
 
       setTimeout(() => {
-        setPostSongs(data);
+        setPostSongs(response.data);
       }, 1500);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -62,45 +65,97 @@ const SongPost = ({ userId }) => {
   const deleteSong = async (song) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3001/songs/${song._id}`,
+        `http://localhost:3001/api/songs/${song.id}?userId=${logUser.id}`,
         {
-          headers: {
-            "x-api-key": localStorage.getItem("token"),
-          },
+          headers: { "x-api-key": localStorage.getItem("token") },
           data: song,
         }
       );
       console.log("Song deleted:", response.data);
+
+      // Emit an event to notify other components about the deletion
+      eventBus.emit("songDeleted", song.id);
     } catch (error) {
       console.error("Error deleting song:", error);
     }
-    navigate(0);
   };
+  useEffect(() => {
+    const handleProfileUpdated = () => {
+      ShowSongs();
+    };
+
+    eventBus.on("profileUpdated", handleProfileUpdated);
+
+    return () => {
+      eventBus.off("profileUpdated", handleProfileUpdated);
+    };
+  }, []);
 
   useEffect(() => {
     ShowSongs();
-  }, []);
 
+    const handleNewSong = (newSong) => {
+      setPostSongs((prevSongs) => [newSong, ...prevSongs]);
+    };
+
+    eventBus.on("songPosted", handleNewSong);
+
+    return () => {
+      eventBus.off("songPosted", handleNewSong);
+    };
+  }, []);
   const getLoggedinUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
-    } else {
-      await axios
-        .get("http://localhost:3001/users/profile", {
-          headers: {
-            "x-api-key": token,
-          },
-        })
-        .then((response) => {
-          setloggedInUser(response.data);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      return;
+    }
+    console.log(token + " logged invsdgvsdvsdvsdvs");
+
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/api/users/profile",
+        {
+          headers: { "x-api-key": token },
+        }
+      );
+
+      setLoggedInUser(response.data);
+      ShowSongs();
+    } catch (error) {
+      console.error("Error fetching logged-in user:", error);
+      navigate("/login"); // Redirect if token is invalid
     }
   };
+  useEffect(() => {
+    ShowSongs();
+  }, [logUser]); // Runs only when `navigate` changes (which is rare)
+
+  useEffect(() => {
+    const handleFriendsUpdated = (followedUser) => {
+      ShowSongs();
+    };
+
+    eventBus.on("friendsUpdated", handleFriendsUpdated);
+
+    return () => {
+      eventBus.off("friendsUpdated", handleFriendsUpdated);
+    };
+  }, []);
+  // Listen for songDeleted event and update the song list
+  useEffect(() => {
+    const handleSongDeleted = (songId) => {
+      setPostSongs((prevSongs) =>
+        prevSongs.filter((song) => song.id !== songId)
+      );
+    };
+
+    eventBus.on("songDeleted", handleSongDeleted);
+
+    return () => {
+      eventBus.off("songDeleted", handleSongDeleted);
+    };
+  }, []);
 
   return (
     <div>
@@ -109,13 +164,13 @@ const SongPost = ({ userId }) => {
           <SongLoading />
         </div>
       ) : (
-        postSongs.map((song, index) => (
+        postSongs.map((song, index) =>
           // Add a conditional check here to show posts only if userId matches loggedInUser
-          (userId && song.user_id === userId) || !userId ? (
+          (userId && song.userId === userId) || !userId ? (
             <div
               className="mt-4 mx-4 p-2 rounded"
               style={{
-                backgroundColor: "white",
+                backgroundColor: color,
                 width: "",
               }}
               key={index}
@@ -127,7 +182,7 @@ const SongPost = ({ userId }) => {
                 <div className="d-flex align-items-center">
                   <img
                     src={
-                      user[song.user_id].imgUrl ||
+                      song.user?.imgUrl ||
                       "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
                     }
                     alt="Profile"
@@ -136,34 +191,26 @@ const SongPost = ({ userId }) => {
                   />
                   <div className="mx-2">
                     <h5
-                      onClick={() => navigate(`/profiles/${song.user_id}`)}
+                      onClick={() => navigate(`/profiles/${song.userId}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user && user[song.user_id]
-                        ? user[song.user_id].name
-                        : "Unknown User"}
+                      {song.user ? song.user?.name : "Unknown User"}
                     </h5>
-                    <p
-                      className="text-muted mb-0"
-                      style={{ fontSize: "14px" }}
-                    >
-                      {user && user[song.user_id]
-                        ? user[song.user_id].level >= 150
+                    <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
+                      {song.user
+                        ? song.user?.level >= 150
                           ? "Pro "
-                          : user[song.user_id].level >= 50
+                          : song.user?.level >= 50
                           ? "Maxim "
                           : "Noob "
                         : "Unknown Level"}
-                      <span
-                        style={{ fontSize: "14px" }}
-                        className="text-muted"
-                      >
-                        &#8226; {user[song.user_id].friends.length} Friends
+                      <span style={{ fontSize: "14px" }} className="text-muted">
+                        &#8226; {song.user?.friends?.length ?? 0} Friends
                       </span>
                     </p>
                   </div>
                 </div>
-                {song.user_id == loggedInUser._id && (
+                {song.userId == logUser.id && (
                   <div>
                     <button
                       id={index}
@@ -178,33 +225,35 @@ const SongPost = ({ userId }) => {
                       />
                     </button>
 
-                    <button id={index} className="btn">
+                    {/* <button id={index} className="btn">
                       <img
                         src={process.env.PUBLIC_URL + "/pen.png"}
                         alt="Song 2"
                         className="mb-1"
                         style={{ width: "16px", height: "16px" }}
                       />
-                    </button>
+                    </button> */}
                   </div>
                 )}
               </div>
-              {showDeleteConfirmation && song.user_id == loggedInUser._id && (
-                <div className="confirmation-modal">
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => deleteSong(song)}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => setShowDeleteConfirmation(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
+              {showDeleteConfirmation &&
+                songToDelete &&
+                songToDelete.id === song.id && (
+                  <div className="confirmation-modal">
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => deleteSong(song)}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setShowDeleteConfirmation(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
 
               <div
                 className="instagram-post rounded"
@@ -218,7 +267,7 @@ const SongPost = ({ userId }) => {
               >
                 <img
                   className="rounded mt-3"
-                  src={song.img_url}
+                  src={song.imgUrl}
                   alt={`${song.title} Album Cover`}
                   style={{
                     width: "100%",
@@ -241,7 +290,11 @@ const SongPost = ({ userId }) => {
                   }}
                 >
                   <p
-                    style={{ fontWeight: "bold", fontSize: "16px", margin: "0" }}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      margin: "0",
+                    }}
                   >
                     {song.title}
                   </p>
@@ -249,10 +302,10 @@ const SongPost = ({ userId }) => {
                 </div>
               </div>
               <div className="ms-1">
-                {user && user[song.user_id] ? (
+                {song.userId ? (
                   <SongRating
-                    songId={song._id}
-                    userId={user[song.user_id]._id}
+                    songId={song.id}
+                    userId={song.user?.id}
                     user={user}
                     userLevel={userLevel}
                     updateLevel={(newLevel) => {
@@ -276,7 +329,7 @@ const SongPost = ({ userId }) => {
               </div>
             </div>
           ) : null
-        ))
+        )
       )}
     </div>
   );

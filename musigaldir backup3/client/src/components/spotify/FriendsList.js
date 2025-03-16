@@ -19,6 +19,9 @@ const FriendsList = () => {
     border: "none",
     padding: "10px",
     backgroundColor: "",
+    position: "sticky",
+    top: "0",
+    zIndex: "1000",
   };
 
   const formatTimeDifference = (timestamp) => {

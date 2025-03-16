@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Nav from "./Nav";
 import Profile from "../profile/Profile";
@@ -8,11 +8,16 @@ import PostArea from "../post/PostArea";
 import Search from "../customFunctions/Search";
 import Friends from "./Friends";
 import Leaderboards from "./Leaderboards";
-
+import eventBus from "../EventBus/eventBus";
 const Home = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState("#ECEBEC");
+  const [childrenBgColor, setchildrenBgColor] = useState("white");
+
   const nav = useNavigate();
 
   useEffect(() => {
+    // Check token validation on component mount
     async function checkToken() {
       const redirectPath = await checkTokenValidation();
       if (redirectPath === "/login") {
@@ -21,29 +26,48 @@ const Home = () => {
       }
     }
 
-    // Call the checkToken function when the component mounts
     checkToken();
+
+    // Listen for theme changes
+    const handleThemeChange = (newMode) => {
+      setDarkMode(newMode);
+      setBackgroundColor(newMode ? "#ECEBEC" : "#2E2E2E"); // Change background color based on theme
+      setchildrenBgColor(!newMode ? "lavender" : "white"); // Change background color for children components (Profile, PostArea, Friends, Leaderboards)
+    };
+
+    // Subscribe to theme change events
+    eventBus.on("themeChanged", handleThemeChange);
+
+    // Cleanup event listener when the component unmounts
+    return () => {
+      eventBus.removeListener("themeChanged", handleThemeChange);
+    };
   }, [nav]);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prevMode) => !prevMode);
+    eventBus.emit("themeChanged", !darkMode); // Emit the theme change event
+  };
+
   return (
-    <div style={{ backgroundColor: "#ECEBEC" }}>
+    <div style={{ backgroundColor }}>
       <Nav />
       <div className="container">
         <div className="row">
           <div className="col-md-12 col-lg-4 order-md-1">
-            <Profile />
+            <Profile color={childrenBgColor} />
           </div>
           <div className="col-md-12 col-lg-4 order-md-2">
-            <PostArea />
+            <PostArea color={childrenBgColor} />
           </div>
           <div className="col-md-12 col-lg-4 order-md-3">
-            <Friends /> 
-            <Leaderboards/>
+            <Friends color={childrenBgColor} />
+            <Leaderboards color={childrenBgColor} />
           </div>
         </div>
       </div>
     </div>
   );
-  
 };
 
 export default Home;

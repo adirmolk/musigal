@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ProductLoading from "../customFunctions/ProductLoading";
+import eventBus from "../EventBus/eventBus";
 
-const ProductPost = ({ userId }) => {
+const ProductPost = ({ userId, color }) => {
   const [postProducts, setPostProducts] = useState([]);
   const [user, setUser] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
@@ -14,7 +15,7 @@ const ProductPost = ({ userId }) => {
   const fetchUserProfile = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/profile/${userId}`,
+        `http://localhost:3001/api/users/profile/${userId}`,
         {
           headers: {
             "x-api-key": localStorage.getItem("token"),
@@ -31,7 +32,7 @@ const ProductPost = ({ userId }) => {
 
   const ShowProducts = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3001/products", {
+      const { data } = await axios.get("http://localhost:3001/api/products", {
         headers: { "x-api-key": localStorage.getItem("token") },
       });
 
@@ -47,8 +48,22 @@ const ProductPost = ({ userId }) => {
     }
   };
 
+  // Function to handle new song posted event
+
   useEffect(() => {
     ShowProducts();
+    const handleNewProduct = (newProduct) => {
+      console.log(newProduct);
+
+      setPostProducts((prevProducts) => [newProduct, ...prevProducts]);
+    };
+    // Listen for the "songPosted" event to add new products
+    eventBus.on("productPosted", handleNewProduct);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      eventBus.off("productPosted", handleNewProduct);
+    };
   }, []);
 
   const conditionColors = {
@@ -77,14 +92,14 @@ const ProductPost = ({ userId }) => {
           <ProductLoading />
         </div>
       ) : (
-        postProducts.map((item, index) => (
+        postProducts.map((item, index) =>
           // Add a conditional check here to show products only if userId matches
           (userId && item.user_id === userId) || !userId ? (
             <div
               className="mt-4 mx-4 rounded p-2"
               style={{
                 width: "",
-                backgroundColor: "white",
+                backgroundColor: color,
               }}
               key={index}
             >
@@ -167,7 +182,7 @@ const ProductPost = ({ userId }) => {
               </div>
             </div>
           ) : null
-        ))
+        )
       )}
     </div>
   );

@@ -14,17 +14,17 @@ import { UserProvider } from "../users/UserContext";
 const MainRoutes = () => {
   return (
     <BrowserRouter>
-    <UserProvider>
-      <Routes>
-        <Route path="/" element={<Welcome />}></Route>
-        <Route path="/home" element={<Home />}></Route>
-        <Route path="/home/post" element={<Post />}></Route>
-        <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/profiles/:id" element={<ProfilesErea />}></Route>
-        <Route path="/vinylwall/:id" element={<VinylWall />}></Route>
-      </Routes>
+      <UserProvider>
+        <Routes>
+          <Route path="/" element={<Welcome />}></Route>
+          <Route path="/home" element={<Home />}></Route>
+          <Route path="/home/post" element={<Post />}></Route>
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/profile" element={<Profile />}></Route>
+          <Route path="/profiles/:id" element={<ProfilesErea />}></Route>
+          <Route path="/vinylwall/:id" element={<VinylWall />}></Route>
+        </Routes>
       </UserProvider>
     </BrowserRouter>
   );
