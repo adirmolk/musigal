@@ -7,16 +7,18 @@ import eventBus from "../EventBus/eventBus";
 const EditProfile = () => {
   const user = useUser();
   const [name, setName] = useState(user.name);
-  const [imgUrl, setImgUrl] = useState("");
+  const [imgUrl, setImgUrl] = useState(null);
 
   const updateProfile = async () => {
     try {
+      console.log(user);
+
       await axios.put(
         `http://localhost:3001/api/users/${user.id}`,
         {
           ...user, // Spread the existing user data
           name: name, // Override/add new values
-          imgUrl: imgUrl,
+          imgUrl: imgUrl != null ? imgUrl : user.imgUrl,
         },
         {
           headers: {

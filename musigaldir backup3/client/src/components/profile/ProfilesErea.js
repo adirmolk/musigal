@@ -55,28 +55,13 @@ const ProfilesErea = () => {
     }
   };
   useEffect(() => {
-    // Fetch user and logged-in user on component mount
-
     fetchUser();
     fetchLoggedInUser();
 
     // Listen for profile updates from the event bus
     const handleProfileUpdate = (updatedProfile) => {
-      setUser((prevUser) => ({
-        ...prevUser,
-        // Only update name if it has changed
-        ...(updatedProfile.name ? { name: updatedProfile.name } : {}),
-        // Only update imgUrl if it has changed
-        ...(updatedProfile.imgUrl ? { imgUrl: updatedProfile.imgUrl } : {}),
-      }));
-
-      setLoggedInUser((prevLoggedInUser) => ({
-        ...prevLoggedInUser,
-        // Only update name if it has changed
-        ...(updatedProfile.name ? { name: updatedProfile.name } : {}),
-        // Only update imgUrl if it has changed
-        ...(updatedProfile.imgUrl ? { imgUrl: updatedProfile.imgUrl } : {}),
-      }));
+      fetchLoggedInUser();
+      fetchUser();
       updateUser(user);
       setEditProfileOpen(false);
     };
