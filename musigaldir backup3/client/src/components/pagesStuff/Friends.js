@@ -11,32 +11,31 @@ const Friends = ({ color }) => {
   const [followStatus, setFollowStatus] = useState({}); // Track follow status for each friend
 
   const navigate = useNavigate();
+  const getProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    } else {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/api/users/profile",
+          {
+            headers: {
+              "x-api-key": token,
+            },
+          }
+        );
+        setUser(response.data);
+        console.log(response.data);
+        friendsGet(response.data.id); // Fetch friends after getting the user data
+        setLoggedInUser(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   useEffect(() => {
-    const getProfile = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-      } else {
-        try {
-          const response = await axios.get(
-            "http://localhost:3001/api/users/profile",
-            {
-              headers: {
-                "x-api-key": token,
-              },
-            }
-          );
-          setUser(response.data);
-          console.log(response.data);
-          friendsGet(response.data.id); // Fetch friends after getting the user data
-          setLoggedInUser(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    };
-
     getProfile();
   }, [navigate]);
 
@@ -56,7 +55,7 @@ const Friends = ({ color }) => {
   // Toggle follow/unfollow friend
   const toggleFollow = async (targetUserId) => {
     try {
-      if (isFollowed) {
+      if (!followStatus[targetUserId]) {
         // User is currently following, so remove the friend
         const response = await axios.put(
           "http://localhost:3001/api/users/follow", // No query params
@@ -101,8 +100,23 @@ const Friends = ({ color }) => {
       if (loggedInUser) {
         friendsGet(loggedInUser.id); // Re-fetch the friends list
       }
-    };
+      if (loggedInUser && user) {
+        const followStatusCopy = { ...followStatus };
+        friends.forEach((friend) => {
+          // Set follow status for each friend
+          console.log(followStatusCopy[friend.id]);
+          console.log(loggedInUser.friends.includes(friend.id.toString()));
+          console.log(loggedInUser.friends);
 
+          followStatusCopy[friend.id] = loggedInUser.friends.includes(
+            friend.id.toString()
+          );
+          console.log(followStatusCopy);
+        });
+        setFollowStatus(followStatusCopy);
+      }
+      getProfile();
+    };
     eventBus.on("friendsUpdated", handleFriendsUpdated);
 
     // Cleanup the event listener when the component is unmounted

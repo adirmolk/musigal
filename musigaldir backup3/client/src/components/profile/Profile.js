@@ -1,12 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../users/UserContext";
 import CurrentlyPlaying from "../spotify/CurrentlyPlaying";
 import { useNavigate } from "react-router-dom";
+import eventBus from "../EventBus/eventBus";
+import axios from "axios";
 
 const Profile = ({ color }) => {
-  const user = useUser();
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const getProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    } else {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/api/users/profile",
+          {
+            headers: {
+              "x-api-key": token,
+            },
+          }
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+  useEffect(() => {
+    getProfile();
+  }, [navigate]);
+  useEffect(() => {
+    // Re-fetch friends list when the friendsUpdated event is emitted
+    const handleFriendsUpdated = () => {
+      getProfile();
+    };
+    eventBus.on("friendsUpdated", handleFriendsUpdated);
 
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      eventBus.off("friendsUpdated", handleFriendsUpdated);
+    };
+  }, []);
   return (
     <div style={{ backgroundColor: color }} className="container d-flex mt-4">
       <div className="row">
@@ -32,7 +68,7 @@ const Profile = ({ color }) => {
                   />
                   <div className="mx-3">
                     <h3
-                      onClick={() => navigate(`/profiles/${user._id}`)}
+                      onClick={() => navigate(`/profiles/${user.id}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
                       {user.name}

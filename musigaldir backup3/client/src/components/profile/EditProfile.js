@@ -12,9 +12,10 @@ const EditProfile = () => {
   const updateProfile = async () => {
     try {
       await axios.put(
-        `http://localhost:3001/users/update/${user._id}`,
+        `http://localhost:3001/api/users/${user.id}`,
         {
-          name: name,
+          ...user, // Spread the existing user data
+          name: name, // Override/add new values
           imgUrl: imgUrl,
         },
         {
@@ -23,6 +24,7 @@ const EditProfile = () => {
           },
         }
       );
+
       console.log("Profile updated successfully");
 
       // Emit an event to notify other components about the profile update

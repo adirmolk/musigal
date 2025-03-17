@@ -6,13 +6,13 @@ const useFriendsList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
-  useEffect(() => {
-    setIsLoading(true);
-    axios.get("http://localhost:3001/api/friendList").then((res) => {
-      setIsLoading(false);
-      setFfiendsList(res.data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   axios.get("http://localhost:3001/api/friendList").then((res) => {
+  //     setIsLoading(false);
+  //     setFfiendsList(res.data);
+  //   });
+  // }, []);
 
   return { friendsList, isLoading };
 };

@@ -40,7 +40,9 @@ const SongPost = ({ userId, color }) => {
       //   fetchUserProfile(song.userId);
       // }
 
-      setPostSongs(response.data);
+      setTimeout(() => {
+        setPostSongs(response.data);
+      }, 1000);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

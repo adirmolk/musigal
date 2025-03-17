@@ -87,7 +87,7 @@ const ProductPost = ({ userId, color }) => {
 
   return (
     <div>
-      {postProducts.length === 0 ? (
+      {postProducts.length <= 0 ? (
         <div className="text-center" style={{ width: "450px" }}>
           <ProductLoading />
         </div>
@@ -107,7 +107,7 @@ const ProductPost = ({ userId, color }) => {
                 <div className="d-flex align-items-center ms-1">
                   <img
                     src={
-                      user[item.userId].imgUrl ||
+                      item.user?.imgUrl ||
                       "https://res.cloudinary.com/dk-find-out/image/upload/q_80,w_1920,f_auto/A-Alamy-BXWK5E_vvmkuf.jpg"
                     }
                     alt="Profile"
@@ -119,20 +119,18 @@ const ProductPost = ({ userId, color }) => {
                       onClick={() => navigate(`/profiles/${item.userId}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user && user[item.userId]
-                        ? user[item.userId].name
-                        : "Unknown User"}
+                      {user && item.user ? item.user?.name : "Unknown User"}
                     </h5>
                     <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
-                      {user && user[item.userId]
-                        ? user[item.userId].level >= 150
+                      {user && item.user
+                        ? item.user?.level >= 150
                           ? "Pro "
-                          : user[item.userId].level >= 50
+                          : item.user?.level >= 50
                           ? "Maxim "
                           : "Noob "
                         : "Unknown Level"}
                       <span style={{ fontSize: "14px" }} className="text-muted">
-                        &#8226; {user[item.userId].friends.length} Friends
+                        &#8226; {item.user?.friends.length} Friends
                       </span>
                     </p>
                   </div>

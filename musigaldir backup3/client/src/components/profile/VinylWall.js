@@ -22,8 +22,8 @@ const VinylWall = () => {
     : reversedVinylWall.slice(0, displayedVinyls);
 
   const renderVinyl = async () => {
-    const { data } = await axios.get(`http://localhost:3001/vinyls/user/${id}`);
-    setVinylWall(data);
+    const data = await axios.get(`http://localhost:3001/api/vinyl/user/${id}`);
+    setVinylWall(data.data);
     console.log(data);
   };
 
@@ -34,7 +34,7 @@ const VinylWall = () => {
   const postVinyl = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3001/vinyls",
+        "http://localhost:3001/api/vinyl",
         albumTitleFromDeezer,
         {
           headers: {
@@ -49,19 +49,19 @@ const VinylWall = () => {
   };
 
   const fetchLoggedInUser = async () => {
-    const { data } = await axios.get(`http://localhost:3001/users/profile`, {
+    const data = await axios.get(`http://localhost:3001/api/users/profile`, {
       headers: {
         "x-api-key": localStorage.getItem("token"),
       },
     });
-    setLoggedInUser(data);
+    setLoggedInUser(data.data);
 
     console.log("Logged: ", loggedInUser);
   };
 
   useEffect(() => {
     fetchLoggedInUser();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     renderVinyl();
@@ -76,7 +76,8 @@ const VinylWall = () => {
     setAlbumTitleFromDeezer({
       title: albumTitle,
       artist: album_artist,
-      img_url: albumImg_url,
+      imgUrl: albumImg_url,
+      userId: loggedInUser.id,
     });
   };
 
@@ -119,7 +120,7 @@ const VinylWall = () => {
             >
               <img
                 className="rounded"
-                src={record.img_url}
+                src={record.imgUrl}
                 alt={`${record.title} Album Cover`}
                 style={{
                   width: "100%",
@@ -167,31 +168,33 @@ const VinylWall = () => {
           </div>
         </div>
       )}
-      {vinylWall.length > 0 && (
-        <div className="d-flex">
-          <button
-            className="btn btn-outline-primary mt-2 "
-            onClick={handleShowMore}
-          >
-            {showAll ? "Show Less" : "Show All"}
-          </button>
-          {loggedInUser?._id === id && (
-            <div className="mt-2 ms-3">
-              <button
-                className="btn btn-outline-primary"
-                style={{
-                  width: "",
-                  height: "",
-                  display: loggedInUser ? "inline" : "none",
-                }}
-                onClick={onAddVinyl}
-              >
-                <FaPlus size={15} />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      <div style={{ display: "flex" }}>
+        {vinylWall.length > 0 && (
+          <div className="d-flex">
+            <button
+              className="btn btn-outline-primary mt-2 "
+              onClick={handleShowMore}
+            >
+              {showAll ? "Show Less" : "Show All"}
+            </button>
+          </div>
+        )}
+        {loggedInUser?.id == id && (
+          <div className="mt-2 ms-3">
+            <button
+              className="btn btn-outline-primary"
+              style={{
+                width: "",
+                height: "",
+                display: loggedInUser ? "inline" : "none",
+              }}
+              onClick={onAddVinyl}
+            >
+              <FaPlus size={15} />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

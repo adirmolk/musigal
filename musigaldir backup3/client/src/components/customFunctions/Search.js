@@ -14,38 +14,36 @@ const Search = () => {
   const [isFollowed, setIsFollowed] = useState(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const getProfile = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-      } else {
-        try {
-          const response = await axios.get(
-            "http://localhost:3001/api/users/profile",
-            {
-              headers: {
-                "x-api-key": token,
-              },
-            }
-          );
-          setUser(response.data);
-          console.log(response.data);
-          friendsGet(response.data._id); // Fetch friends after getting the user data
-          setLoggedInUser(response.data);
-        } catch (error) {
-          console.error(error);
-        }
+  const getProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    } else {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/api/users/profile",
+          {
+            headers: {
+              "x-api-key": token,
+            },
+          }
+        );
+        setUser(response.data);
+        console.log(response.data);
+        friendsGet(response.data.id); // Fetch friends after getting the user data
+        setLoggedInUser(response.data);
+      } catch (error) {
+        console.error(error);
       }
-    };
-
+    }
+  };
+  useEffect(() => {
     getProfile();
   }, [navigate]);
   const friendsGet = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/users/friends/${userId}`
+        `http://localhost:3001/api/users/friends?userId=${userId}`
       );
       console.log(response.data.friendsArr);
       setFriends(response.data.friendsArr);
@@ -63,10 +61,11 @@ const Search = () => {
 
       // Send a GET request to the search route with the search criteria
       const response = await axios.get(
-        `http://localhost:3001/users/search?criteria=${searchCriteria}`
+        `http://localhost:3001/api/users/search?criteria=${searchCriteria}`
       );
       const users = response.data;
       setSearchResults(users);
+      setFriends(users);
     } catch (error) {
       console.error(error);
       // Handle errors here
@@ -86,47 +85,76 @@ const Search = () => {
     setTypingTimeout(newTimeout);
   };
 
-  const toggleFollow = async (id) => {
+  // Toggle follow/unfollow friend
+  const toggleFollow = async (targetUserId) => {
     try {
-      if (isFollowed) {
+      console.log(followStatus[targetUserId]);
+
+      if (!followStatus[targetUserId]) {
         // User is currently following, so remove the friend
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
+        const response = await axios.put(
+          "http://localhost:3001/api/users/follow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
         );
         if (response.status === 200) {
-          setSearchCriteria("");
           setIsFollowed(false);
-          // You might want to update the friends list here
         } else {
           console.log("Failed to remove friend.");
         }
       } else {
         // User is not currently following, so add the friend
-        const response = await axios.patch(
-          `http://localhost:3001/users/addRemoveFriend/${loggedInUser._id}/${id}`,
-          {},
+        const response = await axios.put(
+          "http://localhost:3001/api/users/unfollow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
         );
+
         if (response.status === 200) {
-          setSearchCriteria("");
           setIsFollowed(true);
-          // You might want to update the friends list here
         } else {
           console.log("Failed to add friend.");
         }
       }
-      eventBus.emit("friendsUpdated");
+      setSearchCriteria("");
+      if (loggedInUser && user && friends?.length > 0) {
+        const followStatusCopy = { ...followStatus };
+        friends.forEach((friend) => {
+          // Set follow status for each friend
+          console.log(followStatusCopy[friend.id]);
+          console.log(loggedInUser.friends.includes(friend.id.toString()));
+          console.log(loggedInUser.friends);
+
+          followStatusCopy[friend.id] = loggedInUser.friends.includes(
+            friend.id.toString()
+          );
+          console.log(followStatusCopy);
+        });
+        setFollowStatus(followStatusCopy);
+      }
+      // Emit event to notify others that the friends list has changed
+      eventBus.emit("friendsUpdated", targetUserId);
     } catch (error) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    // Re-fetch friends list when the friendsUpdated event is emitted
+    const handleFriendsUpdated = () => {
+      getProfile();
+    };
 
+    eventBus.on("friendsUpdated", handleFriendsUpdated);
+
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      eventBus.off("friendsUpdated", handleFriendsUpdated);
+    };
+  }, [loggedInUser]);
   useEffect(() => {
     delayedSearch();
     // Cleanup the timeout on component unmount
@@ -137,13 +165,18 @@ const Search = () => {
     };
   }, [searchCriteria]);
   useEffect(() => {
-    if (loggedInUser && user) {
+    if (loggedInUser && user && friends?.length > 0) {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
         // Set follow status for each friend
-        followStatusCopy[friend._id] = loggedInUser.friends.includes(
-          friend._id
+        console.log(followStatusCopy[friend.id]);
+        console.log(loggedInUser.friends.includes(friend.id.toString()));
+        console.log(loggedInUser.friends);
+
+        followStatusCopy[friend.id] = loggedInUser.friends.includes(
+          friend.id.toString()
         );
+        console.log(followStatusCopy);
       });
       setFollowStatus(followStatusCopy);
     }
@@ -178,7 +211,7 @@ const Search = () => {
               width: "400px",
               backgroundColor: "",
             }}
-            key={user._id}
+            key={user.id}
           >
             <div className="d-flex align-items-center">
               <img
@@ -193,7 +226,7 @@ const Search = () => {
               <div className="mx-3">
                 <h3
                   onClick={() => {
-                    navigate(`/profiles/${user._id}`);
+                    navigate(`/profiles/${user.id}`);
                   }}
                   style={{ cursor: "pointer", margin: "0" }}
                 >
@@ -219,11 +252,11 @@ const Search = () => {
                 width: "40px",
               }}
               className={`rounded-circle btn  ${
-                followStatus[user._id] ? " mb-1 ms-2" : " ms-2"
+                followStatus[user.id] ? " mb-1 ms-2" : " ms-2"
               }`}
-              onClick={() => toggleFollow(user._id)}
+              onClick={() => toggleFollow(user.id)}
             >
-              {followStatus[user._id] ? (
+              {followStatus[user.id] ? (
                 <img
                   width={"15px"}
                   className="mb-1"

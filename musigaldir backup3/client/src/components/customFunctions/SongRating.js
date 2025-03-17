@@ -14,7 +14,7 @@ const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
     const fetchUserRating = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/songs/rating/${songId}`,
+          `http://localhost:3001/api/songs/rating/${songId}/${userId}`,
           {
             headers: {
               "x-api-key": localStorage.getItem("token"),

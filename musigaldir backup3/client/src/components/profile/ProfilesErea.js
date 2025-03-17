@@ -16,35 +16,46 @@ const ProfilesErea = () => {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isEditProfileOpen, setEditProfileOpen] = useState(false);
   const { id } = useParams();
-
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/users/${id}`);
+      setUser(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchLoggedInUser = async () => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:3001/api/users/profile`,
+        {
+          headers: {
+            "x-api-key": localStorage.getItem("token"),
+          },
+        }
+      );
+      setLoggedInUser(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const updateUser = async () => {
+    try {
+      const { data } = await axios.put(
+        `http://localhost:3001/api/users/${loggedInUser.id}`,
+        {
+          headers: {
+            "x-api-key": localStorage.getItem("token"),
+          },
+        }
+      );
+      setUser(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     // Fetch user and logged-in user on component mount
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/api/users/${id}`
-        );
-        setUser(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const fetchLoggedInUser = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3001/api/users/profile`,
-          {
-            headers: {
-              "x-api-key": localStorage.getItem("token"),
-            },
-          }
-        );
-        setLoggedInUser(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
 
     fetchUser();
     fetchLoggedInUser();
@@ -66,6 +77,7 @@ const ProfilesErea = () => {
         // Only update imgUrl if it has changed
         ...(updatedProfile.imgUrl ? { imgUrl: updatedProfile.imgUrl } : {}),
       }));
+      updateUser(user);
       setEditProfileOpen(false);
     };
 
@@ -77,18 +89,42 @@ const ProfilesErea = () => {
     };
   }, [id]);
 
-  const toggleFollow = async () => {
+  const toggleFollow = async (targetUserId) => {
     try {
-      const response = await axios.patch(
-        `http://localhost:3001/users/addRemoveFriend/${loggedInUser.id}/${id}`,
-        {},
-        {
-          headers: { "x-api-key": localStorage.getItem("token") },
+      if (!isFollowed) {
+        // User is currently following, so remove the friend
+        const response = await axios.put(
+          "http://localhost:3001/api/users/follow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          {
+            headers: { "x-api-key": localStorage.getItem("token") },
+          }
+        );
+        if (response.status === 200) {
+          setIsFollowed(false);
+        } else {
+          console.log("Failed to remove friend.");
         }
-      );
-      if (response.status === 200) {
-        setIsFollowed((prev) => !prev);
+      } else {
+        // User is not currently following, so add the friend
+        const response = await axios.put(
+          "http://localhost:3001/api/users/unfollow", // No query params
+          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          {
+            headers: { "x-api-key": localStorage.getItem("token") },
+          }
+        );
+
+        if (response.status === 200) {
+          setIsFollowed(true);
+        } else {
+          console.log("Failed to add friend.");
+        }
       }
+      fetchUser();
+      fetchLoggedInUser();
+      // Emit event to notify others that the friends list has changed
+      eventBus.emit("friendsUpdated", targetUserId);
     } catch (error) {
       console.log(error);
     }
@@ -138,7 +174,7 @@ const ProfilesErea = () => {
                   />
                   <h2 className="mb-2 ms-5">
                     {user.name}
-                    {loggedInUser?.id === id ? (
+                    {loggedInUser?.id === user.id ? (
                       <div className="d-inline">
                         {" "}
                         <button
@@ -160,7 +196,7 @@ const ProfilesErea = () => {
                             ? "btn-danger ms-2 mb-2"
                             : "ms-2 mb-2 btn-light"
                         }`}
-                        onClick={toggleFollow}
+                        onClick={() => toggleFollow(user.id)}
                       >
                         {isFollowed ? (
                           <img
@@ -242,9 +278,10 @@ const ProfilesErea = () => {
                   </div>
                 </div>
                 {postType === "song" ? (
-                  loggedInUser && (loggedInUser.id === id || isFollowed) ? (
+                  loggedInUser &&
+                  (loggedInUser.id === user.id || isFollowed) ? (
                     <div>
-                      <SongPost userId={id} color={"white"} />
+                      <SongPost userId={user.id} color={"white"} />
                     </div>
                   ) : (
                     <div className="mt-4 ms-4 text-center">
@@ -259,7 +296,7 @@ const ProfilesErea = () => {
                   )
                 ) : (
                   <div>
-                    <ProductPost userId={id} color={"white"} />
+                    <ProductPost userId={user.id} color={"white"} />
                   </div>
                 )}
               </div>
