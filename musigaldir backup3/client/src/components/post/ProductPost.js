@@ -6,29 +6,9 @@ import eventBus from "../EventBus/eventBus";
 
 const ProductPost = ({ userId, color }) => {
   const [postProducts, setPostProducts] = useState([]);
-  const [user, setUser] = useState(null);
-  const [showDescription, setShowDescription] = useState(false);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
-  const [authenticatedUserId, setAuthenticatedUserId] = useState("");
+  const [openPhoneIndex, setOpenPhoneIndex] = useState(null); // New state for phone number toggle
   const navigate = useNavigate();
-
-  const fetchUserProfile = async (userId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3001/api/users/profile/${userId}`,
-        {
-          headers: {
-            "x-api-key": localStorage.getItem("token"),
-          },
-        }
-      );
-      const user = response.data;
-      setAuthenticatedUserId(user._id);
-      setUser((prevUsers) => ({ ...prevUsers, [userId]: user }));
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const ShowProducts = async () => {
     try {
@@ -56,23 +36,14 @@ const ProductPost = ({ userId, color }) => {
     };
   }, []);
 
-  const conditionColors = {
-    "Mint (M)": "green",
-    "Near Mint (NM or M-)": "blue",
-    "Very Good Plus (VG+)": "orange",
-    "Very Good (VG)": "yellow",
-    "Good (G)": "pink",
-    "Good Plus (G+)": "purple",
-    "Poor (P)": "red",
-    "Fair (F)": "brown",
+  const toggleDescription = (index) => {
+    setOpenDescriptionIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
   };
 
-  const toggleDescription = (index) => {
-    if (index === openDescriptionIndex) {
-      setOpenDescriptionIndex(null);
-    } else {
-      setOpenDescriptionIndex(index);
-    }
+  const togglePhone = (index) => {
+    setOpenPhoneIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
   return (
@@ -86,10 +57,7 @@ const ProductPost = ({ userId, color }) => {
           (userId && item.userId === userId) || !userId ? (
             <div
               className="mt-4 mx-4 rounded p-2"
-              style={{
-                width: "",
-                backgroundColor: color,
-              }}
+              style={{ backgroundColor: color }}
               key={index}
             >
               <div className="d-flex p-2 justify-content-between">
@@ -108,18 +76,16 @@ const ProductPost = ({ userId, color }) => {
                       onClick={() => navigate(`/profiles/${item.userId}`)}
                       style={{ cursor: "pointer", margin: "0" }}
                     >
-                      {user && item.user ? item.user?.name : "Unknown User"}
+                      {item.user?.name || "Unknown User"}
                     </h5>
                     <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
-                      {user && item.user
-                        ? item.user?.level >= 150
-                          ? "Pro "
-                          : item.user?.level >= 50
-                          ? "Maxim "
-                          : "Noob "
-                        : "Unknown Level"}
+                      {item.user?.level >= 150
+                        ? "Pro "
+                        : item.user?.level >= 50
+                        ? "Maxim "
+                        : "Noob "}
                       <span style={{ fontSize: "14px" }} className="text-muted">
-                        &#8226; {item.user?.friends.length} Friends
+                        &#8226; {item.user?.friends?.length || 0} Friends
                       </span>
                     </p>
                   </div>
@@ -139,11 +105,7 @@ const ProductPost = ({ userId, color }) => {
                   }}
                 />
                 <br />
-                <span className="fw-bold">{item.title} </span>&#8226;{" "}
-                <span style={{ color: conditionColors[item.condition] }}>
-                  {" "}
-                  {item.condition}{" "}
-                </span>
+                <span className="fw-bold">{item.title} </span>
                 <br />
                 <span className="">{item.price}$ &#8226;</span>
                 <span className=""> {item.location}</span>
@@ -152,6 +114,7 @@ const ProductPost = ({ userId, color }) => {
                   <button
                     style={{ backgroundColor: "lightblue" }}
                     className="btn mt-1"
+                    onClick={() => togglePhone(index)}
                   >
                     Buy
                   </button>
@@ -160,11 +123,29 @@ const ProductPost = ({ userId, color }) => {
                     onClick={() => toggleDescription(index)}
                     className="ms-2 btn mt-1"
                   >
-                    {showDescription ? "Hide Description" : "See Description"}
+                    {openDescriptionIndex === index
+                      ? "Hide Description"
+                      : "See Description"}
                   </button>
                 </div>
+
                 {openDescriptionIndex === index && (
                   <div className="text-center mt-2">{item.description}</div>
+                )}
+
+                {openPhoneIndex === index && (
+                  <div
+                    className="text-center mt-2 p-2 border rounded"
+                    style={{}}
+                  >
+                    <p>
+                      <strong>Seller:</strong> {item.user?.name || "Unknown"}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong>{" "}
+                      {item?.phone || "No phone available"}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
