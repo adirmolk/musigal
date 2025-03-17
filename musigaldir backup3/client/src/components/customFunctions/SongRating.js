@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "../users/UserContext";
 
-const SongRating = ({ songId, userId, userLevel, updateLevel }) => {
+const SongRating = ({ songId, userId, updateLevel }) => {
   const [rated, setRated] = useState(false);
   const [rating, setRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);

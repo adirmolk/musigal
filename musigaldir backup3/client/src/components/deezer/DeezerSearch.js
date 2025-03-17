@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const DeezerSearch = ({onAlbumTitleChange}) => {
+const DeezerSearch = ({ onAlbumTitleChange }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [albumTitle, setAlbumTitle] = useState("");
@@ -21,22 +21,19 @@ const DeezerSearch = ({onAlbumTitleChange}) => {
 
     try {
       const response = await axios.request(options);
-      console.log(response.data.data);
       setSearchResults(response.data.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-
-
   useEffect(() => {
     fetchDeezerData();
   }, [searchQuery]);
 
   useEffect(() => {
-    onAlbumTitleChange(albumTitle, albumImg_url, album_artist)
-  }, [albumTitle])
+    onAlbumTitleChange(albumTitle, albumImg_url, album_artist);
+  }, [albumTitle]);
 
   return (
     <div>
@@ -52,70 +49,83 @@ const DeezerSearch = ({onAlbumTitleChange}) => {
         }}
       />
       <div
-            style={{ width: "400px", margin: "0 auto" }}
-            className="text-center p-2"
+        style={{ width: "400px", margin: "0 auto" }}
+        className="text-center p-2"
+      >
+        {searchResults && (
+          <div
+            style={{
+              maxHeight: "300px",
+              overflowY: "scroll",
+            }}
           >
-            {searchResults && (
+            {searchResults.map((result) => (
               <div
+                key={result.id}
+                className="rounded"
                 style={{
-                  maxHeight: "300px",
-                  overflowY: "scroll",
+                  backgroundColor: "#DDC7A9",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "10px",
+                  marginBottom: "10px",
                 }}
               >
-                {searchResults.map((result) => (
-                  <div
-                    key={result.id}
-                    className="rounded"
+                <img
+                  className="rounded"
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    marginRight: "10px",
+                  }}
+                  src={result.album.cover_small}
+                  alt={`${result.title} Album Cover`}
+                />
+
+                <div className="mt-2" style={{ flex: 1 }}>
+                  <p
+                    className="ms-2 d-inline mb-0"
                     style={{
-                      backgroundColor: "#DDC7A9",
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "10px",
-                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      color: "white",
                     }}
                   >
-                    <img
-                      className="rounded"
-                      style={{
-                        width: "70px",
-                        height: "70px",
-                        marginRight: "10px",
-                      }}
-                      src={result.album.cover_small}
-                      alt={`${result.title} Album Cover`}
-                    />
-
-                    <div className="mt-2" style={{ flex: 1 }}>
-                      <p
-                        className="ms-2 d-inline mb-0"
-                        style={{
-                          fontWeight: "bold",
-                          color:"white"
-                        }}
-                      >
-                        {result.album.title} &#8226;
-                      </p>
-                      <p
-                        className="d-inline ms-1"
-                        style={{
-                          minWidth: 0,
-                          fontWeight: "bold",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          color:"white"
-                        }}
-                      >
-                        {result.artist.name}
-                      </p>
-           <br/>
-                      <button className="btn mt-2 text-bg-primary" onClick={()=>{{setAlbum_artist(result.artist.name)};{setAlbumImg_url(result.album.cover_medium)};setAlbumTitle(result.album.title);}}>+</button>
-                    </div>
-                  </div>
-                ))}
+                    {result.album.title} &#8226;
+                  </p>
+                  <p
+                    className="d-inline ms-1"
+                    style={{
+                      minWidth: 0,
+                      fontWeight: "bold",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      color: "white",
+                    }}
+                  >
+                    {result.artist.name}
+                  </p>
+                  <br />
+                  <button
+                    className="btn mt-2 text-bg-primary"
+                    onClick={() => {
+                      {
+                        setAlbum_artist(result.artist.name);
+                      }
+                      {
+                        setAlbumImg_url(result.album.cover_medium);
+                      }
+                      setAlbumTitle(result.album.title);
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            )}
-    </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

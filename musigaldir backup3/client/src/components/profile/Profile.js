@@ -32,13 +32,10 @@ const Profile = ({ color }) => {
     getProfile();
   }, [navigate]);
   useEffect(() => {
-    // Re-fetch friends list when the friendsUpdated event is emitted
     const handleFriendsUpdated = () => {
       getProfile();
     };
     eventBus.on("friendsUpdated", handleFriendsUpdated);
-
-    // Cleanup the event listener when the component is unmounted
     return () => {
       eventBus.off("friendsUpdated", handleFriendsUpdated);
     };

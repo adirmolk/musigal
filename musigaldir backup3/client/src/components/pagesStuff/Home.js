@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Nav from "./Nav";
 import Profile from "../profile/Profile";
 import checkTokenValidation from "../users/checkTokenValidation";
-import Post from "../post/Post";
 import PostArea from "../post/PostArea";
-import Search from "../customFunctions/Search";
 import Friends from "./Friends";
 import Leaderboards from "./Leaderboards";
 import eventBus from "../EventBus/eventBus";
@@ -17,7 +15,6 @@ const Home = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    // Check token validation on component mount
     async function checkToken() {
       const redirectPath = await checkTokenValidation();
       if (redirectPath === "/login") {
@@ -25,20 +22,15 @@ const Home = () => {
         localStorage.removeItem("token");
       }
     }
-
     checkToken();
-
-    // Listen for theme changes
     const handleThemeChange = (newMode) => {
       setDarkMode(newMode);
-      setBackgroundColor(newMode ? "#ECEBEC" : "#2E2E2E"); // Change background color based on theme
-      setchildrenBgColor(!newMode ? "lavender" : "white"); // Change background color for children components (Profile, PostArea, Friends, Leaderboards)
+      setBackgroundColor(newMode ? "#ECEBEC" : "#2E2E2E");
+      setchildrenBgColor(!newMode ? "lavender" : "white");
     };
 
-    // Subscribe to theme change events
     eventBus.on("themeChanged", handleThemeChange);
 
-    // Cleanup event listener when the component unmounts
     return () => {
       eventBus.removeListener("themeChanged", handleThemeChange);
     };
@@ -46,7 +38,7 @@ const Home = () => {
 
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
-    eventBus.emit("themeChanged", !darkMode); // Emit the theme change event
+    eventBus.emit("themeChanged", !darkMode);
   };
 
   return (

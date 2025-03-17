@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import FriendsList from "../spotify/FriendsList";
 import Search from "../customFunctions/Search";
-import { FaSun, FaMoon, FaRegSun, FaLightbulb } from "react-icons/fa"; // FontAwesome Icons
+import { FaMoon } from "react-icons/fa";
 import eventBus from "../EventBus/eventBus";
 
 const Nav = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Function to toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode((prevMode) => !prevMode);
     eventBus.emit("themeChanged", darkMode);
   };
 
-  // Function to toggle menu visibility
   const toggleMenu = () => {
     setMenuOpen((prevOpen) => !prevOpen);
   };

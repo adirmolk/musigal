@@ -8,7 +8,7 @@ const Friends = ({ color }) => {
   const [user, setUser] = useState(null);
   const [isFollowed, setIsFollowed] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [followStatus, setFollowStatus] = useState({}); // Track follow status for each friend
+  const [followStatus, setFollowStatus] = useState({});
 
   const navigate = useNavigate();
   const getProfile = async () => {
@@ -26,8 +26,7 @@ const Friends = ({ color }) => {
           }
         );
         setUser(response.data);
-        console.log(response.data);
-        friendsGet(response.data.id); // Fetch friends after getting the user data
+        friendsGet(response.data.id);
         setLoggedInUser(response.data);
       } catch (error) {
         console.error(error);
@@ -39,27 +38,23 @@ const Friends = ({ color }) => {
     getProfile();
   }, [navigate]);
 
-  // Fetch friends list
   const friendsGet = async (userId) => {
     try {
       const response = await axios.get(
         `http://localhost:3001/api/users/friends?userId=${userId}`
       );
-      console.log(response.data);
       setFriends(response.data);
     } catch (error) {
       console.error("Error fetching friends:", error);
     }
   };
 
-  // Toggle follow/unfollow friend
   const toggleFollow = async (targetUserId) => {
     try {
       if (!followStatus[targetUserId]) {
-        // User is currently following, so remove the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/follow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/follow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -67,13 +62,11 @@ const Friends = ({ color }) => {
         if (response.status === 200) {
           setIsFollowed(false);
         } else {
-          console.log("Failed to remove friend.");
         }
       } else {
-        // User is not currently following, so add the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/unfollow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/unfollow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -82,44 +75,29 @@ const Friends = ({ color }) => {
         if (response.status === 200) {
           setIsFollowed(true);
         } else {
-          console.log("Failed to add friend.");
         }
       }
-
-      // Emit event to notify others that the friends list has changed
       eventBus.emit("friendsUpdated", targetUserId);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
-  // Listen for the event to refresh the friends list
   useEffect(() => {
-    // Re-fetch friends list when the friendsUpdated event is emitted
     const handleFriendsUpdated = () => {
       if (loggedInUser) {
-        friendsGet(loggedInUser.id); // Re-fetch the friends list
+        friendsGet(loggedInUser.id);
       }
       if (loggedInUser && user) {
         const followStatusCopy = { ...followStatus };
         friends.forEach((friend) => {
-          // Set follow status for each friend
-          console.log(followStatusCopy[friend.id]);
-          console.log(loggedInUser.friends.includes(friend.id.toString()));
-          console.log(loggedInUser.friends);
-
           followStatusCopy[friend.id] = loggedInUser.friends.includes(
             friend.id.toString()
           );
-          console.log(followStatusCopy);
         });
         setFollowStatus(followStatusCopy);
       }
       getProfile();
     };
     eventBus.on("friendsUpdated", handleFriendsUpdated);
-
-    // Cleanup the event listener when the component is unmounted
     return () => {
       eventBus.off("friendsUpdated", handleFriendsUpdated);
     };
@@ -129,15 +107,9 @@ const Friends = ({ color }) => {
     if (loggedInUser && user) {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
-        // Set follow status for each friend
-        console.log(followStatusCopy[friend.id]);
-        console.log(loggedInUser.friends.includes(friend.id.toString()));
-        console.log(loggedInUser.friends);
-
         followStatusCopy[friend.id] = loggedInUser.friends.includes(
           friend.id.toString()
         );
-        console.log(followStatusCopy);
       });
       setFollowStatus(followStatusCopy);
     }

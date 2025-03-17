@@ -29,7 +29,6 @@ const Search = () => {
           }
         );
         setUser(response.data);
-        console.log(response.data);
         friendsGet(response.data.id); // Fetch friends after getting the user data
         setLoggedInUser(response.data);
       } catch (error) {
@@ -45,7 +44,6 @@ const Search = () => {
       const response = await axios.get(
         `http://localhost:3001/api/users/friends?userId=${userId}`
       );
-      console.log(response.data.friendsArr);
       setFriends(response.data.friendsArr);
     } catch (error) {
       console.error("Error fetching friends:", error);
@@ -88,8 +86,6 @@ const Search = () => {
   // Toggle follow/unfollow friend
   const toggleFollow = async (targetUserId) => {
     try {
-      console.log(followStatus[targetUserId]);
-
       if (!followStatus[targetUserId]) {
         // User is currently following, so remove the friend
         const response = await axios.put(
@@ -102,7 +98,6 @@ const Search = () => {
         if (response.status === 200) {
           setIsFollowed(false);
         } else {
-          console.log("Failed to remove friend.");
         }
       } else {
         // User is not currently following, so add the friend
@@ -117,7 +112,6 @@ const Search = () => {
         if (response.status === 200) {
           setIsFollowed(true);
         } else {
-          console.log("Failed to add friend.");
         }
       }
       setSearchCriteria("");
@@ -125,22 +119,16 @@ const Search = () => {
         const followStatusCopy = { ...followStatus };
         friends.forEach((friend) => {
           // Set follow status for each friend
-          console.log(followStatusCopy[friend.id]);
-          console.log(loggedInUser.friends.includes(friend.id.toString()));
-          console.log(loggedInUser.friends);
 
           followStatusCopy[friend.id] = loggedInUser.friends.includes(
             friend.id.toString()
           );
-          console.log(followStatusCopy);
         });
         setFollowStatus(followStatusCopy);
       }
       // Emit event to notify others that the friends list has changed
       eventBus.emit("friendsUpdated", targetUserId);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   useEffect(() => {
     // Re-fetch friends list when the friendsUpdated event is emitted
@@ -169,14 +157,10 @@ const Search = () => {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
         // Set follow status for each friend
-        console.log(followStatusCopy[friend.id]);
-        console.log(loggedInUser.friends.includes(friend.id.toString()));
-        console.log(loggedInUser.friends);
 
         followStatusCopy[friend.id] = loggedInUser.friends.includes(
           friend.id.toString()
         );
-        console.log(followStatusCopy);
       });
       setFollowStatus(followStatusCopy);
     }

@@ -14,7 +14,7 @@ const FriendsList = () => {
     setShowFriends(!showFriends);
   };
   const friendListScrollStyle = {
-    maxHeight: "500px", // Adjust the height as needed
+    maxHeight: "500px",
     overflowY: "scroll",
     border: "none",
     padding: "10px",

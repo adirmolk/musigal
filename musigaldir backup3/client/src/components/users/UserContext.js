@@ -11,12 +11,11 @@ export const useUser = () => {
 export const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Handle async loading
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
-      console.log(token + " this is the token ");
       if (!token) {
         navigate("/login");
         return;
@@ -29,21 +28,20 @@ export const UserProvider = ({ children }) => {
             headers: { "x-api-key": token },
           }
         );
-        console.log(response.data + "this is the user ");
 
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user profile:", error);
         navigate("/login");
       } finally {
-        setLoading(false); // ✅ Ensure state updates
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div>Loading...</div>; // ✅ Prevent rendering before data loads
+  if (loading) return <div>Loading...</div>;
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

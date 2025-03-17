@@ -31,7 +31,7 @@ function CurrentlyPlaying({ color }) {
       .then((response) => response.json())
       .then((data) => {
         const newAccessToken = data.access_token;
-        setAccessToken(newAccessToken); // Store the new access token
+        setAccessToken(newAccessToken);
 
         fetch("https://api.spotify.com/v1/me/player/currently-playing", {
           headers: {
@@ -40,7 +40,6 @@ function CurrentlyPlaying({ color }) {
         })
           .then((response) => response.json())
           .then((data) => {
-            // console.log(data);
             if (data.currently_playing_type == "episode") {
               console.log("episode");
             } else if (data.currently_playing_type == "ad") {
@@ -58,36 +57,12 @@ function CurrentlyPlaying({ color }) {
       });
   };
 
-  // const findTopArtist = () => {
-  //   fetch("https://api.spotify.com/v1/me/top/tracks/", {
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log(response.status); // Log the status code
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch top tracks");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setCurrentlyPlaying(data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching top tracks:", error);
-  //     });
-
-  // };
-
   useEffect(() => {
     refreshAccessToken();
-    // findTopArtist();
 
     const refreshInterval = setInterval(() => {
       refreshAccessToken();
-      // findTopArtist();
-    }, 20000); // Refresh every 20 seconds
+    }, 20000);
 
     return () => {
       clearInterval(refreshInterval);
@@ -96,7 +71,6 @@ function CurrentlyPlaying({ color }) {
 
   return (
     <div>
-      {/* <Nav /> */}
       <div className="d-flex">
         {currentlyPlaying ? (
           <div style={{ width: "330px" }} className="p-1">
@@ -163,7 +137,6 @@ function CurrentlyPlaying({ color }) {
             </div>
           </div>
         )}
-        {/* <Home /> */}
       </div>
     </div>
   );

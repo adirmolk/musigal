@@ -36,10 +36,6 @@ const ProductPost = ({ userId, color }) => {
         headers: { "x-api-key": localStorage.getItem("token") },
       });
 
-      // for (const product of data) {
-      //   fetchUserProfile(product.userId);
-      // }
-
       setTimeout(() => {
         setPostProducts(data);
       }, 1500);
@@ -48,19 +44,13 @@ const ProductPost = ({ userId, color }) => {
     }
   };
 
-  // Function to handle new song posted event
-
   useEffect(() => {
     ShowProducts();
     const handleNewProduct = (newProduct) => {
-      console.log(newProduct);
-
       setPostProducts((prevProducts) => [newProduct, ...prevProducts]);
     };
-    // Listen for the "songPosted" event to add new products
     eventBus.on("productPosted", handleNewProduct);
 
-    // Cleanup the event listener when the component is unmounted
     return () => {
       eventBus.off("productPosted", handleNewProduct);
     };
@@ -93,7 +83,6 @@ const ProductPost = ({ userId, color }) => {
         </div>
       ) : (
         postProducts.map((item, index) =>
-          // Add a conditional check here to show products only if userId matches
           (userId && item.userId === userId) || !userId ? (
             <div
               className="mt-4 mx-4 rounded p-2"

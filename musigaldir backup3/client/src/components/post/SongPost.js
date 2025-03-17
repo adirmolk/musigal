@@ -8,7 +8,6 @@ import { useUser } from "../users/UserContext";
 
 const SongPost = ({ userId, color }) => {
   const [postSongs, setPostSongs] = useState([]);
-  const [authenticatedUserId, setAuthenticatedUserId] = useState("");
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [userLevel, setUserLevel] = useState(0);
@@ -23,8 +22,6 @@ const SongPost = ({ userId, color }) => {
   };
 
   const ShowSongs = async () => {
-    console.log(loggedInUser + "HEREEEEEEEEEEEEEE");
-
     try {
       const response = await axios.get(
         userId == null
@@ -34,12 +31,6 @@ const SongPost = ({ userId, color }) => {
           headers: { "x-api-key": localStorage.getItem("token") },
         }
       );
-      console.log(response.data);
-
-      // for (const song of response.data) {
-      //   fetchUserProfile(song.userId);
-      // }
-
       setTimeout(() => {
         setPostSongs(response.data);
       }, 1000);
@@ -47,27 +38,7 @@ const SongPost = ({ userId, color }) => {
       console.error("Error fetching data:", error);
     }
   };
-  const songs = async () => {
-    console.log(loggedInUser + "HEREEEEEEEEEEEEEE");
 
-    try {
-      const response = await axios.get(
-        `http://localhost:3001/api/songs/getSongsByUserId/${userId}`,
-        {
-          headers: { "x-api-key": localStorage.getItem("token") },
-        }
-      );
-      console.log(response.data);
-
-      // for (const song of response.data) {
-      //   fetchUserProfile(song.userId);
-      // }
-
-      setPostSongs(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
   const deleteSong = async (song) => {
     try {
       const response = await axios.delete(
@@ -77,9 +48,6 @@ const SongPost = ({ userId, color }) => {
           data: song,
         }
       );
-      console.log("Song deleted:", response.data);
-
-      // Emit an event to notify other components about the deletion
       eventBus.emit("songDeleted", song.id);
     } catch (error) {
       console.error("Error deleting song:", error);
@@ -116,7 +84,6 @@ const SongPost = ({ userId, color }) => {
       navigate("/login");
       return;
     }
-    console.log(token + " logged invsdgvsdvsdvsdvs");
 
     try {
       const response = await axios.get(
@@ -125,16 +92,10 @@ const SongPost = ({ userId, color }) => {
           headers: { "x-api-key": token },
         }
       );
-      console.log(
-        response.data +
-          "psjvmosvjsovsvnsbusnbsbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-      );
-
       setLoggedInUser(response.data);
-      // ShowSongs();
     } catch (error) {
       console.error("Error fetching logged-in user:", error);
-      navigate("/login"); // Redirect if token is invalid
+      navigate("/login");
     }
   };
   useEffect(() => {
@@ -178,7 +139,6 @@ const SongPost = ({ userId, color }) => {
         </div>
       ) : (
         postSongs.map((song, index) =>
-          // Add a conditional check here to show posts only if userId matches loggedInUser
           (userId && song.userId === userId) || !userId ? (
             <div
               className="mt-4 mx-4 p-2 rounded"
@@ -237,15 +197,6 @@ const SongPost = ({ userId, color }) => {
                         style={{ width: "16px", height: "16px" }}
                       />
                     </button>
-
-                    {/* <button id={index} className="btn">
-                      <img
-                        src={process.env.PUBLIC_URL + "/pen.png"}
-                        alt="Song 2"
-                        className="mb-1"
-                        style={{ width: "16px", height: "16px" }}
-                      />
-                    </button> */}
                   </div>
                 )}
               </div>

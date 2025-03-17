@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Nav from "../pagesStuff/Nav";
 import VinylWall from "./VinylWall";
 import EditProfile from "./EditProfile";
@@ -9,7 +9,6 @@ import ProductPost from "../post/ProductPost";
 import eventBus from "../EventBus/eventBus";
 
 const ProfilesErea = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [postType, setPostType] = useState("song");
@@ -58,7 +57,6 @@ const ProfilesErea = () => {
     fetchUser();
     fetchLoggedInUser();
 
-    // Listen for profile updates from the event bus
     const handleProfileUpdate = (updatedProfile) => {
       fetchLoggedInUser();
       fetchUser();
@@ -68,7 +66,6 @@ const ProfilesErea = () => {
 
     eventBus.on("profileUpdated", handleProfileUpdate);
 
-    // Cleanup event listener on component unmount
     return () => {
       eventBus.off("profileUpdated", handleProfileUpdate);
     };
@@ -77,10 +74,9 @@ const ProfilesErea = () => {
   const toggleFollow = async (targetUserId) => {
     try {
       if (!isFollowed) {
-        // User is currently following, so remove the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/follow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/follow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -91,10 +87,9 @@ const ProfilesErea = () => {
           console.log("Failed to remove friend.");
         }
       } else {
-        // User is not currently following, so add the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/unfollow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/unfollow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -108,7 +103,6 @@ const ProfilesErea = () => {
       }
       fetchUser();
       fetchLoggedInUser();
-      // Emit event to notify others that the friends list has changed
       eventBus.emit("friendsUpdated", targetUserId);
     } catch (error) {
       console.log(error);
@@ -120,9 +114,6 @@ const ProfilesErea = () => {
   };
 
   useEffect(() => {
-    console.log(loggedInUser);
-    console.log(user);
-
     if (
       loggedInUser &&
       user &&

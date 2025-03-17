@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import _ from "lodash";
-import Nav from "../pagesStuff/Nav";
 import checkTokenValidation from "../users/checkTokenValidation";
 import { useUser } from "../users/UserContext";
 import eventBus from "../EventBus/eventBus";
@@ -16,7 +14,6 @@ const Post = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
-  const navigate = useNavigate();
   const user = useUser();
   const [product, setProduct] = useState({ userId: user.id });
 
@@ -55,8 +52,6 @@ const Post = () => {
               headers: { "x-api-key": localStorage.getItem("token") },
             }
           );
-
-          // Emit event after posting a song
           eventBus.emit("songPosted", response.data);
         }
 
@@ -93,8 +88,6 @@ const Post = () => {
   useEffect(() => {
     fetchDeezerData();
   }, [searchQuery]);
-
-  const debouncedFetchDeezerData = _.debounce(fetchDeezerData, 500);
 
   const handlePlayButtonClick = (result) => {
     if (isPlaying) {
@@ -392,7 +385,7 @@ const Post = () => {
             <div
               style={{
                 marginTop: selectedSong !== null ? "15px" : "0",
-                marginRight: "15px", // Add margin to the right side
+                marginRight: "15px",
               }}
               className="d-flex justify-content-between"
             >

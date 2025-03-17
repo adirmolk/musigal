@@ -6,17 +6,15 @@ import { faMedal, fa4, fa5 } from "@fortawesome/free-solid-svg-icons";
 
 const Leaderboards = ({ color }) => {
   const [usersList, setUsersList] = useState([]);
-  const [counter, setCounter] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const { data } = await axios.get("http://localhost:3001/api/users");
-        const sortedByLevel = data.sort((a, b) => b.level - a.level); // Sort in descending order
-        const topFiveUsers = sortedByLevel.slice(0, 5); // Get first five users
+        const sortedByLevel = data.sort((a, b) => b.level - a.level);
+        const topFiveUsers = sortedByLevel.slice(0, 5);
         setUsersList(topFiveUsers);
-        console.log(usersList);
       } catch (error) {
         console.log(error);
       }

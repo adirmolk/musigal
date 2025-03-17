@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FaPlus, FaArrowCircleDown } from "react-icons/fa"; // Import icons
+import { FaPlus, FaArrowCircleDown } from "react-icons/fa";
 import DeezerSearch from "../deezer/DeezerSearch";
 
 const VinylWall = () => {
@@ -10,7 +10,7 @@ const VinylWall = () => {
   const [albumTitleFromDeezer, setAlbumTitleFromDeezer] = useState({});
   const [isAddVinyl, setIsAddVinyl] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [showAll, setShowAll] = useState(false); // Track whether to show all albums
+  const [showAll, setShowAll] = useState(false);
 
   const { id } = useParams();
   const record = vinylWall[0];
@@ -24,7 +24,6 @@ const VinylWall = () => {
   const renderVinyl = async () => {
     const data = await axios.get(`http://localhost:3001/api/vinyl/user/${id}`);
     setVinylWall(data.data);
-    console.log(data);
   };
 
   const handleShowMore = () => {
@@ -42,7 +41,6 @@ const VinylWall = () => {
           },
         }
       );
-      console.log(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -55,8 +53,6 @@ const VinylWall = () => {
       },
     });
     setLoggedInUser(data.data);
-
-    console.log("Logged: ", loggedInUser);
   };
 
   useEffect(() => {
