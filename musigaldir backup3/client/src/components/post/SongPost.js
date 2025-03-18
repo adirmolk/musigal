@@ -5,10 +5,14 @@ import SongRating from "../customFunctions/SongRating";
 import SongLoading from "../customFunctions/SongLoading";
 import eventBus from "../EventBus/eventBus";
 import { useUser } from "../users/UserContext";
+import { ToastContainer } from "react-toastify";
+import { FaArrowDown, FaCommentDots } from "react-icons/fa";
 
 const SongPost = ({ userId, color }) => {
   const [postSongs, setPostSongs] = useState([]);
   const [user, setUser] = useState(null);
+  const [showOptions, setShowOptions] = useState(false);
+
   const navigate = useNavigate();
   const [userLevel, setUserLevel] = useState(0);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -31,6 +35,8 @@ const SongPost = ({ userId, color }) => {
           headers: { "x-api-key": localStorage.getItem("token") },
         }
       );
+      console.log(localStorage.getItem("token") + " tokanakndsansdjns");
+
       setTimeout(() => {
         setPostSongs(response.data);
       }, 1000);
@@ -103,7 +109,7 @@ const SongPost = ({ userId, color }) => {
   }, []);
   useEffect(() => {
     ShowSongs();
-  }, [loggedInUser || userId]);
+  }, [loggedInUser != null || userId != null]);
 
   useEffect(() => {
     const handleFriendsUpdated = (followedUser) => {
@@ -130,9 +136,15 @@ const SongPost = ({ userId, color }) => {
       eventBus.off("songDeleted", handleSongDeleted);
     };
   }, []);
-
+  const handleOptionSelect = (e, song) => {
+    if (e.target.value === "delete") {
+      handleDeleteConfirmation(song); // Call the delete confirmation logic
+    }
+  };
   return (
     <div>
+      <ToastContainer />
+
       {postSongs.length === 0 ? (
         <div className="text-center mt-4">
           <SongLoading />
@@ -183,6 +195,26 @@ const SongPost = ({ userId, color }) => {
                     </p>
                   </div>
                 </div>
+                {/* {logUser.role === "user" && song.userId != logUser.id && (
+                  <div>
+                    <button
+                      className="btn"
+                      onClick={() => setShowOptions(!showOptions)} // Toggles the select options visibility
+                    >
+                      <FaArrowDown size={15} />
+                    </button>
+
+                    {showOptions && (
+                      <select
+                        onChange={(e) => handleOptionSelect(e, song)}
+                        className="options-select"
+                      >
+                        <option value="delete">Delete</option>
+                      </select>
+                    )}
+                  </div>
+                )} */}
+
                 {song.userId == logUser.id && (
                   <div>
                     <button

@@ -29,7 +29,7 @@ const Search = () => {
           }
         );
         setUser(response.data);
-        friendsGet(response.data.id); // Fetch friends after getting the user data
+        friendsGet(response.data.id);
         setLoggedInUser(response.data);
       } catch (error) {
         console.error(error);
@@ -51,22 +51,20 @@ const Search = () => {
   };
   const handleSearch = async () => {
     try {
-      // Check if the search criteria is empty
       if (searchCriteria.trim() === "") {
-        setSearchResults([]); // Clear the search results
-        return; // Exit the function without making an API request
+        setSearchResults([]);
+        return;
       }
 
-      // Send a GET request to the search route with the search criteria
       const response = await axios.get(
         `http://localhost:3001/api/users/search?criteria=${searchCriteria}`
       );
+
       const users = response.data;
       setSearchResults(users);
       setFriends(users);
     } catch (error) {
       console.error(error);
-      // Handle errors here
     }
   };
 
@@ -74,23 +72,18 @@ const Search = () => {
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
-
-    // Set a new timeout to trigger the search after a delay (e.g., 500ms)
     const newTimeout = setTimeout(() => {
       handleSearch();
     }, 500);
-
     setTypingTimeout(newTimeout);
   };
 
-  // Toggle follow/unfollow friend
   const toggleFollow = async (targetUserId) => {
     try {
       if (!followStatus[targetUserId]) {
-        // User is currently following, so remove the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/follow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/follow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -100,10 +93,9 @@ const Search = () => {
         } else {
         }
       } else {
-        // User is not currently following, so add the friend
         const response = await axios.put(
-          "http://localhost:3001/api/users/unfollow", // No query params
-          { userId: loggedInUser.id, targetUserId }, // Send both IDs in the body
+          "http://localhost:3001/api/users/unfollow",
+          { userId: loggedInUser.id, targetUserId },
           {
             headers: { "x-api-key": localStorage.getItem("token") },
           }
@@ -118,34 +110,26 @@ const Search = () => {
       if (loggedInUser && user && friends?.length > 0) {
         const followStatusCopy = { ...followStatus };
         friends.forEach((friend) => {
-          // Set follow status for each friend
-
           followStatusCopy[friend.id] = loggedInUser.friends.includes(
             friend.id.toString()
           );
         });
         setFollowStatus(followStatusCopy);
       }
-      // Emit event to notify others that the friends list has changed
       eventBus.emit("friendsUpdated", targetUserId);
     } catch (error) {}
   };
   useEffect(() => {
-    // Re-fetch friends list when the friendsUpdated event is emitted
     const handleFriendsUpdated = () => {
       getProfile();
     };
-
     eventBus.on("friendsUpdated", handleFriendsUpdated);
-
-    // Cleanup the event listener when the component is unmounted
     return () => {
       eventBus.off("friendsUpdated", handleFriendsUpdated);
     };
   }, [loggedInUser]);
   useEffect(() => {
     delayedSearch();
-    // Cleanup the timeout on component unmount
     return () => {
       if (typingTimeout) {
         clearTimeout(typingTimeout);
@@ -156,8 +140,6 @@ const Search = () => {
     if (loggedInUser && user && friends?.length > 0) {
       const followStatusCopy = { ...followStatus };
       friends.forEach((friend) => {
-        // Set follow status for each friend
-
         followStatusCopy[friend.id] = loggedInUser.friends.includes(
           friend.id.toString()
         );
@@ -179,11 +161,10 @@ const Search = () => {
         className="search-results rounded mt-5"
         style={{
           position: "absolute",
-          top: "50px", // Adjust as needed for your layout
-
+          top: "50px",
           right: "100px",
           width: "430px",
-          maxHeight: "300px", // Set a max height for the scrollable container
+          maxHeight: "300px",
           overflowY: "auto",
           backgroundColor: "white",
         }}
@@ -228,34 +209,36 @@ const Search = () => {
                 </span>
               </div>
             </div>
-            <button
-              id={index}
-              style={{
-                backgroundColor: "#ADD8E6",
-                height: "40px",
-                width: "40px",
-              }}
-              className={`rounded-circle btn  ${
-                followStatus[user.id] ? " mb-1 ms-2" : " ms-2"
-              }`}
-              onClick={() => toggleFollow(user.id)}
-            >
-              {followStatus[user.id] ? (
-                <img
-                  width={"15px"}
-                  className="mb-1"
-                  src={process.env.PUBLIC_URL + "/delete-user.png"}
-                  alt="Delete User"
-                />
-              ) : (
-                <img
-                  width={"15px"}
-                  className="mb-1"
-                  src={process.env.PUBLIC_URL + "/add-user.png"}
-                  alt="Add User"
-                />
-              )}
-            </button>
+            {user.id !== loggedInUser.id && (
+              <button
+                id={index}
+                style={{
+                  backgroundColor: "#ADD8E6",
+                  height: "40px",
+                  width: "40px",
+                }}
+                className={`rounded-circle btn  ${
+                  followStatus[user.id] ? " mb-1 ms-2" : " ms-2"
+                }`}
+                onClick={() => toggleFollow(user.id)}
+              >
+                {followStatus[user.id] ? (
+                  <img
+                    width={"15px"}
+                    className="mb-1"
+                    src={process.env.PUBLIC_URL + "/delete-user.png"}
+                    alt="Delete User"
+                  />
+                ) : (
+                  <img
+                    width={"15px"}
+                    className="mb-1"
+                    src={process.env.PUBLIC_URL + "/add-user.png"}
+                    alt="Add User"
+                  />
+                )}
+              </button>
+            )}
           </div>
         ))}
       </div>

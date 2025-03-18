@@ -3,7 +3,10 @@ import ContentLoader from "react-content-loader";
 
 const SongLoading = () => {
   return (
-    <div className="mt-4 mx-4 p-2 rounded" style={{ backgroundColor: "white", width: "400px" }}>
+    <div
+      className="mt-4 mx-4 p-2 rounded"
+      style={{ backgroundColor: "white", width: "363px" }}
+    >
       <div className="p-2 justify-content-evenly">
         <div className="d-flex align-items-center mb-3">
           <ContentLoader
@@ -43,7 +46,7 @@ const SongLoading = () => {
         <div
           className="instagram-post rounded"
           style={{
-            width: "365px",
+            width: "330px",
             marginBottom: "20px",
             position: "relative",
             borderRadius: "10px",
@@ -52,7 +55,7 @@ const SongLoading = () => {
         >
           <ContentLoader
             speed={3}
-            width={365}
+            width={330}
             height={365}
             viewBox="0 0 365 365"
             backgroundColor="#f3f3f3"
@@ -123,8 +126,6 @@ const SongLoading = () => {
               <rect x="0" y="0" rx="4" ry="4" width="100" height="10" />
             </ContentLoader>
           </div>
-
-
         </div>
       </div>
     </div>

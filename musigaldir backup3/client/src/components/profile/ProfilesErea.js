@@ -7,6 +7,7 @@ import EditProfile from "./EditProfile";
 import SongPost from "../post/SongPost";
 import ProductPost from "../post/ProductPost";
 import eventBus from "../EventBus/eventBus";
+import { ClipLoader } from "react-spinners";
 
 const ProfilesErea = () => {
   const [user, setUser] = useState(null);
@@ -130,7 +131,13 @@ const ProfilesErea = () => {
       <Nav />
 
       {user ? (
-        <div style={{ backgroundColor: "#EEEDEF" }}>
+        <div
+          style={{
+            backgroundColor: "#EEEDEF",
+            height: "fit-content",
+            minHeight: "110vh",
+          }}
+        >
           <div className="container">
             <div className="row">
               <div className="col-12 order-1 ">
@@ -286,7 +293,9 @@ const ProfilesErea = () => {
         </div>
       ) : (
         <div>
-          <h1>user not found</h1>
+          <div className="flex justify-center items-center h-screen">
+            <ClipLoader color="#3B82F6" size={50} />
+          </div>
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ const SkullLoading = () => {
   return (
     <ContentLoader
       speed={3}
-      width={432}
+      width={370}
       height={400}
       viewBox="0 0 370 370"
       backgroundColor="#f3f3f3"

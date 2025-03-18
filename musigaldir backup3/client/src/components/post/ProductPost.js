@@ -7,7 +7,7 @@ import eventBus from "../EventBus/eventBus";
 const ProductPost = ({ userId, color }) => {
   const [postProducts, setPostProducts] = useState([]);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
-  const [openPhoneIndex, setOpenPhoneIndex] = useState(null); // New state for phone number toggle
+  const [openPhoneIndex, setOpenPhoneIndex] = useState(null);
   const navigate = useNavigate();
 
   const ShowProducts = async () => {
@@ -45,7 +45,16 @@ const ProductPost = ({ userId, color }) => {
   const togglePhone = (index) => {
     setOpenPhoneIndex((prevIndex) => (prevIndex === index ? null : index));
   };
-
+  const conditionColors = {
+    "Mint (M)": "green",
+    "Near Mint (NM or M-)": "blue",
+    "Very Good Plus (VG+)": "orange",
+    "Very Good (VG)": "yellow",
+    "Good (G)": "pink",
+    "Good Plus (G+)": "purple",
+    "Poor (P)": "red",
+    "Fair (F)": "brown",
+  };
   return (
     <div>
       {postProducts.length <= 0 ? (
@@ -95,7 +104,7 @@ const ProductPost = ({ userId, color }) => {
               <div className="p-3 rounded">
                 <img
                   className="rounded mb-1"
-                  src={item.img_url}
+                  src={item.imgUrl}
                   alt={`${item.title} Album Cover`}
                   style={{
                     width: "100%",
@@ -105,7 +114,11 @@ const ProductPost = ({ userId, color }) => {
                   }}
                 />
                 <br />
-                <span className="fw-bold">{item.title} </span>
+                <span className="fw-bold">{item.title} </span>&#8226;{" "}
+                <span style={{ color: conditionColors[item.condition] }}>
+                  {" "}
+                  {item.condition}{" "}
+                </span>
                 <br />
                 <span className="">{item.price}$ &#8226;</span>
                 <span className=""> {item.location}</span>
@@ -128,11 +141,9 @@ const ProductPost = ({ userId, color }) => {
                       : "See Description"}
                   </button>
                 </div>
-
                 {openDescriptionIndex === index && (
                   <div className="text-center mt-2">{item.description}</div>
                 )}
-
                 {openPhoneIndex === index && (
                   <div
                     className="text-center mt-2 p-2 border rounded"

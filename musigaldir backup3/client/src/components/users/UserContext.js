@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
 const UserContext = createContext(null);
 
@@ -41,7 +42,18 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, [navigate]);
 
-  if (loading) return <div>Loading...</div>;
-
+  if (loading)
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <ClipLoader color="#3B82F6" size={50} />
+      </div>
+    );
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

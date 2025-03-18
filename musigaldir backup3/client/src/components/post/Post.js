@@ -4,6 +4,8 @@ import _ from "lodash";
 import checkTokenValidation from "../users/checkTokenValidation";
 import { useUser } from "../users/UserContext";
 import eventBus from "../EventBus/eventBus";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Post = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -44,6 +46,15 @@ const Post = () => {
             }
           );
           eventBus.emit("productPosted", response.data);
+          toast.success("Product posted successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
         } else {
           response = await axios.post(
             `http://localhost:3001/api/songs?userId=${user.id}`,
@@ -53,6 +64,15 @@ const Post = () => {
             }
           );
           eventBus.emit("songPosted", response.data);
+          toast.success("Song posted successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
         }
 
         setIsPosted(true);
@@ -61,11 +81,19 @@ const Post = () => {
         }, 1000);
       } catch (error) {
         console.error(error);
+        toast.error("Error posting song/product!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
         setIsLoading(false);
       }
     }
   };
-
   const fetchDeezerData = async () => {
     const options = {
       method: "GET",

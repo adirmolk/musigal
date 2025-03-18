@@ -8,7 +8,7 @@ const useFriendsList = () => {
 
   // useEffect(() => {
   //   setIsLoading(true);
-  //   axios.get("http://localhost:3001/api/friendList").then((res) => {
+  //   axios.get("http://localhost:3002/api/friendList").then((res) => {
   //     setIsLoading(false);
   //     setFfiendsList(res.data);
   //   });

@@ -42,7 +42,7 @@ const Home = () => {
   };
 
   return (
-    <div style={{ backgroundColor }}>
+    <div style={{ backgroundColor, height: "fit-content", minHeight: "110vh" }}>
       <Nav />
       <div className="container">
         <div className="row">

@@ -49,5 +49,5 @@ routesInit(app);
 const server = http.createServer(app);
 // בודק באיזה פורט להריץ את השרת  , אם בשרת אמיתי אוסף
 // את המשתנה פורט מהסביבת עבודה שלו ואם לא 3001
-const port = 3001;
+const port = 3002;
 server.listen(port);
