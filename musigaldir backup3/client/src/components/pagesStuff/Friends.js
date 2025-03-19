@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import eventBus from "../EventBus/eventBus";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const Friends = ({ color }) => {
   const [friends, setFriends] = useState([]);
   const [user, setUser] = useState(null);
@@ -43,15 +44,15 @@ const Friends = ({ color }) => {
       const response = await axios.get(
         `http://localhost:3001/api/users/friends?userId=${userId}`
       );
-      toast.success("Fetching friends successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
+      // toast.success("Fetching friends successfully!", {
+      //   position: "top-right",
+      //   autoClose: 3000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   theme: "colored",
+      // });
       setFriends(response.data);
     } catch (error) {
       console.error("Error fetching friends:", error);

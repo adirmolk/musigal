@@ -2,7 +2,9 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import eventBus from "../EventBus/eventBus";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const Search = () => {
   const [searchCriteria, setSearchCriteria] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -44,15 +46,15 @@ const Search = () => {
       const response = await axios.get(
         `http://localhost:3001/api/users/friends?userId=${userId}`
       );
-      toast.success("Fetching friends successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
+      // toast.success("Fetching friends successfully!", {
+      //   position: "top-right",
+      //   autoClose: 3000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   theme: "colored",
+      // });
       setFriends(response.data.friendsArr);
     } catch (error) {
       console.error("Error fetching friends:", error);

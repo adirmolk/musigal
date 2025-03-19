@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "../users/UserContext";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const SongRating = ({ songId, userId, updateLevel }) => {
   const [rated, setRated] = useState(false);
   const [rating, setRating] = useState(0);
@@ -38,15 +40,7 @@ const SongRating = ({ songId, userId, updateLevel }) => {
             },
           }
         );
-        toast.success("Fetching user rating successfully!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
+
         setUser(data);
       } catch (error) {
         console.error("Error fetching user rating:", error);

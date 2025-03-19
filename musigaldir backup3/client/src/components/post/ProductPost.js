@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ProductLoading from "../customFunctions/ProductLoading";
 import eventBus from "../EventBus/eventBus";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const ProductPost = ({ userId, color }) => {
   const [postProducts, setPostProducts] = useState([]);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);

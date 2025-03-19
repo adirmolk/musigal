@@ -3,7 +3,8 @@ import axios from "axios";
 import { useUser } from "../users/UserContext";
 import { useNavigate } from "react-router-dom";
 import eventBus from "../EventBus/eventBus";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const EditProfile = () => {
   const user = useUser();
   const [name, setName] = useState(user.name);
@@ -26,14 +27,14 @@ const EditProfile = () => {
       );
       eventBus.emit("profileUpdated", { name, imgUrl });
       toast.success("Profile updated successfully!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            theme: "colored",
-          });
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (error) {
       console.error("Error updating profile", error);
       toast.error("Error updating profile!", {

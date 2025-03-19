@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaPlus, FaArrowCircleDown } from "react-icons/fa";
 import DeezerSearch from "../deezer/DeezerSearch";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const VinylWall = () => {
   const [vinylWall, setVinylWall] = useState([]);
   const [showDeezerSearch, setShowDeezerSearch] = useState(false);
