@@ -42,7 +42,10 @@ const Friends = ({ color }) => {
   const friendsGet = async (userId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/users/friends?userId=${userId}`
+        `http://localhost:3001/api/users/friends?userId=${userId}`,
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        }
       );
       // toast.success("Fetching friends successfully!", {
       //   position: "top-right",

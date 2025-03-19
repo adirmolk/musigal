@@ -20,7 +20,12 @@ const ProfilesErea = () => {
   const navigate = useNavigate();
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/users/${id}`);
+      const response = await axios.get(
+        `http://localhost:3001/api/users/${id}`,
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        }
+      );
       setUser(response.data);
     } catch (error) {
       console.log(error);
@@ -138,7 +143,6 @@ const ProfilesErea = () => {
       if (response.status === 200) {
         eventBus.emit("userDeleted", user);
         navigate("/home");
-        // Optionally redirect or update state after deletion
       } else {
         toast.error("Error deleting user!", {
           position: "top-right",

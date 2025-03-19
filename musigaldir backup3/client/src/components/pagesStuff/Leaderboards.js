@@ -11,7 +11,9 @@ const Leaderboards = ({ color }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3001/api/users");
+        const { data } = await axios.get("http://localhost:3001/api/users", {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        });
         const sortedByLevel = data.sort((a, b) => b.level - a.level);
         const topFiveUsers = sortedByLevel.slice(0, 5);
         setUsersList(topFiveUsers);

@@ -23,7 +23,9 @@ const VinylWall = () => {
     : reversedVinylWall.slice(0, displayedVinyls);
 
   const renderVinyl = async () => {
-    const data = await axios.get(`http://localhost:3001/api/vinyl/user/${id}`);
+    const data = await axios.get(`http://localhost:3001/api/vinyl/user/${id}`, {
+      headers: { "x-api-key": localStorage.getItem("token") },
+    });
     setVinylWall(data.data);
   };
 

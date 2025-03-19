@@ -95,35 +95,59 @@ const Profile = ({ color }) => {
               <hr />
               <div className="p-3">
                 <h5 className="font-weight-bold mb-3">Social Profiles</h5>
+
+                {/* Twitter Profile */}
                 <div className="d-flex justify-content-between mb-2">
                   <div className="d-flex align-items-center">
                     <img
                       src={process.env.PUBLIC_URL + "/twitter.png"}
                       alt="Twitter"
                       className="mr-2"
-                      style={{ width: "30px", height: "30px" }}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        window.open(
+                          `https://twitter.com/${user.name}`,
+                          "_blank"
+                        )
+                      }
                     />
                     <div className="mx-3">
                       <p className="font-weight-bold mb-0">Twitter</p>
                       <p className="text-muted">Social Network</p>
                     </div>
                   </div>
-                  <i className="bi bi-pencil"></i>{" "}
+                  <i className="bi bi-pencil"></i>
                 </div>
-                <div className="d-flex justify-content-between ">
-                  <div className="d-flex align-items-center ">
+
+                {/* Spotify Profile */}
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex align-items-center">
                     <img
                       src={process.env.PUBLIC_URL + "/spotify.png"}
-                      alt="LinkedIn"
+                      alt="Spotify"
                       className="mr-2"
-                      style={{ width: "30px", height: "30px" }}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        window.open(
+                          `https://open.spotify.com/user/${user.name}`,
+                          "_blank"
+                        )
+                      }
                     />
                     <div className="mx-3">
                       <p className="font-weight-bold mb-0">Spotify</p>
                       <p className="text-muted">Music Platform</p>
                     </div>
                   </div>
-                  <i className="bi bi-pencil"></i>{" "}
+                  <i className="bi bi-pencil"></i>
                 </div>
               </div>
             </div>

@@ -7,7 +7,8 @@ import eventBus from "../EventBus/eventBus";
 import { useUser } from "../users/UserContext";
 import { ToastContainer } from "react-toastify";
 import { FaArrowDown, FaCommentDots } from "react-icons/fa";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 const SongPost = ({ userId, color }) => {
   const [postSongs, setPostSongs] = useState([]);
   const [user, setUser] = useState(null);
