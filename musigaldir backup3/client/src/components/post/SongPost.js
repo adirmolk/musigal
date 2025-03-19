@@ -55,8 +55,26 @@ const SongPost = ({ userId, color }) => {
         }
       );
       eventBus.emit("songDeleted", song.id);
+      toast.success("Deleting song successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (error) {
       console.error("Error deleting song:", error);
+      toast.error("Error deleting song!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
   useEffect(() => {

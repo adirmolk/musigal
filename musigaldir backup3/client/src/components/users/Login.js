@@ -20,7 +20,15 @@ const Login = () => {
           },
         }
       );
-
+      toast.success("Login successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
       console.log(response.data);
       const token = response.data;
       localStorage.setItem("token", token);
