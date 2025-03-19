@@ -15,12 +15,29 @@ const ProductPost = ({ userId, color }) => {
       const { data } = await axios.get("http://localhost:3001/api/products", {
         headers: { "x-api-key": localStorage.getItem("token") },
       });
-
+      toast.success("Fetching products successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       setTimeout(() => {
         setPostProducts(data);
       }, 1500);
     } catch (error) {
       console.error("Error fetching data:", error);
+      toast.error("Error fetching products!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 

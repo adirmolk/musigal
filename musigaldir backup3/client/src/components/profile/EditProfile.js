@@ -25,8 +25,26 @@ const EditProfile = () => {
         }
       );
       eventBus.emit("profileUpdated", { name, imgUrl });
+      toast.success("Profile updated successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
     } catch (error) {
       console.error("Error updating profile", error);
+      toast.error("Error updating profile!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 

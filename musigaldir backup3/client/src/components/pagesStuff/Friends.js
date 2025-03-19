@@ -43,9 +43,27 @@ const Friends = ({ color }) => {
       const response = await axios.get(
         `http://localhost:3001/api/users/friends?userId=${userId}`
       );
+      toast.success("Fetching friends successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       setFriends(response.data);
     } catch (error) {
       console.error("Error fetching friends:", error);
+      toast.error("Error fetching friends!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 

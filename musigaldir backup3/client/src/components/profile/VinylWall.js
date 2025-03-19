@@ -41,8 +41,26 @@ const VinylWall = () => {
           },
         }
       );
+      toast.success("Post vinyl successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (err) {
       console.log(err);
+      toast.error("Error posting vinyl!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
 

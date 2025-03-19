@@ -38,9 +38,27 @@ const SongRating = ({ songId, userId, updateLevel }) => {
             },
           }
         );
+        toast.success("Fetching user rating successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
         setUser(data);
       } catch (error) {
         console.error("Error fetching user rating:", error);
+        toast.error("Error fetching user rating!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
       }
     };
 
@@ -87,8 +105,26 @@ const SongRating = ({ songId, userId, updateLevel }) => {
           },
         }
       );
+      toast.success("Updating rating successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (error) {
       console.error("Error updating rating:", error);
+      toast.error("Error updating rating!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     }
   };
   const toggleInputVisibility = () => {
