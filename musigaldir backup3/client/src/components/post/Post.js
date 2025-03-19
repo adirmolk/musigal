@@ -17,7 +17,7 @@ const Post = () => {
   const [isPosted, setIsPosted] = useState(false);
   const audioRef = useRef(null);
   const user = useUser();
-  const [product, setProduct] = useState({ userId: user.id });
+  const [product, setProduct] = useState({});
 
   const onPlay = () => {
     setSong({

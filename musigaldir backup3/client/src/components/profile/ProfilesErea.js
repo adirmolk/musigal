@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Nav from "../pagesStuff/Nav";
 import VinylWall from "./VinylWall";
 import EditProfile from "./EditProfile";
@@ -8,7 +8,8 @@ import SongPost from "../post/SongPost";
 import ProductPost from "../post/ProductPost";
 import eventBus from "../EventBus/eventBus";
 import { ClipLoader } from "react-spinners";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const ProfilesErea = () => {
   const [user, setUser] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -16,6 +17,7 @@ const ProfilesErea = () => {
   const [isFollowed, setIsFollowed] = useState(false);
   const [isEditProfileOpen, setEditProfileOpen] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
   const fetchUser = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/api/users/${id}`);
@@ -125,7 +127,34 @@ const ProfilesErea = () => {
       setIsFollowed(false);
     }
   }, [loggedInUser, user]);
-
+  const deleteUser = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/api/users/deleteUserById?userId=${user.id}`,
+        {
+          headers: { "x-api-key": localStorage.getItem("token") },
+        }
+      );
+      if (response.status === 200) {
+        eventBus.emit("userDeleted", user);
+        navigate("/home");
+        // Optionally redirect or update state after deletion
+      } else {
+        toast.error("Error deleting user!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting user");
+    }
+  };
   return (
     <div>
       <Nav />
@@ -194,6 +223,18 @@ const ProfilesErea = () => {
                             alt="Follow"
                           />
                         )}
+                      </button>
+                    )}
+                    {loggedInUser?.role === "admin" && (
+                      <button
+                        className="btn btn-danger ms-2 mb-2"
+                        onClick={deleteUser}
+                      >
+                        <img
+                          width="18px"
+                          src={process.env.PUBLIC_URL + "/trash-can.png"}
+                          alt="Delete User"
+                        />
                       </button>
                     )}
                   </h2>
