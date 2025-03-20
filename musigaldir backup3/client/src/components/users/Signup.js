@@ -27,42 +27,50 @@ const Signup = () => {
           </p>
           <form id="id_form" onSubmit={onSubmit}>
             <div className="form-group">
-              <label htmlFor="id_name">Name</label>
+              <label htmlFor="id_name" style={{ fontWeight: "bold",marginTop:"5px",marginBottom:"5px" }}>Name</label>
               <input
                 onChange={(e) => setUser({ ...user, name: e.target.value })}
                 id="id_name"
                 className="form-control"
                 type="text"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
+                placeholder="Enter your name"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="id_email">Email</label>
+              <label htmlFor="id_email" style={{ fontWeight: "bold",marginTop:"5px",marginBottom:"5px" }}>Email</label>
               <input
                 onChange={(e) => setUser({ ...user, email: e.target.value })}
                 id="id_email"
                 className="form-control"
                 type="email"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
+                placeholder="Enter your email"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="id_password">Password</label>
+              <label htmlFor="id_password" style={{ fontWeight: "bold",marginTop:"5px",marginBottom:"5px" }}>Password</label>
               <input
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                 id="id_password"
                 className="form-control"
                 type="password"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
+                placeholder="Enter your password"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="id_imgUrl">imgUrl</label>
+              <label htmlFor="id_imgUrl" style={{ fontWeight: "bold",marginTop:"5px",marginBottom:"5px" }}>imgUrl</label>
               <input
                 onChange={(e) => setUser({ ...user, imgUrl: e.target.value })}
                 id="id_imgUrl"
                 className="form-control"
                 type="text"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
+                placeholder="Enter your imgUrl"
               />
             </div>
-            <button className="btn btn-primary">Sign Up</button>
+            <button className="btn btn-primary" style={{marginTop:"20px"}}>Sign Up</button>
             <button
               style={{ textDecorationLine: "none" }}
               onClick={() => nav("/login")}
