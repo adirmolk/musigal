@@ -61,26 +61,31 @@ const Login = () => {
           </p>
           <form id="id_form" onSubmit={onSubmit}>
             <div className="mb-3">
-              <label htmlFor="id_email" className="form-label">
+              <label htmlFor="id_email" className="form-label" style={{ fontWeight: "bold" }}
+              >
                 Email
               </label>
               <input
                 onChange={(e) => setUser({ ...user, email: e.target.value })}
                 id="id_email"
-                className="form-control"
+                className="form-control custom-shadow"
                 type="email"
+                placeholder="Enter your email"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
                 required
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="id_password" className="form-label">
+              <label htmlFor="id_password" className="form-label" style={{ fontWeight: "bold" }}>
                 Password
               </label>
               <input
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                 id="id_password"
-                className="form-control"
+                className="form-control custom-shadow"
                 type="password"
+                placeholder="Enter your password"
+                style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)" }}
                 required
               />
             </div>
