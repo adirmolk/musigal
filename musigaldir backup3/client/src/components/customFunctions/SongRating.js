@@ -99,7 +99,7 @@ const SongRating = ({ songId, userId, updateLevel }) => {
           },
         }
       );
-      toast.success("Updating rating successfully!", {
+      toast.success("user is now admin!", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,

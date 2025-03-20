@@ -78,7 +78,23 @@ const ProfilesErea = () => {
       eventBus.off("profileUpdated", handleProfileUpdate);
     };
   }, [id]);
-
+  const makeUserAdmin = async (user) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/api/users/${user.id}`,
+        {
+          ...user,
+          role: "admin",
+        },
+        {
+          headers: {
+            "x-api-key": localStorage.getItem("token"),
+          },
+        }
+      );
+      eventBus.emit("profileUpdated");
+    } catch (e) {}
+  };
   const toggleFollow = async (targetUserId) => {
     try {
       if (!isFollowed) {
@@ -241,6 +257,19 @@ const ProfilesErea = () => {
                         />
                       </button>
                     )}
+                    {loggedInUser?.role === "admin" &&
+                      user?.role !== "admin" && (
+                        <button
+                          className="btn btn-warning ms-2 mb-2"
+                          onClick={() => makeUserAdmin(user)}
+                        >
+                          <img
+                            width="18px"
+                            src={process.env.PUBLIC_URL + "/crown.png"}
+                            alt="Delete User"
+                          />
+                        </button>
+                      )}
                   </h2>
 
                   <div className="d-flex ms-5">
